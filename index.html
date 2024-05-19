@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我的地图</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <img src="../images/avatar.jpg" alt="头像" class="avatar">
+        </div>
+        <ul class="nav-right">
+            <li><a href="#" onclick="showMap()"><i class="fas fa-map"></i> 地图</a></li>
+            <li><a href="#" onclick="showWeather()"><i class="fas fa-cloud-sun"></i> 天气</a></li>
+        </ul>
+    </nav>
+    <div id="map-container">
+        <div id="map"></div>
+        <div id="search-container">
+            <div id="search-input-container">
+                <input type="text" id="search-input" placeholder="Wo soll es hingehen?" oninput="showSuggestions()">
+                <button id="search-button"><i class="fas fa-search"></i></button>
+            </div>
+            <div id="suggestions"></div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="js/scripts.js"></script>
+</body>
+</html>
