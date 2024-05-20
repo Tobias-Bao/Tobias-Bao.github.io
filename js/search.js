@@ -1,9 +1,11 @@
 document.getElementById('search-button').addEventListener('click', function() {
     var query = document.getElementById('search-input').value;
     if (query) {
+        console.log(`Searching for: ${query}`);
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`)
             .then(response => response.json())
             .then(data => {
+                console.log(data);
                 if (data && data.length > 0) {
                     var latlng = [data[0].lat, data[0].lon];
                     map.setView(latlng, 13);
@@ -25,11 +27,14 @@ document.getElementById('search-button').addEventListener('click', function() {
 
 function showSuggestions() {
     var query = document.getElementById('search-input').value;
+    var suggestions = document.getElementById('suggestions');
+    
     if (query) {
+        console.log(`Fetching suggestions for: ${query}`);
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`)
             .then(response => response.json())
             .then(data => {
-                var suggestions = document.getElementById('suggestions');
+                console.log(data);
                 suggestions.innerHTML = '';
                 if (data && data.length > 0) {
                     data.forEach(item => {
@@ -56,6 +61,16 @@ function showSuggestions() {
                 console.error('Error:', error);
             });
     } else {
-        document.getElementById('suggestions').style.display = 'none';
+        suggestions.style.display = 'none';
     }
 }
+
+document.getElementById('search-input').addEventListener('blur', function() {
+    setTimeout(function() {
+        document.getElementById('suggestions').style.display = 'none';
+    }, 100); // 延迟隐藏以便点击事件先触发
+});
+
+document.getElementById('search-input').addEventListener('input', function() {
+    showSuggestions();
+});

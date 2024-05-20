@@ -9,7 +9,7 @@ var currentLocationMarker;
 // 添加定位按钮
 L.Control.Locate = L.Control.extend({
     onAdd: function(map) {
-        var btn = L.DomUtil.create('button', 'leaflet-control-locate leaflet-bar');
+        var btn = L.DomUtil.create('button', 'leaflet-control-locate leaflet-bar-part'); // 添加 leaflet-bar-part 以确保样式覆盖
         btn.innerHTML = '<i class="fas fa-crosshairs"></i>'; // 使用 Font Awesome 图标
         L.DomEvent.on(btn, 'click', function() {
             map.locate({setView: true, maxZoom: 16});

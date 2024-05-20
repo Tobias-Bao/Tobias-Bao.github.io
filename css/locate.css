@@ -1,10 +1,10 @@
 /* 修改定位按钮样式 */
-.leaflet-bar .leaflet-control-locate {
+.leaflet-control-locate {
     background-color: rgba(255, 255, 255, 0.9); /* 背景色 */
     backdrop-filter: blur(5px);
     border-radius: 50%; /* 圆形按钮 */
-    width: 80px; /* 按钮宽度 */
-    height: 80px; /* 按钮高度 */
+    width: 50px; /* 按钮宽度 */
+    height: 50px; /* 按钮高度 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -13,11 +13,11 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* 添加阴影效果 */
 }
 
-.leaflet-bar .leaflet-control-locate i {
+.leaflet-control-locate i {
     font-size: 36px; /* 图标大小 */
     color: #333; /* 图标颜色 */
 }
 
-.leaflet-bar .leaflet-control-locate:hover {
+.leaflet-control-locate:hover {
     transform: scale(1.1); /* 鼠标悬停放大效果 */
 }
