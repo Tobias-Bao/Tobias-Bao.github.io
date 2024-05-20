@@ -58,3 +58,34 @@ nav {
 .nav-right li a i {
     margin-right: 5px;
 }
+
+/* 响应式设计 */
+@media only screen and (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .nav-right {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-right li {
+        margin: 10px 0; /* 在窄屏上增加顶部和底部间距 */
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    nav {
+        padding: 5px 10px;
+    }
+
+    .nav-right li a {
+        font-size: 16px;
+    }
+    
+    .nav-right li {
+        margin: 5px 0; /* 进一步缩小间距 */
+    }
+}
