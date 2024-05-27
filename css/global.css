@@ -49,3 +49,48 @@ button:hover {
     background-color: #0056b3;
     transform: scale(1.05);
 }
+
+/* 媒体查询 */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .currency select {
+        width: 90%;
+    }
+
+    .switch button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    input[type="number"], input[type="text"] {
+        width: calc(100% - 60px);
+        padding: 8px;
+    }
+
+    #convertButton, #homeButton {
+        width: 90%;
+        padding: 12px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .currency select {
+        width: 100%;
+    }
+
+    input[type="number"], input[type="text"] {
+        width: calc(100% - 40px);
+        padding: 6px;
+    }
+
+    #convertButton, #homeButton {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
+}
