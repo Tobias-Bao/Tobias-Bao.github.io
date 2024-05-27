@@ -1,0 +1,92 @@
+/* 汇率转换器页面特定样式 */
+.converter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.currency {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.currency select {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.switch {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+}
+
+.switch button {
+    width: auto; /* 确保按钮宽度适应内容 */
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.switch button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.amount, .result {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+label {
+    margin-right: 10px;
+    white-space: nowrap; /* 使标签不换行 */
+}
+
+input[type="number"], input[type="text"] {
+    width: calc(100% - 100px); /* 调整输入框宽度 */
+    padding: 10px;
+    margin: 5px 0;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#convertButton {
+    font-size: 20px; /* 增大字体 */
+    margin-bottom: 10px; /* 增加下方间距 */
+    background-color: #007bff; /* 设置按钮背景色 */
+}
+
+#convertButton:hover {
+    background-color: #0056b3; /* 鼠标悬停时的背景色 */
+}
+
+#homeButton {
+    font-size: 20px; /* 增大字体 */
+    background-color: #28a745; /* 绿色按钮 */
+    margin-top: 10px;
+}
+
+#homeButton:hover {
+    background-color: #218838;
+}
+
+.rate {
+    text-align: center;
+    font-size: 16px; /* 增大字体 */
+    margin-bottom: 20px;
+}

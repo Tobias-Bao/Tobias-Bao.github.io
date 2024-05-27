@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汇率转换器</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/converter.css">
+</head>
+<body>
+    <div class="container">
+        <h1>汇率转换器</h1>
+        <div class="converter">
+            <div class="currency">
+                <select id="fromCurrency">
+                    <option value="USD">美元</option>
+                    <option value="CNY">人民币</option>
+                    <option value="EUR" selected>欧元</option>
+                    <option value="JPY">日元</option>
+                    <option value="GBP">英镑</option>
+                </select>
+            </div>
+            <div class="switch">
+                <button id="switchButton">⇌</button>
+            </div>
+            <div class="currency">
+                <select id="toCurrency">
+                    <option value="USD">美元</option>
+                    <option value="CNY" selected>人民币</option>
+                    <option value="EUR">欧元</option>
+                    <option value="JPY">日元</option>
+                    <option value="GBP">英镑</option>
+                </select>
+            </div>
+        </div>
+        <div class="amount">
+            <label for="amount">金额</label>
+            <input type="number" id="amount" value="100">
+        </div>
+        <div class="result">
+            <label for="result">结果</label>
+            <input type="text" id="result" readonly>
+        </div>
+        <div class="rate">
+            <span id="rate"></span>
+        </div>
+        <button id="convertButton">兑换</button>
+        <button id="homeButton" onclick="window.location.href='../index.html'">返回首页</button>
+    </div>
+    <script src="../js/global.js"></script>
+    <script src="../js/converter.js"></script>
+</body>
+</html>
