@@ -1,6 +1,6 @@
 // Währungsumrechner-Funktionalität
-const apiKey = 'c7ed3f19cf5a63a30e51b89e'; // API-Schlüssel für ExchangeRate-API
-const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/`;
+// Wir verwenden eine zuverlässigere API ohne Schlüssel
+const apiUrl = 'https://open.er-api.com/v6/latest/';
 
 // Währungssymbole
 const currencySymbols = {
@@ -59,11 +59,16 @@ function convertCurrency() {
             return response.json();
         })
         .then(data => {
-            if (data.result !== 'success') {
-                throw new Error(`API-Fehler: ${data.error}`);
+            // Prüft, ob die Daten gültig sind
+            if (!data.rates) {
+                throw new Error('Ungültiges Datenformat von der API');
             }
             
-            const rate = data.conversion_rates[toCurrency];
+            const rate = data.rates[toCurrency];
+            if (!rate) {
+                throw new Error(`Wechselkurs für ${toCurrency} nicht gefunden`);
+            }
+            
             const result = amount * rate;
             
             // Aktualisiert das Ergebnis mit Animation
@@ -209,6 +214,8 @@ function addChartToggle() {
     // Erstellt den Diagramm-Container
     const chartContainer = document.createElement('div');
     chartContainer.className = 'chart-container';
+    chartContainer.style.display = 'none'; // Standardmäßig ausgeblendet
+    chartContainer.style.height = '300px'; // Feste Höhe für das Diagramm
     document.querySelector('.rate').after(chartContainer);
     
     // Erstellt den Diagramm-Toggle-Button
@@ -217,41 +224,36 @@ function addChartToggle() {
     chartToggle.innerHTML = '<i class="fas fa-chart-line"></i> Historische Daten anzeigen';
     chartContainer.before(chartToggle);
     
-    // Event-Listener für den Toggle
-    chartToggle.addEventListener('click', function() {
-        const isVisible = chartContainer.style.display === 'block';
-        chartContainer.style.display = isVisible ? 'none' : 'block';
-        
-        // Ändert den Button-Text
-        this.innerHTML = isVisible ? 
-            '<i class="fas fa-chart-line"></i> Historische Daten anzeigen' : 
-            '<i class="fas fa-chart-line"></i> Historische Daten ausblenden';
-        
-        // Aktualisiert das Diagramm, wenn es angezeigt wird
-        if (!isVisible) {
-            const fromCurrency = document.getElementById('fromCurrency').value;
-            const toCurrency = document.getElementById('toCurrency').value;
-            updateChart(fromCurrency, toCurrency);
-        }
-    });
+    // Erstellt das Canvas-Element für das Diagramm
+    const canvas = document.createElement('canvas');
+    canvas.id = 'rateChart';
+    chartContainer.appendChild(canvas);
     
-    // Lädt Chart.js, falls es noch nicht geladen wurde
-    if (typeof Chart === 'undefined') {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-        script.onload = function() {
-            // Erstellt das Canvas-Element für das Diagramm
-            const canvas = document.createElement('canvas');
-            canvas.id = 'rateChart';
-            chartContainer.appendChild(canvas);
-        };
-        document.head.appendChild(script);
-    } else {
-        // Erstellt das Canvas-Element für das Diagramm
-        const canvas = document.createElement('canvas');
-        canvas.id = 'rateChart';
-        chartContainer.appendChild(canvas);
-    }
+    // Lädt Chart.js direkt
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    script.onload = function() {
+        console.log('Chart.js wurde geladen');
+        
+        // Event-Listener für den Toggle erst nach dem Laden von Chart.js
+        chartToggle.addEventListener('click', function() {
+            const isVisible = chartContainer.style.display === 'block';
+            chartContainer.style.display = isVisible ? 'none' : 'block';
+            
+            // Ändert den Button-Text
+            this.innerHTML = isVisible ? 
+                '<i class="fas fa-chart-line"></i> Historische Daten anzeigen' : 
+                '<i class="fas fa-chart-line"></i> Historische Daten ausblenden';
+            
+            // Aktualisiert das Diagramm, wenn es angezeigt wird
+            if (!isVisible) {
+                const fromCurrency = document.getElementById('fromCurrency').value;
+                const toCurrency = document.getElementById('toCurrency').value;
+                updateChart(fromCurrency, toCurrency);
+            }
+        });
+    };
+    document.head.appendChild(script);
 }
 
 /**
@@ -261,52 +263,69 @@ function updateChart(fromCurrency, toCurrency) {
     const key = `${fromCurrency}-${toCurrency}`;
     const data = historicalData[key];
     
-    if (!data || typeof Chart === 'undefined') return;
-    
-    // Zerstört das vorhandene Diagramm, falls es existiert
-    if (window.rateChart) {
-        window.rateChart.destroy();
+    if (!data || typeof Chart === 'undefined') {
+        console.error('Chart.js nicht geladen oder keine Daten verfügbar');
+        return;
     }
     
-    // Erstellt das neue Diagramm
-    const ctx = document.getElementById('rateChart').getContext('2d');
-    window.rateChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: data.dates,
-            datasets: [{
-                label: `${fromCurrency} zu ${toCurrency}`,
-                data: data.rates,
-                borderColor: '#007bff',
-                backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `Rate: ${context.raw.toFixed(4)}`;
+    try {
+        // Zerstört das vorhandene Diagramm, falls es existiert
+        if (window.rateChart) {
+            window.rateChart.destroy();
+        }
+        
+        // Erstellt das neue Diagramm
+        const canvas = document.getElementById('rateChart');
+        const ctx = canvas.getContext('2d');
+        
+        // Stellt sicher, dass das Canvas sichtbar ist
+        canvas.style.display = 'block';
+        
+        window.rateChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.dates,
+                datasets: [{
+                    label: `${fromCurrency} zu ${toCurrency}`,
+                    data: data.rates,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Rate: ${context.raw.toFixed(4)}`;
+                            }
                         }
                     }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: false
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                },
+                animation: {
+                    duration: 1000 // Animation für bessere Sichtbarkeit
                 }
             }
-        }
-    });
+        });
+        
+        console.log('Diagramm wurde aktualisiert');
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren des Diagramms:', error);
+    }
 }
 
 /**
