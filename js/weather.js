@@ -544,16 +544,57 @@ function addWeatherAnimation(weatherId, container) {
         if (existingAnimation) {
             existingAnimation.remove();
         }
+        
+        // Entfernt auch 3D-Hintergrund und Partikelschicht
+        const existingBg = containerElement.querySelector('.weather-3d-bg');
+        if (existingBg) {
+            existingBg.remove();
+        }
+        
+        const existingParticles = containerElement.querySelector('.particle-layer');
+        if (existingParticles) {
+            existingParticles.remove();
+        }
     } else {
         const existingAnimation = container.querySelector('.weather-animation');
         if (existingAnimation) {
             existingAnimation.remove();
+        }
+        
+        // Entfernt auch 3D-Hintergrund und Partikelschicht
+        const existingBg = container.querySelector('.weather-3d-bg');
+        if (existingBg) {
+            existingBg.remove();
+        }
+        
+        const existingParticles = container.querySelector('.particle-layer');
+        if (existingParticles) {
+            existingParticles.remove();
         }
     }
     
     // Erstellt neuen Animationscontainer
     const animationContainer = document.createElement('div');
     animationContainer.className = 'weather-animation';
+    
+    // Erstellt 3D-Hintergrund
+    const bg3d = document.createElement('div');
+    bg3d.className = 'weather-3d-bg';
+    
+    // Erstellt Partikelschicht
+    const particleLayer = document.createElement('div');
+    particleLayer.className = 'particle-layer';
+    
+    // Fügt Partikel hinzu
+    for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.animationDuration = `${5 + Math.random() * 10}s`;
+        particle.style.animationDelay = `${Math.random() * 5}s`;
+        particleLayer.appendChild(particle);
+    }
     
     // Wählt Animation basierend auf Wettercode
     // Wettercode-Referenz: https://openweathermap.org/weather-conditions
@@ -563,6 +604,18 @@ function addWeatherAnimation(weatherId, container) {
         const sun = document.createElement('div');
         sun.className = 'sun';
         animationContainer.appendChild(sun);
+        
+        // Fügt zusätzliche Partikel für sonniges Wetter hinzu
+        for (let i = 0; i < 10; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animationDuration = `${5 + Math.random() * 10}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            particle.style.background = `rgba(255, ${200 + Math.random() * 55}, ${100 + Math.random() * 100}, 0.8)`;
+            particleLayer.appendChild(particle);
+        }
     }
     // Leicht bewölkt
     else if (weatherId === 801) {
@@ -579,6 +632,8 @@ function addWeatherAnimation(weatherId, container) {
         for (let i = 1; i <= 3; i++) {
             const cloud = document.createElement('div');
             cloud.className = `cloud cloud-${i}`;
+            // Zufällige Z-Tiefe für 3D-Effekt
+            cloud.style.setProperty('--depth', `${10 + Math.random() * 30}px`);
             animationContainer.appendChild(cloud);
         }
     }
@@ -588,17 +643,20 @@ function addWeatherAnimation(weatherId, container) {
         for (let i = 1; i <= 2; i++) {
             const cloud = document.createElement('div');
             cloud.className = `cloud cloud-${i}`;
+            cloud.style.setProperty('--depth', `${20 + Math.random() * 20}px`);
             animationContainer.appendChild(cloud);
         }
         
-        // Regentropfen
-        for (let i = 0; i < 20; i++) {
+        // Regentropfen mit 3D-Effekt
+        for (let i = 0; i < 30; i++) {
             const raindrop = document.createElement('div');
             raindrop.className = 'raindrop';
             raindrop.style.left = `${Math.random() * 100}%`;
             raindrop.style.animationDuration = `${0.5 + Math.random() * 1}s`;
             raindrop.style.animationDelay = `${Math.random() * 2}s`;
             raindrop.style.height = `${20 + Math.random() * 30}px`;
+            // Zufällige Z-Tiefe für 3D-Effekt
+            raindrop.style.setProperty('--depth', `${Math.random() * 40}px`);
             animationContainer.appendChild(raindrop);
         }
     }
@@ -608,11 +666,12 @@ function addWeatherAnimation(weatherId, container) {
         for (let i = 1; i <= 2; i++) {
             const cloud = document.createElement('div');
             cloud.className = `cloud cloud-${i}`;
+            cloud.style.setProperty('--depth', `${20 + Math.random() * 20}px`);
             animationContainer.appendChild(cloud);
         }
         
-        // Schneeflocken
-        for (let i = 0; i < 30; i++) {
+        // Schneeflocken mit 3D-Effekt
+        for (let i = 0; i < 40; i++) {
             const snowflake = document.createElement('div');
             snowflake.className = 'snowflake';
             snowflake.style.left = `${Math.random() * 100}%`;
@@ -620,32 +679,45 @@ function addWeatherAnimation(weatherId, container) {
             snowflake.style.animationDelay = `${Math.random() * 3}s`;
             snowflake.style.width = `${3 + Math.random() * 5}px`;
             snowflake.style.height = snowflake.style.width;
+            // Zufällige Z-Tiefe und Drift für 3D-Effekt
+            snowflake.style.setProperty('--depth', `${Math.random() * 50}px`);
+            snowflake.style.setProperty('--drift', `${-20 + Math.random() * 40}px`);
             animationContainer.appendChild(snowflake);
         }
     }
     // Gewitter
     else if (weatherId >= 200 && weatherId <= 232) {
-        // Wolken
+        // Wolken mit dunklerer Farbe
         for (let i = 1; i <= 3; i++) {
             const cloud = document.createElement('div');
             cloud.className = `cloud cloud-${i}`;
-            cloud.style.background = 'rgba(100, 100, 100, 0.8)';
+            cloud.style.setProperty('--depth', `${20 + Math.random() * 20}px`);
+            
+            // Dunklere Wolken für Gewitter
+            if (cloud.querySelector(':before')) {
+                cloud.querySelector(':before').style.background = 'rgba(100, 100, 100, 0.8)';
+            }
+            if (cloud.querySelector(':after')) {
+                cloud.querySelector(':after').style.background = 'rgba(80, 80, 80, 0.8)';
+            }
+            
             animationContainer.appendChild(cloud);
         }
         
-        // Blitz
+        // Blitz mit verbessertem 3D-Effekt
         const lightning = document.createElement('div');
         lightning.className = 'lightning';
         animationContainer.appendChild(lightning);
         
         // Regentropfen
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 25; i++) {
             const raindrop = document.createElement('div');
             raindrop.className = 'raindrop';
             raindrop.style.left = `${Math.random() * 100}%`;
             raindrop.style.animationDuration = `${0.5 + Math.random() * 1}s`;
             raindrop.style.animationDelay = `${Math.random() * 2}s`;
             raindrop.style.height = `${20 + Math.random() * 30}px`;
+            raindrop.style.setProperty('--depth', `${Math.random() * 40}px`);
             animationContainer.appendChild(raindrop);
         }
     }
@@ -654,13 +726,86 @@ function addWeatherAnimation(weatherId, container) {
         const fog = document.createElement('div');
         fog.className = 'fog';
         animationContainer.appendChild(fog);
+        
+        // Zusätzliche Nebelpartikel
+        for (let i = 0; i < 8; i++) {
+            const fogLayer = document.createElement('div');
+            fogLayer.className = 'fog';
+            fogLayer.style.opacity = `${0.1 + Math.random() * 0.2}`;
+            fogLayer.style.animationDelay = `${Math.random() * 10}s`;
+            fogLayer.style.animationDuration = `${15 + Math.random() * 10}s`;
+            fogLayer.style.setProperty('--depth', `${Math.random() * 30}px`);
+            animationContainer.appendChild(fogLayer);
+        }
     }
     
-    // Fügt Animation zum Container hinzu
+    // Fügt alle Elemente zum Container hinzu
     if (typeof container === 'string') {
-        document.querySelector(container).appendChild(animationContainer);
+        const containerElement = document.querySelector(container);
+        containerElement.appendChild(bg3d);
+        containerElement.appendChild(particleLayer);
+        containerElement.appendChild(animationContainer);
     } else {
+        container.appendChild(bg3d);
+        container.appendChild(particleLayer);
         container.appendChild(animationContainer);
+    }
+    
+    // Fügt 3D-Mauseffekt hinzu, wenn es sich um die aktuelle Wetteranzeige handelt
+    if (container === '.current-weather') {
+        add3DMouseEffect();
+    }
+}
+
+/**
+ * Fügt einen 3D-Mauseffekt zur aktuellen Wetteranzeige hinzu
+ */
+function add3DMouseEffect() {
+    const container = document.querySelector('.current-weather');
+    if (!container) return;
+    
+    // Entfernt vorhandene Event-Listener
+    container.removeEventListener('mousemove', handleMouseMove);
+    container.removeEventListener('mouseleave', handleMouseLeave);
+    
+    // Fügt neue Event-Listener hinzu
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mouseleave', handleMouseLeave);
+    
+    // Mausbewegung verarbeiten
+    function handleMouseMove(e) {
+        const rect = container.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        // Berechnet die Position des Mauszeigers relativ zum Zentrum
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        // Berechnet die Rotation basierend auf der Mausposition
+        const rotateY = ((mouseX - centerX) / centerX) * 5; // Max 5 Grad
+        const rotateX = ((centerY - mouseY) / centerY) * 5; // Max 5 Grad
+        
+        // Wendet die Rotation an
+        container.style.transform = `perspective(1200px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) translateZ(20px)`;
+        
+        // Passt die Position des Lichts an
+        const weatherIcon = container.querySelector('.weather-icon');
+        if (weatherIcon) {
+            weatherIcon.style.transform = `translateZ(20px) translateX(${rotateY * 2}px) translateY(${-rotateX * 2}px)`;
+        }
+    }
+    
+    // Mauszeiger verlässt den Container
+    function handleMouseLeave() {
+        // Setzt die Rotation zurück
+        container.style.transform = 'perspective(1200px) rotateY(0deg) rotateX(0deg) translateZ(0)';
+        
+        // Setzt die Position des Wettericons zurück
+        const weatherIcon = container.querySelector('.weather-icon');
+        if (weatherIcon) {
+            weatherIcon.style.transform = 'translateZ(20px)';
+        }
     }
 }
 
