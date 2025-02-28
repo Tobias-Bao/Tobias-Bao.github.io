@@ -87,10 +87,62 @@
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+        
+        /* Grundlegende Seitenlayout */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            flex: 1;
+        }
+        
+        /* Stile für den Fußbereich mit Autorinformationen */
+        .author-info {
+            margin-top: 40px;
+            padding: 15px 0;
+            text-align: center;
+            border-top: 1px solid #eaeaea;
+            font-size: 0.9em;
+            color: #666;
+            animation: fadeIn 0.8s ease-out;
+            width: 100%;
+            position: relative;
+            clear: both;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .author-info a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        
+        .author-info a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+        
+        .dark-mode .author-info {
+            border-top-color: #444;
+            color: #aaa;
+        }
+        
+        .dark-mode .author-info a {
+            color: #4da3ff;
+        }
+        
+        .dark-mode .author-info a:hover {
+            color: #75b7ff;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container main-content">
         <h1>欢迎来到工具首页</h1>
         
         <div class="feature-list">
@@ -125,6 +177,15 @@
             <!-- 在这里可以添加更多按钮 -->
         </div>
     </div>
+    
+    <footer class="author-info">
+        <p>
+            <!-- 作者信息 -->
+            <span>作者: </span>
+            <a href="https://changlai-bao.github.io/cn/index.html" target="_blank">Changlai Bao</a>
+        </p>
+    </footer>
+    
     <script src="js/global.js"></script>
 </body>
 </html>
