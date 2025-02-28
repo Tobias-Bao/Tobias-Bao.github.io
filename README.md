@@ -1,7 +1,7 @@
-# Projektbeschreibung / Project Description / 项目描述
+# 🚀Projektbeschreibung / Project Description / 项目描述
 
-## Übersicht / Overview / 概述
-![Projektstruktur](images/background.jpg)  
+## 📁Übersicht / Overview / 概述
+![Projektstruktur]  
 ```mermaid
 graph TD
     A[index.html] --> B[css/]
@@ -21,23 +21,15 @@ graph TD
     E --> E2[converter.html]
 ```
 
-## Funktionen / Features / 功能
+## ✨Funktionen / Features / 功能
 - 🌦️ Wetterinformationen anzeigen / Display weather information / 显示天气信息
 - 💱 Währungsumrechnung / Currency conversion / 货币转换
 - 📱 Responsives Design / Responsive design / 响应式设计
 
-## Technologien / Technologies / 技术
-| Sprache/Framework | Version | Verwendung | Dokumentation |
-|-------------------|---------|------------|---------------|
-| HTML              | 5       | Struktur   | [MDN](https://developer.mozilla.org/de/docs/Web/HTML) |
-| CSS               | 3       | Styling    | [MDN](https://developer.mozilla.org/de/docs/Web/CSS) |
-| JavaScript        | ES6     | Logik      | [MDN](https://developer.mozilla.org/de/docs/Web/JavaScript) |
-| Bootstrap         | 5.3     | Layout     | [Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/) |
-
-## Installation / Installation / 安装
+## 🛠️Installation / Installation / 安装
 1. Repository klonen:
 ```bash
-git clone https://github.com/Tobias-Bao/Tobias-Bao.github.io.git
+git clone https://github.com/Tobias-Bao/Tobias-Bao.github.io
 ```
 2. Projekt öffnen:
 ```bash
@@ -48,23 +40,13 @@ cd Tobias-Bao.github.io
 start index.html
 ```
 
-## Beitrag / Contribution / 贡献
-```diff
-+ Wir freuen uns über Beiträge! / We welcome contributions! / 欢迎贡献！
-```
-1. Fork das Repository
-2. Erstelle einen neuen Branch (`git checkout -b feature/AmazingFeature`)
-3. Committe deine Änderungen (`git commit -m 'Add some AmazingFeature'`)
-4. Push zum Branch (`git push origin feature/AmazingFeature`)
-5. Öffne einen Pull Request
+## 📜Lizenz / License / 许可证
+[MIT License](LICENSE)
 
-## Lizenz / License / 许可证
-[MIT](https://choosealicense.com/licenses/mit/)
-
-## Kontakt / Contact / 联系方式
-- 📧 Email: changlai.bao@outlook.com.com
-- 🐙 GitHub: [Tobias-Bao](https://github.com/Changlai-Bao)
-- 🌐 Website: [https://tobias-bao.github.io](https://tobias-bao.github.io)
+## 📫Kontakt / Contact / 联系方式
+- 📧 Email: changlai.bao@outlook.com
+- 🐙 GitHub: [Changlai-Bao](https://github.com/Changlai-Bao)
+- 🌐 Website: [https://Changlai-Bao.github.io](https://Changlai-Bao.github.io)
 
 ---
 
