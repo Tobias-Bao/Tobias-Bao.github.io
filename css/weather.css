@@ -45,7 +45,7 @@
 /* Autovervollständigung für Städtesuche */
 .autocomplete-container {
     position: relative;
-    width: calc(100% - 120px); /* 减去按钮的宽度，为按钮留出空间 */
+    flex: 1;
     margin-right: 10px; /* 与按钮之间的间距 */
 }
 
@@ -115,9 +115,10 @@
     transition: all 0.3s ease;
     min-width: 100px; /* Mindestbreite für bessere Touch-Interaktion */
     font-size: 16px; /* Größere Schrift für bessere Lesbarkeit */
-    position: absolute; /* 绝对定位 */
-    right: 15px; /* 放置在右侧，增加一些间距 */
-    top: 15px; /* 与顶部对齐，增加一些间距 */
+    position: relative; /* 相对定位 */
+    height: 42px; /* 与输入框高度一致 */
+    align-self: flex-start; /* 顶部对齐 */
+    margin-top: 5px; /* 与输入框顶部对齐 */
 }
 
 .weather-search button:hover {
@@ -551,14 +552,19 @@
 /* Verbesserte Medienabfragen */
 @media (max-width: 768px) {
     .weather-search {
-        flex-direction: column;
-        align-items: stretch;
-        padding-right: 110px; /* 为右侧的按钮留出空间 */
+        flex-direction: row;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    
+    .weather-search label {
+        width: 100%;
+        margin-bottom: 5px;
     }
     
     .autocomplete-container {
-        width: 100%; /* 在移动设备上占满宽度 */
-        margin-right: 0;
+        flex: 1;
+        min-width: 60%;
     }
     
     .weather-search input {
@@ -567,10 +573,8 @@
     }
     
     .weather-search button {
-        width: auto;
         margin: 5px 0;
-        top: 5px; /* 调整顶部位置 */
-        right: 5px; /* 调整右侧位置 */
+        height: 42px;
     }
     
     .current-weather {
