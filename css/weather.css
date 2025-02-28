@@ -42,7 +42,7 @@
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
-/* Autovervollständigung für Städtesuche */
+/* Autovervollständigung für Städtesuche - Radform */
 .autocomplete-container {
     position: relative;
     flex: 1;
@@ -53,30 +53,65 @@
     position: absolute;
     z-index: 2000; /* 降低z-index，使其低于返回首页按钮 */
     width: 100%;
-    max-height: 500px; /* 增加最大高度，与天气结果区域一致 */
-    background-color: #ffffff;
+    height: 150px; /* 固定高度，显示3个选项 */
+    background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid #ccc;
-    border-radius: 0 0 5px 5px;
+    border-radius: 10px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     display: none;
     top: 100%; /* 紧贴输入框底部 */
     left: 0;
     overflow-y: auto; /* 添加垂直滚动条 */
     -webkit-overflow-scrolling: touch; /* Verbessert das Scrollen auf iOS-Geräten */
+    perspective: 500px; /* 添加3D视角 */
+    transform-style: preserve-3d; /* 保持3D效果 */
+    padding: 25px 0; /* 上下添加空间，使滚轮效果更明显 */
 }
 
 .autocomplete-item {
-    padding: 8px 10px;
+    padding: 12px 15px;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-align: center;
+    transform-origin: center center;
+    height: 50px; /* 固定高度 */
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .autocomplete-item:hover, .autocomplete-item.selected {
     background-color: #f0f8ff;
+    transform: scale(1.05);
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* 添加中央选择指示器 */
+.autocomplete-list:before, .autocomplete-list:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #007bff;
+    z-index: 2;
+}
+
+.autocomplete-list:before {
+    top: 75px; /* 上边界线 */
+}
+
+.autocomplete-list:after {
+    bottom: 75px; /* 下边界线 */
 }
 
 .autocomplete-divider {
-    padding: 5px 10px;
+    padding: 8px 10px;
     font-size: 12px;
     color: #666;
     background-color: #f5f5f5;
@@ -84,12 +119,19 @@
     border-bottom: 1px solid #ddd;
     text-align: center;
     font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 3;
 }
 
 .dark-mode .autocomplete-list {
-    background-color: #333333;
+    background-color: rgba(51, 51, 51, 0.9);
     border-color: #555;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .autocomplete-list:before, .dark-mode .autocomplete-list:after {
+    background: #4da3ff;
 }
 
 .dark-mode .autocomplete-divider {
@@ -101,6 +143,7 @@
 
 .dark-mode .autocomplete-item:hover, .dark-mode .autocomplete-item.selected {
     background-color: #444;
+    color: #4da3ff;
 }
 
 .weather-search button {

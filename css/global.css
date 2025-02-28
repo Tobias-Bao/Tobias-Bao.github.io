@@ -10,7 +10,7 @@ body {
     height: 100vh;
     margin: 0;
     overflow-x: hidden; /* Verhindert horizontales Scrollen */
-    overflow-y: auto; /* Erlaubt vertikales Scrollen bei Bedarf */
+    overflow-y: hidden; /* Verhindert vertikales Scrollen */
     transition: background-color 0.5s ease; /* Übergang für Dunkelmodus */
 }
 
@@ -40,6 +40,14 @@ html, body {
     transition: all 0.3s ease; /* Übergang für Dunkelmodus */
     margin: 15px auto; /* Zentriert den Container und fügt Abstand hinzu */
     overflow-y: auto; /* Erlaubt Scrollen innerhalb des Containers bei Bedarf */
+    overflow-x: hidden; /* Verhindert horizontales Scrollen */
+    -ms-overflow-style: none;  /* IE und Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Versteckt die Scrollbar in Webkit-Browsern */
+.container::-webkit-scrollbar {
+    display: none;
 }
 
 /* Globaler Button-Stil */

@@ -240,8 +240,29 @@ function updateAutocomplete(input) {
     
     // Zeigt lokale Übereinstimmungen an
     if (localMatches.length > 0) {
+        // 添加空白项目在顶部和底部，增强滚轮效果
+        const emptyItemTop = document.createElement('div');
+        emptyItemTop.className = 'autocomplete-item empty';
+        emptyItemTop.style.visibility = 'hidden';
+        emptyItemTop.innerHTML = '&nbsp;';
+        list.appendChild(emptyItemTop);
+        
         displayCityMatches(localMatches, list);
+        
+        const emptyItemBottom = document.createElement('div');
+        emptyItemBottom.className = 'autocomplete-item empty';
+        emptyItemBottom.style.visibility = 'hidden';
+        emptyItemBottom.innerHTML = '&nbsp;';
+        list.appendChild(emptyItemBottom);
+        
         list.style.display = 'block';
+        
+        // 滚动到中间位置，增强滚轮效果
+        setTimeout(() => {
+            if (list.children.length > 2) {
+                list.scrollTop = 25; // 滚动到第一个实际项目
+            }
+        }, 10);
         
         // Versteckt nur die Wetterinfos
         if (weatherInfo) {
@@ -261,10 +282,40 @@ function updateAutocomplete(input) {
                     divider.className = 'autocomplete-divider';
                     divider.textContent = 'Online-Ergebnisse';
                     list.appendChild(divider);
+                } else {
+                    // 如果没有本地匹配，添加空白项目在顶部
+                    const emptyItemTop = document.createElement('div');
+                    emptyItemTop.className = 'autocomplete-item empty';
+                    emptyItemTop.style.visibility = 'hidden';
+                    emptyItemTop.innerHTML = '&nbsp;';
+                    list.appendChild(emptyItemTop);
                 }
                 
                 displayCityMatches(apiMatches, list);
+                
+                // 添加空白项目在底部
+                const emptyItemBottom = document.createElement('div');
+                emptyItemBottom.className = 'autocomplete-item empty';
+                emptyItemBottom.style.visibility = 'hidden';
+                emptyItemBottom.innerHTML = '&nbsp;';
+                list.appendChild(emptyItemBottom);
+                
                 list.style.display = 'block';
+                
+                // 滚动到中间位置
+                setTimeout(() => {
+                    if (list.children.length > 2) {
+                        if (localMatches.length > 0) {
+                            // 如果有本地匹配和分隔线，滚动到分隔线
+                            const dividerIndex = Array.from(list.children).findIndex(el => el.className === 'autocomplete-divider');
+                            if (dividerIndex !== -1) {
+                                list.scrollTop = list.children[dividerIndex].offsetTop - 25;
+                            }
+                        } else {
+                            list.scrollTop = 25; // 滚动到第一个实际项目
+                        }
+                    }
+                }, 10);
                 
                 // Versteckt nur die Wetterinfos
                 if (weatherInfo) {
@@ -330,25 +381,55 @@ function searchCitiesAPI(input, list, hasLocalMatches) {
             // Speichert die Ergebnisse im Cache
             cityCache[input] = apiMatches;
             
-            // Wenn es API-Ergebnisse gibt und die Liste noch angezeigt wird
-            if (apiMatches.length > 0 && list.style.display !== 'none') {
-                // Fügt eine Trennlinie hinzu, wenn es bereits lokale Ergebnisse gibt
+    // Wenn es API-Ergebnisse gibt und die Liste noch angezeigt wird
+    if (apiMatches.length > 0 && list.style.display !== 'none') {
+        // Fügt eine Trennlinie hinzu, wenn es bereits lokale Ergebnisse gibt
+        if (hasLocalMatches) {
+            const divider = document.createElement('div');
+            divider.className = 'autocomplete-divider';
+            divider.textContent = 'Online-Ergebnisse';
+            list.appendChild(divider);
+        } else {
+            // 如果没有本地匹配，添加空白项目在顶部
+            const emptyItemTop = document.createElement('div');
+            emptyItemTop.className = 'autocomplete-item empty';
+            emptyItemTop.style.visibility = 'hidden';
+            emptyItemTop.innerHTML = '&nbsp;';
+            list.appendChild(emptyItemTop);
+        }
+        
+        displayCityMatches(apiMatches, list);
+        
+        // 添加空白项目在底部
+        const emptyItemBottom = document.createElement('div');
+        emptyItemBottom.className = 'autocomplete-item empty';
+        emptyItemBottom.style.visibility = 'hidden';
+        emptyItemBottom.innerHTML = '&nbsp;';
+        list.appendChild(emptyItemBottom);
+        
+        list.style.display = 'block';
+        
+        // 滚动到中间位置
+        setTimeout(() => {
+            if (list.children.length > 2) {
                 if (hasLocalMatches) {
-                    const divider = document.createElement('div');
-                    divider.className = 'autocomplete-divider';
-                    divider.textContent = 'Online-Ergebnisse';
-                    list.appendChild(divider);
-                }
-                
-                displayCityMatches(apiMatches, list);
-                list.style.display = 'block';
-                
-                // Versteckt nur die Wetterinfos
-                const weatherInfo = document.querySelector('.weather-info');
-                if (weatherInfo) {
-                    weatherInfo.style.display = 'none';
+                    // 如果有本地匹配和分隔线，滚动到分隔线
+                    const dividerIndex = Array.from(list.children).findIndex(el => el.className === 'autocomplete-divider');
+                    if (dividerIndex !== -1) {
+                        list.scrollTop = list.children[dividerIndex].offsetTop - 25;
+                    }
+                } else {
+                    list.scrollTop = 25; // 滚动到第一个实际项目
                 }
             }
+        }, 10);
+        
+        // Versteckt nur die Wetterinfos
+        const weatherInfo = document.querySelector('.weather-info');
+        if (weatherInfo) {
+            weatherInfo.style.display = 'none';
+        }
+    }
         })
         .catch(error => {
             console.error('Fehler bei der API-Anfrage:', error);
@@ -379,6 +460,30 @@ function displayCityMatches(matches, list) {
             }
             
             searchWeather();
+        });
+        
+        // 添加鼠标悬停事件，增强滚轮效果
+        item.addEventListener('mouseenter', function() {
+            // 计算需要滚动的位置，使当前项目居中
+            const itemOffset = this.offsetTop;
+            const listHeight = list.offsetHeight;
+            const itemHeight = this.offsetHeight;
+            const scrollTo = itemOffset - (listHeight / 2) + (itemHeight / 2);
+            
+            // 平滑滚动到计算的位置
+            list.scrollTo({
+                top: scrollTo,
+                behavior: 'smooth'
+            });
+            
+            // 移除其他项目的选中状态
+            const items = list.getElementsByClassName('autocomplete-item');
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.remove('selected');
+            }
+            
+            // 添加选中状态
+            this.classList.add('selected');
         });
         
         list.appendChild(item);
