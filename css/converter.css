@@ -1,15 +1,17 @@
-/* 汇率转换器页面特定样式 */
+/* Spezifische Stile für die Währungsumrechner-Seite */
 .converter {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    animation: slideIn 0.5s ease-out;
 }
 
 .currency {
     flex: 1;
     display: flex;
     justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .currency select {
@@ -18,6 +20,20 @@
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ccc;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: white;
+}
+
+.currency select:hover {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.currency select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
 .switch {
@@ -28,7 +44,7 @@
 }
 
 .switch button {
-    width: auto; /* 确保按钮宽度适应内容 */
+    width: auto; /* Stellt sicher, dass die Breite des Buttons zum Inhalt passt */
     padding: 10px;
     font-size: 16px;
     border: none;
@@ -44,40 +60,66 @@
     transform: scale(1.05);
 }
 
+/* Drehanimation für den Umschalter */
+.switch button.rotating {
+    animation: rotate 0.5s ease-in-out;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(180deg); }
+}
+
 .amount, .result {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.result {
+    animation-delay: 0.1s;
 }
 
 label {
     margin-right: 10px;
-    white-space: nowrap; /* 使标签不换行 */
+    white-space: nowrap; /* Verhindert Zeilenumbrüche bei Labels */
+    transition: all 0.3s ease;
 }
 
 input[type="number"], input[type="text"] {
-    width: calc(100% - 100px); /* 调整输入框宽度 */
+    width: calc(100% - 100px); /* Anpassung der Eingabebreite */
     padding: 10px;
     margin: 5px 0;
     box-sizing: border-box;
     border-radius: 5px;
     border: 1px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+input[type="number"]:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
 #convertButton {
-    font-size: 20px; /* 增大字体 */
-    margin-bottom: 10px; /* 增加下方间距 */
-    background-color: #007bff; /* 设置按钮背景色 */
+    font-size: 20px; /* Größere Schrift */
+    margin-bottom: 10px; /* Mehr Abstand nach unten */
+    background-color: #007bff; /* Hintergrundfarbe des Buttons */
+    animation: pulse 2s infinite;
 }
 
 #convertButton:hover {
-    background-color: #0056b3; /* 鼠标悬停时的背景色 */
+    background-color: #0056b3; /* Hintergrundfarbe bei Hover */
+    animation: none;
 }
 
 #homeButton {
-    font-size: 20px; /* 增大字体 */
-    background-color: #28a745; /* 绿色按钮 */
+    font-size: 20px; /* Größere Schrift */
+    background-color: #28a745; /* Grüner Button */
     margin-top: 10px;
 }
 
@@ -87,6 +129,90 @@ input[type="number"], input[type="text"] {
 
 .rate {
     text-align: center;
-    font-size: 16px; /* 增大字体 */
+    font-size: 16px; /* Größere Schrift */
     margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 123, 255, 0.1);
+    transition: all 0.3s ease;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Währungssymbole */
+.currency-symbol {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* Ergebnisanimation */
+.highlight {
+    animation: highlight 1s ease;
+}
+
+@keyframes highlight {
+    0% { background-color: rgba(255, 255, 0, 0.5); }
+    100% { background-color: transparent; }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+/* Diagramm-Container */
+.chart-container {
+    width: 100%;
+    height: 200px;
+    margin: 20px 0;
+    border-radius: 5px;
+    overflow: hidden;
+    display: none;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Umschalter für Diagramm */
+.chart-toggle {
+    background-color: transparent;
+    color: #007bff;
+    border: 1px solid #007bff;
+    width: auto;
+    padding: 5px 10px;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.chart-toggle:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Dunkelmodus-Anpassungen */
+.dark-mode .currency select {
+    background-color: #333;
+    color: #f0f0f0;
+    border-color: #555;
+}
+
+.dark-mode .rate {
+    background-color: rgba(0, 123, 255, 0.2);
+    color: #f0f0f0;
+}
+
+.dark-mode .chart-toggle {
+    color: #4da3ff;
+    border-color: #4da3ff;
+}
+
+.dark-mode .chart-toggle:hover {
+    background-color: rgba(77, 163, 255, 0.2);
 }

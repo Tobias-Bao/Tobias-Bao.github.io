@@ -5,12 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首页</title>
     <link rel="stylesheet" href="css/global.css">
+    <style>
+        /* Spezifische Stile für die Startseite */
+        .nav {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .nav button {
+            position: relative;
+            overflow: hidden;
+            margin: 15px 0;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .nav button:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        
+        .nav button:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+        
+        h1 {
+            animation: fadeIn 0.8s ease-out;
+            margin-bottom: 30px;
+            color: #333;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-list {
+            text-align: left;
+            margin: 30px 0;
+            padding: 0 20px;
+            animation: fadeIn 1s ease-out;
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+        }
+        
+        .feature-list h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+        
+        .feature-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: '✓';
+            color: #28a745;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .dark-mode h1 {
+            color: #f0f0f0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dark-mode .feature-list h2 {
+            color: #4da3ff;
+        }
+        
+        .dark-mode .feature-list li:before {
+            color: #5cb85c;
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>欢迎来到工具首页</h1>
+        
+        <div class="feature-list">
+            <h2>汇率转换器功能</h2>
+            <ul>
+                <li>支持多种货币转换</li>
+                <li>实时获取最新汇率</li>
+                <li>查看历史汇率趋势</li>
+                <li>自动计算转换结果</li>
+                <li>支持暗黑模式</li>
+            </ul>
+        </div>
+        
         <div class="nav">
-            <button onclick="window.location.href='partials/converter.html'">汇率转换器</button>
+            <button onclick="window.location.href='partials/converter.html'">
+                <i class="fas fa-exchange-alt"></i> 汇率转换器
+            </button>
             <!-- 在这里可以添加更多按钮 -->
         </div>
     </div>

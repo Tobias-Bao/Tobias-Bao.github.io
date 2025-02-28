@@ -1,4 +1,4 @@
-/* 背景模糊效果 */
+/* Hintergrundunschärfe-Effekt */
 body {
     background-image: url('../images/background.jpg');
     background-size: cover;
@@ -9,7 +9,8 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    overflow: hidden; /* 防止水平滚动 */
+    overflow: hidden; /* Verhindert horizontales Scrollen */
+    transition: background-color 0.5s ease; /* Übergang für Dunkelmodus */
 }
 
 html, body {
@@ -20,7 +21,7 @@ html, body {
     box-sizing: border-box;
 }
 
-/* 容器样式 */
+/* Container-Stil */
 .container {
     background-color: rgba(255, 255, 255, 0.8);
     padding: 20px;
@@ -29,9 +30,11 @@ html, body {
     width: 100%;
     max-width: 600px;
     text-align: center;
+    animation: fadeIn 0.8s ease-out; /* Fade-In-Animation beim Laden */
+    transition: all 0.3s ease; /* Übergang für Dunkelmodus */
 }
 
-/* 全局按钮样式 */
+/* Globaler Button-Stil */
 button {
     width: 80%;
     padding: 15px;
@@ -43,14 +46,99 @@ button {
     font-size: 18px;
     margin: 10px 0;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 button:hover {
     background-color: #0056b3;
     transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* 媒体查询 */
+/* Ripple-Effekt für Buttons */
+button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+button:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+/* Dunkelmodus-Klassen */
+.dark-mode {
+    background-color: #121212;
+}
+
+.dark-mode .container {
+    background-color: rgba(30, 30, 30, 0.9);
+    color: #f0f0f0;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode button {
+    background-color: #0d6efd;
+}
+
+.dark-mode button:hover {
+    background-color: #0b5ed7;
+}
+
+.dark-mode input, .dark-mode select {
+    background-color: #333;
+    color: #f0f0f0;
+    border-color: #555;
+}
+
+/* Ladeanimation */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+    display: none;
+}
+
+/* Animationen */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 1;
+    }
+    20% {
+        transform: scale(25, 25);
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(40, 40);
+    }
+}
+
+/* Medienabfragen */
 @media (max-width: 768px) {
     .container {
         width: 90%;
@@ -93,4 +181,40 @@ button:hover {
         padding: 10px;
         font-size: 16px;
     }
+}
+
+/* Dunkelmodus-Schalter */
+.theme-switch {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-switch:hover {
+    transform: scale(1.1);
+}
+
+.theme-switch i {
+    font-size: 20px;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.dark-mode .theme-switch {
+    background-color: rgba(50, 50, 50, 0.8);
+}
+
+.dark-mode .theme-switch i {
+    color: #f0f0f0;
 }
