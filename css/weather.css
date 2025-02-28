@@ -6,6 +6,10 @@
     margin-bottom: 20px;
     animation: slideIn 0.5s ease-out;
     flex-wrap: wrap;
+    width: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .weather-search label {
@@ -16,13 +20,15 @@
 
 .weather-search input {
     flex: 1;
-    min-width: 200px;
+    min-width: 180px;
     padding: 10px;
     margin: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
     transition: all 0.3s ease;
     position: relative;
+    font-size: 16px; /* Größere Schrift für bessere Lesbarkeit auf mobilen Geräten */
+    -webkit-appearance: none; /* Entfernt Standard-Styling auf iOS */
 }
 
 .weather-search input:focus {
@@ -39,9 +45,9 @@
 
 .autocomplete-list {
     position: absolute;
-    z-index: 2000;
+    z-index: 3000; /* 增加z-index，确保下拉列表在最上层 */
     width: 100%;
-    max-height: 150px; /* 减小最大高度，避免遮挡按钮 */
+    max-height: 120px; /* 进一步减小最大高度，避免遮挡按钮 */
     overflow-y: auto;
     background-color: #ffffff;
     border: 1px solid #ccc;
@@ -50,6 +56,7 @@
     display: none;
     top: 100%; /* 紧贴输入框底部 */
     left: 0;
+    -webkit-overflow-scrolling: touch; /* Verbessert das Scrollen auf iOS-Geräten */
 }
 
 .autocomplete-item {
@@ -100,6 +107,8 @@
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
+    min-width: 100px; /* Mindestbreite für bessere Touch-Interaktion */
+    font-size: 16px; /* Größere Schrift für bessere Lesbarkeit */
 }
 
 .weather-search button:hover {
@@ -133,11 +142,15 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    width: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .weather-icon {
-    flex: 0 0 120px;
-    height: 120px;
+    flex: 0 0 100px;
+    height: 100px;
     margin: 10px;
     display: flex;
     justify-content: center;
@@ -264,7 +277,7 @@
 
 .weather-details {
     flex: 1;
-    min-width: 200px;
+    min-width: 180px;
     padding: 10px;
     text-align: center;
     position: relative;
@@ -311,6 +324,10 @@
 
 .forecast-container {
     margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .forecast-container h3 {
@@ -327,6 +344,7 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: #007bff #f0f0f0;
+    scroll-snap-type: x mandatory; /* Verbessert das Scrollen auf Touch-Geräten */
 }
 
 .forecast::-webkit-scrollbar {
@@ -355,6 +373,7 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    scroll-snap-align: start; /* Verbessert das Scrollen auf Touch-Geräten */
 }
 
 .forecast-item:hover {
@@ -424,16 +443,25 @@
 
 #homeButton {
     background-color: #28a745;
-    margin-top: 20px;
-    position: fixed; /* 固定位置 */
-    bottom: 20px; /* 距离底部20px */
-    left: 50%; /* 水平居中 */
-    transform: translateX(-50%); /* 确保真正居中 */
-    z-index: 3000; /* 确保按钮的z-index高于联想列表 */
+    margin-top: 50px; /* 进一步增加顶部边距，避免与其他元素重叠 */
+    position: relative; /* Ändern von fixed zu relative für bessere Mobilgerätekompatibilität */
+    z-index: 1000; /* 降低按钮的z-index，使其低于联想列表 */
     width: auto; /* 自适应宽度 */
     padding: 10px 20px; /* 增加内边距使按钮更明显 */
     border-radius: 5px; /* 添加圆角 */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
+    max-width: 250px; /* Begrenzt die Breite auf größeren Bildschirmen */
+    margin-left: auto;
+    margin-right: auto;
+    display: block; /* Stellt sicher, dass der Button als Block-Element angezeigt wird */
+    clear: both; /* 确保按钮不会与浮动元素重叠 */
+}
+
+/* 添加额外的样式，确保返回首页按钮容器不会被下拉列表遮挡 */
+.home-button-container {
+    margin-top: 100px; /* 为按钮容器添加足够的顶部边距 */
+    position: relative;
+    z-index: 1000;
 }
 
 #homeButton:hover {
@@ -509,7 +537,7 @@
     background-color: #4da3ff;
 }
 
-/* Medienabfragen */
+/* Verbesserte Medienabfragen */
 @media (max-width: 768px) {
     .weather-search {
         flex-direction: column;
@@ -528,23 +556,138 @@
     
     .current-weather {
         flex-direction: column;
+        padding: 12px;
+    }
+    
+    .weather-icon {
+        flex: 0 0 80px;
+        height: 80px;
+    }
+    
+    .weather-details h2 {
+        font-size: 22px;
+    }
+    
+    .temperature {
+        font-size: 32px;
     }
     
     .forecast-item {
         width: 100px;
     }
+    
+    .forecast-container h3 {
+        font-size: 18px;
+    }
 }
 
 @media (max-width: 480px) {
     .weather-data {
-        flex-direction: column;
+        flex-direction: row; /* Ändert die Richtung für bessere Platznutzung */
+        flex-wrap: wrap; /* Erlaubt Umbruch bei Bedarf */
+        justify-content: space-around; /* Verteilt Elemente gleichmäßig */
     }
     
     .data-item {
-        margin: 5px 0;
+        margin: 5px;
+        min-width: 70px; /* Mindestbreite für Datenelemente */
     }
     
     .forecast-item {
-        width: 90px;
+        width: 85px;
+        padding: 8px;
+    }
+    
+    .forecast-item .day {
+        font-size: 13px;
+    }
+    
+    .forecast-item .forecast-temp {
+        font-size: 16px;
+    }
+    
+    .forecast-item .forecast-desc {
+        font-size: 11px;
+    }
+    
+    .forecast-item .forecast-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    h1 {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+    
+    .weather-details h2 {
+        font-size: 20px;
+    }
+    
+    .temperature {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 320px) {
+    .weather-icon {
+        flex: 0 0 70px;
+        height: 70px;
+    }
+    
+    .weather-details h2 {
+        font-size: 18px;
+    }
+    
+    .temperature {
+        font-size: 28px;
+    }
+    
+    .forecast-item {
+        width: 80px;
+        padding: 6px;
+    }
+    
+    .data-item {
+        min-width: 60px;
+        font-size: 13px;
+    }
+    
+    .data-item i {
+        font-size: 16px;
+    }
+    
+    h1 {
+        font-size: 20px;
+    }
+}
+
+/* Anpassungen für größere Bildschirme */
+@media (min-width: 1025px) {
+    .weather-search {
+        max-width: 600px;
+    }
+    
+    .current-weather {
+        max-width: 700px;
+        padding: 20px;
+    }
+    
+    .forecast-container {
+        max-width: 800px;
+    }
+    
+    .forecast-item {
+        width: 130px;
+        margin: 0 8px;
+    }
+    
+    .weather-icon {
+        flex: 0 0 140px;
+        height: 140px;
+    }
+    
+    .temperature {
+        font-size: 40px;
     }
 }

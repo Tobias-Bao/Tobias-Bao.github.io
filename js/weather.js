@@ -122,15 +122,10 @@ function initAutocomplete() {
     document.addEventListener('click', function(e) {
         if (!autocompleteContainer.contains(e.target)) {
             autocompleteList.style.display = 'none';
-            // Zeigt die Wetterinfos und den Home-Button wieder an
+            // Zeigt die Wetterinfos wieder an
             const weatherInfo = document.querySelector('.weather-info');
             if (weatherInfo) {
                 weatherInfo.style.display = 'block';
-            }
-            
-            const homeButton = document.getElementById('homeButton');
-            if (homeButton) {
-                homeButton.style.display = 'block';
             }
         }
     });
@@ -185,15 +180,10 @@ function initAutocomplete() {
                 this.value = items[selectedIndex].getAttribute('data-value');
                 list.style.display = 'none';
                 
-                // Zeigt die Wetterinfos und den Home-Button wieder an
+                // Zeigt die Wetterinfos wieder an
                 const weatherInfo = document.querySelector('.weather-info');
                 if (weatherInfo) {
                     weatherInfo.style.display = 'block';
-                }
-                
-                const homeButton = document.getElementById('homeButton');
-                if (homeButton) {
-                    homeButton.style.display = 'block';
                 }
                 
                 searchWeather();
@@ -203,15 +193,10 @@ function initAutocomplete() {
         else if (e.key === 'Escape') {
             list.style.display = 'none';
             
-            // Zeigt die Wetterinfos und den Home-Button wieder an
+            // Zeigt die Wetterinfos wieder an
             const weatherInfo = document.querySelector('.weather-info');
             if (weatherInfo) {
                 weatherInfo.style.display = 'block';
-            }
-            
-            const homeButton = document.getElementById('homeButton');
-            if (homeButton) {
-                homeButton.style.display = 'block';
             }
         }
     });
@@ -223,7 +208,6 @@ function initAutocomplete() {
 function updateAutocomplete(input) {
     const list = document.getElementById('autocompleteList');
     const weatherInfo = document.querySelector('.weather-info');
-    const homeButton = document.getElementById('homeButton');
     
     // Leert die Liste
     list.innerHTML = '';
@@ -231,13 +215,9 @@ function updateAutocomplete(input) {
     if (!input || input.trim() === '') {
         list.style.display = 'none';
         
-        // Zeigt die Wetterinfos und den Home-Button wieder an
+        // Zeigt die Wetterinfos wieder an
         if (weatherInfo) {
             weatherInfo.style.display = 'block';
-        }
-        
-        if (homeButton) {
-            homeButton.style.display = 'block';
         }
         
         return;
@@ -253,11 +233,10 @@ function updateAutocomplete(input) {
         displayCityMatches(localMatches, list);
         list.style.display = 'block';
         
-        // Versteckt nur die Wetterinfos, Home-Button bleibt sichtbar
+        // Versteckt nur die Wetterinfos
         if (weatherInfo) {
             weatherInfo.style.display = 'none';
         }
-        // Home-Button wird nicht mehr versteckt
     }
     
     // Wenn die Eingabe mindestens 3 Zeichen hat, suche auch über die API
@@ -277,11 +256,10 @@ function updateAutocomplete(input) {
                 displayCityMatches(apiMatches, list);
                 list.style.display = 'block';
                 
-                // Versteckt nur die Wetterinfos, Home-Button bleibt sichtbar
+                // Versteckt nur die Wetterinfos
                 if (weatherInfo) {
                     weatherInfo.style.display = 'none';
                 }
-                // Home-Button wird nicht mehr versteckt
             }
         } else {
             // Sucht über die API
@@ -293,13 +271,9 @@ function updateAutocomplete(input) {
     if (list.children.length === 0) {
         list.style.display = 'none';
         
-        // Zeigt die Wetterinfos und den Home-Button wieder an
+        // Zeigt die Wetterinfos wieder an
         if (weatherInfo) {
             weatherInfo.style.display = 'block';
-        }
-        
-        if (homeButton) {
-            homeButton.style.display = 'block';
         }
     }
 }
@@ -359,12 +333,11 @@ function searchCitiesAPI(input, list, hasLocalMatches) {
                 displayCityMatches(apiMatches, list);
                 list.style.display = 'block';
                 
-                // Versteckt nur die Wetterinfos, Home-Button bleibt sichtbar
+                // Versteckt nur die Wetterinfos
                 const weatherInfo = document.querySelector('.weather-info');
                 if (weatherInfo) {
                     weatherInfo.style.display = 'none';
                 }
-                // Home-Button wird nicht mehr versteckt
             }
         })
         .catch(error => {
@@ -389,15 +362,10 @@ function displayCityMatches(matches, list) {
             document.getElementById('cityInput').value = this.getAttribute('data-value');
             list.style.display = 'none';
             
-            // Zeigt die Wetterinfos und den Home-Button wieder an
+            // Zeigt die Wetterinfos wieder an
             const weatherInfo = document.querySelector('.weather-info');
             if (weatherInfo) {
                 weatherInfo.style.display = 'block';
-            }
-            
-            const homeButton = document.getElementById('homeButton');
-            if (homeButton) {
-                homeButton.style.display = 'block';
             }
             
             searchWeather();
@@ -467,24 +435,12 @@ function fetchCurrentWeather(city) {
             
             // Versteckt Ladeanimation
             showLoader(false);
-            
-            // Zeigt den Home-Button wieder an
-            const homeButton = document.getElementById('homeButton');
-            if (homeButton) {
-                homeButton.style.display = 'block';
-            }
         })
         .catch(error => {
             console.error('Fehler beim Abrufen des Wetters:', error);
             showError(error.message || '获取天气数据时出错');
             showLoader(false);
             document.querySelector('.weather-info').style.display = 'none';
-            
-            // Zeigt den Home-Button wieder an
-            const homeButton = document.getElementById('homeButton');
-            if (homeButton) {
-                homeButton.style.display = 'block';
-            }
         });
 }
 

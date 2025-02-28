@@ -5,13 +5,17 @@
     align-items: center;
     margin-bottom: 20px;
     animation: slideIn 0.5s ease-out;
+    flex-wrap: wrap; /* Erlaubt Umbruch auf kleinen Bildschirmen */
+    width: 100%;
 }
 
 .currency {
     flex: 1;
+    min-width: 120px; /* Mindestbreite für kleine Bildschirme */
     display: flex;
     justify-content: center;
     transition: all 0.3s ease;
+    margin: 5px 0; /* Abstand hinzufügen */
 }
 
 .currency select {
@@ -41,6 +45,7 @@
     display: flex;
     align-items: center;
     margin: 0 10px;
+    padding: 5px 0; /* Zusätzlicher Abstand für bessere Touch-Interaktion */
 }
 
 .switch button {
@@ -77,6 +82,8 @@
     margin-bottom: 20px;
     animation: fadeInUp 0.5s ease-out;
     animation-fill-mode: both;
+    flex-wrap: wrap; /* Erlaubt Umbruch auf kleinen Bildschirmen */
+    width: 100%;
 }
 
 .result {
@@ -87,6 +94,8 @@ label {
     margin-right: 10px;
     white-space: nowrap; /* Verhindert Zeilenumbrüche bei Labels */
     transition: all 0.3s ease;
+    min-width: 60px; /* Mindestbreite für Labels */
+    text-align: right; /* Rechtsausrichtung für bessere Lesbarkeit */
 }
 
 input[type="number"], input[type="text"] {
@@ -179,6 +188,7 @@ input[type="number"]:focus, input[type="text"]:focus {
     overflow: hidden;
     display: none;
     animation: fadeIn 0.5s ease-out;
+    max-width: 100%; /* Verhindert Überlauf auf kleinen Bildschirmen */
 }
 
 /* Umschalter für Diagramm */
@@ -194,6 +204,120 @@ input[type="number"]:focus, input[type="text"]:focus {
 
 .chart-toggle:hover {
     background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Verbesserte Responsive Anpassungen */
+@media (max-width: 768px) {
+    .converter {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .currency {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .switch {
+        margin: 10px 0;
+        transform: rotate(90deg); /* Dreht den Umschalter für vertikale Anordnung */
+    }
+    
+    .amount, .result {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    label {
+        margin-bottom: 5px;
+        text-align: left;
+        width: 100%;
+    }
+    
+    input[type="number"], input[type="text"] {
+        width: 100%;
+    }
+    
+    .rate {
+        font-size: 14px;
+        padding: 8px;
+    }
+    
+    .chart-container {
+        height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+    
+    .currency select {
+        font-size: 14px;
+        padding: 8px;
+    }
+    
+    .switch button {
+        padding: 8px;
+        font-size: 14px;
+    }
+    
+    input[type="number"], input[type="text"] {
+        font-size: 14px;
+        padding: 8px;
+    }
+    
+    .chart-container {
+        height: 150px;
+    }
+    
+    .chart-toggle {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
+
+@media (max-width: 320px) {
+    h1 {
+        font-size: 20px;
+    }
+    
+    .currency select, input[type="number"], input[type="text"] {
+        font-size: 13px;
+        padding: 6px;
+    }
+    
+    .rate {
+        font-size: 13px;
+        padding: 6px;
+    }
+    
+    .chart-container {
+        height: 130px;
+    }
+}
+
+/* Anpassungen für größere Bildschirme */
+@media (min-width: 1025px) {
+    .converter {
+        max-width: 700px;
+        margin: 0 auto 20px;
+    }
+    
+    .amount, .result {
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .chart-container {
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 250px;
+    }
 }
 
 /* Dunkelmodus-Anpassungen */
