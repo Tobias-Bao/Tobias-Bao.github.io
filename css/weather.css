@@ -690,7 +690,7 @@
 
 /* 修改返回首页按钮容器样式，确保在搜索按钮下方显示 */
 .home-button-container {
-    position: absolute; /* 绝对定位 */
+    position: absolute; /* 保持绝对定位 */
     right: 20px; /* 与搜索按钮右侧对齐 */
     top: 110px; /* 位于搜索按钮下方 */
     z-index: 3000; /* 增加z-index，确保在搜索列表之上 */
@@ -909,6 +909,11 @@
         min-height: 250px; /* 在移动设备上增加最小高度 */
     }
     
+    /* 在移动设备上调整返回按钮容器位置 */
+    .home-button-container {
+        top: 150px; /* 增加顶部距离，避免与搜索重叠 */
+    }
+    
     .weather-search label {
         width: 100%;
         margin-bottom: 5px;
@@ -971,6 +976,11 @@
         justify-content: space-around; /* Verteilt Elemente gleichmäßig */
     }
     
+    /* 在小屏幕设备上进一步调整返回按钮容器位置 */
+    .home-button-container {
+        top: 170px; /* 进一步增加顶部距离 */
+    }
+    
     .data-item {
         margin: 5px;
         min-width: 70px; /* Mindestbreite für Datenelemente */
@@ -1016,6 +1026,12 @@
 @media (max-width: 320px) {
     .weather-search {
         padding: 10px;
+        min-height: 280px; /* 在超小屏幕上增加最小高度 */
+    }
+    
+    /* 在超小屏幕设备上进一步调整返回按钮容器位置 */
+    .home-button-container {
+        top: 190px; /* 进一步增加顶部距离 */
     }
     
     .current-weather {
