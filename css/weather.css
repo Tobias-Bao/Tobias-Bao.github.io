@@ -1,0 +1,334 @@
+/* Spezifische Stile für die Wettervorhersage-Seite */
+.weather-search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    animation: slideIn 0.5s ease-out;
+    flex-wrap: wrap;
+}
+
+.weather-search label {
+    margin-right: 10px;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.weather-search input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.weather-search input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+.weather-search button {
+    width: auto;
+    padding: 10px 15px;
+    margin: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.weather-search button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.weather-info {
+    display: none;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.current-weather {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.weather-icon {
+    flex: 0 0 120px;
+    height: 120px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.weather-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: fadeIn 1s ease-out;
+}
+
+.weather-details {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px;
+    text-align: center;
+}
+
+.weather-details h2 {
+    margin: 0 0 5px 0;
+    color: #007bff;
+    font-size: 24px;
+}
+
+.weather-details p {
+    margin: 5px 0;
+}
+
+.temperature {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 10px 0 !important;
+    color: #333;
+}
+
+.weather-data {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.data-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px 10px;
+    min-width: 80px;
+}
+
+.data-item i {
+    font-size: 20px;
+    margin-bottom: 5px;
+    color: #007bff;
+}
+
+.forecast-container {
+    margin-top: 20px;
+}
+
+.forecast-container h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #007bff;
+}
+
+.forecast {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px 0;
+    margin-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #007bff #f0f0f0;
+}
+
+.forecast::-webkit-scrollbar {
+    height: 8px;
+}
+
+.forecast::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.forecast::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 4px;
+}
+
+.forecast-item {
+    flex: 0 0 auto;
+    width: 120px;
+    padding: 10px;
+    margin: 0 5px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.forecast-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.forecast-item .day {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.forecast-item .forecast-icon {
+    width: 50px;
+    height: 50px;
+    margin: 5px auto;
+}
+
+.forecast-item .forecast-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.forecast-item .forecast-temp {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.forecast-item .forecast-desc {
+    font-size: 12px;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+    display: none;
+}
+
+.error-message {
+    color: #dc3545;
+    text-align: center;
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(220, 53, 69, 0.1);
+    display: none;
+}
+
+#homeButton {
+    background-color: #28a745;
+    margin-top: 20px;
+}
+
+#homeButton:hover {
+    background-color: #218838;
+}
+
+/* Animationen */
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Dunkelmodus-Anpassungen */
+.dark-mode .current-weather {
+    background-color: rgba(50, 50, 50, 0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .weather-details h2 {
+    color: #4da3ff;
+}
+
+.dark-mode .temperature {
+    color: #f0f0f0;
+}
+
+.dark-mode .data-item i {
+    color: #4da3ff;
+}
+
+.dark-mode .forecast-container h3 {
+    color: #4da3ff;
+}
+
+.dark-mode .forecast-item {
+    background-color: rgba(50, 50, 50, 0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .forecast-item .forecast-desc {
+    color: #aaa;
+}
+
+.dark-mode .forecast::-webkit-scrollbar-track {
+    background: #333;
+}
+
+.dark-mode .forecast::-webkit-scrollbar-thumb {
+    background-color: #4da3ff;
+}
+
+/* Medienabfragen */
+@media (max-width: 768px) {
+    .weather-search {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .weather-search input {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .weather-search button {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .current-weather {
+        flex-direction: column;
+    }
+    
+    .forecast-item {
+        width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .weather-data {
+        flex-direction: column;
+    }
+    
+    .data-item {
+        margin: 5px 0;
+    }
+    
+    .forecast-item {
+        width: 90px;
+    }
+}
