@@ -22,12 +22,74 @@
     border-radius: 5px;
     border: 1px solid #ccc;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .weather-search input:focus {
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Autovervollständigung für Städtesuche */
+.autocomplete-container {
+    position: relative;
+    width: 100%;
+}
+
+.autocomplete-list {
+    position: absolute;
+    z-index: 1500;
+    width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    display: none;
+}
+
+.autocomplete-item {
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.autocomplete-item:hover, .autocomplete-item.selected {
+    background-color: #f0f8ff;
+}
+
+.autocomplete-divider {
+    padding: 5px 10px;
+    font-size: 12px;
+    color: #666;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    font-weight: bold;
+}
+
+.dark-mode .autocomplete-list {
+    background-color: rgba(51, 51, 51, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-color: #555;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .autocomplete-divider {
+    color: #aaa;
+    background-color: #444;
+    border-top-color: #555;
+    border-bottom-color: #555;
+}
+
+.dark-mode .autocomplete-item:hover, .dark-mode .autocomplete-item.selected {
+    background-color: #444;
 }
 
 .weather-search button {
@@ -50,6 +112,14 @@
 .weather-info {
     display: none;
     animation: fadeIn 0.8s ease-out;
+    position: relative;
+    margin-top: 20px;
+    z-index: 10;
+}
+
+/* 确保自动完成列表与天气信息之间有足够的间距 */
+.autocomplete-container + .weather-info {
+    margin-top: 30px;
 }
 
 .current-weather {
@@ -63,6 +133,8 @@
     background-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .weather-icon {
@@ -81,11 +153,124 @@
     animation: fadeIn 1s ease-out;
 }
 
+/* Wetteranimationen */
+.weather-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* Sonnenanimation */
+.sun {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #ffde59 30%, #ff9d00);
+    border-radius: 50%;
+    box-shadow: 0 0 40px #ffde59, 0 0 60px #ff9d00;
+    animation: sunPulse 4s infinite alternate;
+}
+
+@keyframes sunPulse {
+    0% { transform: scale(1); box-shadow: 0 0 40px #ffde59, 0 0 60px #ff9d00; }
+    100% { transform: scale(1.1); box-shadow: 0 0 60px #ffde59, 0 0 80px #ff9d00; }
+}
+
+/* Wolkenanimation */
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: cloudFloat linear infinite;
+}
+
+.cloud-1 {
+    width: 100px;
+    height: 60px;
+    top: 15%;
+    animation-duration: 60s;
+}
+
+.cloud-2 {
+    width: 140px;
+    height: 80px;
+    top: 25%;
+    animation-duration: 75s;
+}
+
+.cloud-3 {
+    width: 80px;
+    height: 50px;
+    top: 10%;
+    animation-duration: 45s;
+}
+
+@keyframes cloudFloat {
+    0% { left: -10%; }
+    100% { left: 110%; }
+}
+
+/* Regenanimation */
+.raindrop {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.6));
+    animation: rain linear infinite;
+}
+
+@keyframes rain {
+    0% { transform: translateY(-100px); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Schneeanimation */
+.snowflake {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: snow linear infinite;
+}
+
+@keyframes snow {
+    0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+/* Gewitteranimation */
+.lightning {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    opacity: 0;
+    animation: lightning 10s infinite;
+}
+
+@keyframes lightning {
+    0%, 96%, 98%, 100% { opacity: 0; }
+    97%, 99% { opacity: 0.8; background: white; }
+}
+
 .weather-details {
     flex: 1;
     min-width: 200px;
     padding: 10px;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .weather-details h2 {
@@ -170,6 +355,8 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .forecast-item:hover {
@@ -180,12 +367,16 @@
 .forecast-item .day {
     font-weight: bold;
     margin-bottom: 5px;
+    position: relative;
+    z-index: 1;
 }
 
 .forecast-item .forecast-icon {
     width: 50px;
     height: 50px;
     margin: 5px auto;
+    position: relative;
+    z-index: 1;
 }
 
 .forecast-item .forecast-icon img {
@@ -198,6 +389,8 @@
     font-size: 18px;
     font-weight: bold;
     margin: 5px 0;
+    position: relative;
+    z-index: 1;
 }
 
 .forecast-item .forecast-desc {
@@ -206,6 +399,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: relative;
+    z-index: 1;
 }
 
 .loader {
@@ -252,6 +447,20 @@
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Nebelanimation */
+.fog {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3));
+    animation: fogMove 20s infinite alternate;
+}
+
+@keyframes fogMove {
+    0% { opacity: 0.2; transform: translateX(-5%) translateY(0); }
+    100% { opacity: 0.4; transform: translateX(5%) translateY(5%); }
 }
 
 /* Dunkelmodus-Anpassungen */
