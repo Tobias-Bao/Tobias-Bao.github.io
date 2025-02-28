@@ -122,11 +122,15 @@ function initAutocomplete() {
     document.addEventListener('click', function(e) {
         if (!autocompleteContainer.contains(e.target)) {
             autocompleteList.style.display = 'none';
-            // Stellt die Wetterinfos wieder her, wenn die Liste geschlossen wird
+            // Zeigt die Wetterinfos und den Home-Button wieder an
             const weatherInfo = document.querySelector('.weather-info');
-            if (weatherInfo && weatherInfo.style.display === 'block') {
-                weatherInfo.style.opacity = '1';
-                weatherInfo.style.pointerEvents = 'auto';
+            if (weatherInfo) {
+                weatherInfo.style.display = 'block';
+            }
+            
+            const homeButton = document.getElementById('homeButton');
+            if (homeButton) {
+                homeButton.style.display = 'block';
             }
         }
     });
@@ -180,23 +184,34 @@ function initAutocomplete() {
                 e.preventDefault();
                 this.value = items[selectedIndex].getAttribute('data-value');
                 list.style.display = 'none';
-                // Stellt die Wetterinfos wieder her, wenn die Liste geschlossen wird
+                
+                // Zeigt die Wetterinfos und den Home-Button wieder an
                 const weatherInfo = document.querySelector('.weather-info');
-                if (weatherInfo && weatherInfo.style.display === 'block') {
-                    weatherInfo.style.opacity = '1';
-                    weatherInfo.style.pointerEvents = 'auto';
+                if (weatherInfo) {
+                    weatherInfo.style.display = 'block';
                 }
+                
+                const homeButton = document.getElementById('homeButton');
+                if (homeButton) {
+                    homeButton.style.display = 'block';
+                }
+                
                 searchWeather();
             }
         }
         // Escape-Taste
         else if (e.key === 'Escape') {
             list.style.display = 'none';
-            // Stellt die Wetterinfos wieder her, wenn die Liste geschlossen wird
+            
+            // Zeigt die Wetterinfos und den Home-Button wieder an
             const weatherInfo = document.querySelector('.weather-info');
-            if (weatherInfo && weatherInfo.style.display === 'block') {
-                weatherInfo.style.opacity = '1';
-                weatherInfo.style.pointerEvents = 'auto';
+            if (weatherInfo) {
+                weatherInfo.style.display = 'block';
+            }
+            
+            const homeButton = document.getElementById('homeButton');
+            if (homeButton) {
+                homeButton.style.display = 'block';
             }
         }
     });
@@ -208,17 +223,23 @@ function initAutocomplete() {
 function updateAutocomplete(input) {
     const list = document.getElementById('autocompleteList');
     const weatherInfo = document.querySelector('.weather-info');
+    const homeButton = document.getElementById('homeButton');
     
     // Leert die Liste
     list.innerHTML = '';
     
     if (!input || input.trim() === '') {
         list.style.display = 'none';
-        // Stellt die Wetterinfos wieder her, wenn die Liste versteckt wird
-        if (weatherInfo && weatherInfo.style.display === 'block') {
-            weatherInfo.style.opacity = '1';
-            weatherInfo.style.pointerEvents = 'auto';
+        
+        // Zeigt die Wetterinfos und den Home-Button wieder an
+        if (weatherInfo) {
+            weatherInfo.style.display = 'block';
         }
+        
+        if (homeButton) {
+            homeButton.style.display = 'block';
+        }
+        
         return;
     }
     
@@ -232,12 +253,11 @@ function updateAutocomplete(input) {
         displayCityMatches(localMatches, list);
         list.style.display = 'block';
         
-        // Macht Wetterinfos halbtransparent und deaktiviert Interaktionen, wenn die Liste angezeigt wird
-        if (weatherInfo && weatherInfo.style.display === 'block') {
-            weatherInfo.style.opacity = '0.3';
-            weatherInfo.style.pointerEvents = 'none';
-            weatherInfo.style.transition = 'opacity 0.3s ease';
+        // Versteckt nur die Wetterinfos, Home-Button bleibt sichtbar
+        if (weatherInfo) {
+            weatherInfo.style.display = 'none';
         }
+        // Home-Button wird nicht mehr versteckt
     }
     
     // Wenn die Eingabe mindestens 3 Zeichen hat, suche auch über die API
@@ -257,12 +277,11 @@ function updateAutocomplete(input) {
                 displayCityMatches(apiMatches, list);
                 list.style.display = 'block';
                 
-                // Macht Wetterinfos halbtransparent und deaktiviert Interaktionen, wenn die Liste angezeigt wird
-                if (weatherInfo && weatherInfo.style.display === 'block') {
-                    weatherInfo.style.opacity = '0.3';
-                    weatherInfo.style.pointerEvents = 'none';
-                    weatherInfo.style.transition = 'opacity 0.3s ease';
+                // Versteckt nur die Wetterinfos, Home-Button bleibt sichtbar
+                if (weatherInfo) {
+                    weatherInfo.style.display = 'none';
                 }
+                // Home-Button wird nicht mehr versteckt
             }
         } else {
             // Sucht über die API
@@ -273,10 +292,14 @@ function updateAutocomplete(input) {
     // Wenn keine Übereinstimmungen gefunden wurden, verstecke die Liste
     if (list.children.length === 0) {
         list.style.display = 'none';
-        // Stellt die Wetterinfos wieder her, wenn die Liste versteckt wird
-        if (weatherInfo && weatherInfo.style.display === 'block') {
-            weatherInfo.style.opacity = '1';
-            weatherInfo.style.pointerEvents = 'auto';
+        
+        // Zeigt die Wetterinfos und den Home-Button wieder an
+        if (weatherInfo) {
+            weatherInfo.style.display = 'block';
+        }
+        
+        if (homeButton) {
+            homeButton.style.display = 'block';
         }
     }
 }
@@ -336,13 +359,12 @@ function searchCitiesAPI(input, list, hasLocalMatches) {
                 displayCityMatches(apiMatches, list);
                 list.style.display = 'block';
                 
-                // Macht Wetterinfos halbtransparent und deaktiviert Interaktionen, wenn die Liste angezeigt wird
+                // Versteckt nur die Wetterinfos, Home-Button bleibt sichtbar
                 const weatherInfo = document.querySelector('.weather-info');
-                if (weatherInfo && weatherInfo.style.display === 'block') {
-                    weatherInfo.style.opacity = '0.3';
-                    weatherInfo.style.pointerEvents = 'none';
-                    weatherInfo.style.transition = 'opacity 0.3s ease';
+                if (weatherInfo) {
+                    weatherInfo.style.display = 'none';
                 }
+                // Home-Button wird nicht mehr versteckt
             }
         })
         .catch(error => {
@@ -367,11 +389,15 @@ function displayCityMatches(matches, list) {
             document.getElementById('cityInput').value = this.getAttribute('data-value');
             list.style.display = 'none';
             
-            // Stellt die Wetterinfos wieder her, wenn die Liste geschlossen wird
+            // Zeigt die Wetterinfos und den Home-Button wieder an
             const weatherInfo = document.querySelector('.weather-info');
-            if (weatherInfo && weatherInfo.style.display === 'block') {
-                weatherInfo.style.opacity = '1';
-                weatherInfo.style.pointerEvents = 'auto';
+            if (weatherInfo) {
+                weatherInfo.style.display = 'block';
+            }
+            
+            const homeButton = document.getElementById('homeButton');
+            if (homeButton) {
+                homeButton.style.display = 'block';
             }
             
             searchWeather();
@@ -441,12 +467,24 @@ function fetchCurrentWeather(city) {
             
             // Versteckt Ladeanimation
             showLoader(false);
+            
+            // Zeigt den Home-Button wieder an
+            const homeButton = document.getElementById('homeButton');
+            if (homeButton) {
+                homeButton.style.display = 'block';
+            }
         })
         .catch(error => {
             console.error('Fehler beim Abrufen des Wetters:', error);
             showError(error.message || '获取天气数据时出错');
             showLoader(false);
             document.querySelector('.weather-info').style.display = 'none';
+            
+            // Zeigt den Home-Button wieder an
+            const homeButton = document.getElementById('homeButton');
+            if (homeButton) {
+                homeButton.style.display = 'block';
+            }
         });
 }
 
@@ -703,17 +741,13 @@ function formatDay(date) {
 }
 
 /**
- * Macht den ersten Buchstaben eines Strings groß
- */
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-/**
  * Zeigt oder versteckt die Ladeanimation
  */
 function showLoader(show) {
-    document.getElementById('weatherLoader').style.display = show ? 'block' : 'none';
+    const loader = document.getElementById('weatherLoader');
+    if (loader) {
+        loader.style.display = show ? 'block' : 'none';
+    }
 }
 
 /**
@@ -721,16 +755,28 @@ function showLoader(show) {
  */
 function showError(message) {
     const errorElement = document.getElementById('errorMessage');
-    errorElement.textContent = message;
-    errorElement.style.display = 'block';
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
 }
 
 /**
  * Versteckt die Fehlermeldung
  */
 function hideError() {
-    document.getElementById('errorMessage').style.display = 'none';
+    const errorElement = document.getElementById('errorMessage');
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
 }
 
-// Initialisiert die Wettervorhersage, wenn das DOM geladen ist
+/**
+ * Großschreibt den ersten Buchstaben eines Strings
+ */
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+// Initialisiert die Wettervorhersage-Seite, wenn das DOM geladen ist
 document.addEventListener('DOMContentLoaded', initWeather);

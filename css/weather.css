@@ -39,17 +39,17 @@
 
 .autocomplete-list {
     position: absolute;
-    z-index: 1500;
+    z-index: 2000;
     width: 100%;
-    max-height: 250px;
+    max-height: 150px; /* 减小最大高度，避免遮挡按钮 */
     overflow-y: auto;
-    background-color: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 0 0 5px 5px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     display: none;
+    top: 100%; /* 紧贴输入框底部 */
+    left: 0;
 }
 
 .autocomplete-item {
@@ -74,9 +74,7 @@
 }
 
 .dark-mode .autocomplete-list {
-    background-color: rgba(51, 51, 51, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background-color: #333333;
     border-color: #555;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
@@ -427,6 +425,15 @@
 #homeButton {
     background-color: #28a745;
     margin-top: 20px;
+    position: fixed; /* 固定位置 */
+    bottom: 20px; /* 距离底部20px */
+    left: 50%; /* 水平居中 */
+    transform: translateX(-50%); /* 确保真正居中 */
+    z-index: 3000; /* 确保按钮的z-index高于联想列表 */
+    width: auto; /* 自适应宽度 */
+    padding: 10px 20px; /* 增加内边距使按钮更明显 */
+    border-radius: 5px; /* 添加圆角 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
 }
 
 #homeButton:hover {
