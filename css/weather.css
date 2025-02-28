@@ -7,14 +7,15 @@
     animation: slideIn 0.5s ease-out;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 700px; /* 增加最大宽度，与天气结果一致 */
+    max-width: 800px; /* 增加最大宽度 */
     margin-left: auto;
     margin-right: auto;
     position: relative; /* 添加相对定位，作为子元素的定位参考 */
-    padding: 15px; /* 添加内边距 */
-    border-radius: 10px; /* 添加圆角 */
-    background-color: rgba(255, 255, 255, 0.2); /* 添加背景色 */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+    padding: 35px; /* 增加内边距 */
+    border-radius: 12px; /* 增加圆角 */
+    background-color: rgba(255, 255, 255, 0.25); /* 增加背景色透明度 */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15); /* 增强阴影效果 */
+    min-height: 200px; /* 增加最小高度，为返回按钮留出空间 */
 }
 
 .weather-search label {
@@ -42,7 +43,7 @@
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
-/* Autovervollständigung für Städtesuche - Radform */
+/* Autovervollständigung für Städtesuche - Listenform */
 .autocomplete-container {
     position: relative;
     flex: 1;
@@ -53,7 +54,7 @@
     position: absolute;
     z-index: 2000; /* 降低z-index，使其低于返回首页按钮 */
     width: 100%;
-    height: 150px; /* 固定高度，显示3个选项 */
+    max-height: 200px; /* 增加最大高度，显示更多选项 */
     background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid #ccc;
     border-radius: 10px;
@@ -63,51 +64,26 @@
     left: 0;
     overflow-y: auto; /* 添加垂直滚动条 */
     -webkit-overflow-scrolling: touch; /* Verbessert das Scrollen auf iOS-Geräten */
-    perspective: 500px; /* 添加3D视角 */
-    transform-style: preserve-3d; /* 保持3D效果 */
-    padding: 25px 0; /* 上下添加空间，使滚轮效果更明显 */
+    padding: 15px 0; /* 增加上下内边距 */
 }
 
 .autocomplete-item {
-    padding: 12px 15px;
+    padding: 15px 20px;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
-    transform-origin: center center;
-    height: 50px; /* 固定高度 */
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    transform: translateZ(0);
-    backface-visibility: hidden;
 }
 
 .autocomplete-item:hover, .autocomplete-item.selected {
     background-color: #f0f8ff;
-    transform: scale(1.05);
+    transform: scale(1.02); /* 减小悬停时的放大效果 */
     font-weight: bold;
     color: #007bff;
-}
-
-/* 添加中央选择指示器 */
-.autocomplete-list:before, .autocomplete-list:after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: #007bff;
-    z-index: 2;
-}
-
-.autocomplete-list:before {
-    top: 75px; /* 上边界线 */
-}
-
-.autocomplete-list:after {
-    bottom: 75px; /* 下边界线 */
 }
 
 .autocomplete-divider {
@@ -130,10 +106,6 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
 
-.dark-mode .autocomplete-list:before, .dark-mode .autocomplete-list:after {
-    background: #4da3ff;
-}
-
 .dark-mode .autocomplete-divider {
     color: #aaa;
     background-color: #444;
@@ -148,7 +120,7 @@
 
 .weather-search button {
     width: auto;
-    padding: 10px 15px;
+    padding: 12px 20px; /* 增加内边距 */
     margin: 5px;
     background-color: #007bff;
     color: white;
@@ -156,12 +128,12 @@
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-width: 100px; /* Mindestbreite für bessere Touch-Interaktion */
+    min-width: 120px; /* 增加最小宽度 */
     font-size: 16px; /* Größere Schrift für bessere Lesbarkeit */
     position: relative; /* 相对定位 */
-    height: 42px; /* 与输入框高度一致 */
+    height: 45px; /* 增加高度 */
     align-self: flex-start; /* 顶部对齐 */
-    margin-top: 5px; /* 与输入框顶部对齐 */
+    margin-top: 20px; /* 与输入框顶部对齐 */
 }
 
 .weather-search button:hover {
@@ -188,15 +160,15 @@
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
-    padding: 15px;
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px; /* 增加内边距 */
+    border-radius: 12px; /* 增加圆角 */
+    background-color: rgba(255, 255, 255, 0.25); /* 增加背景色透明度 */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15); /* 增强阴影效果 */
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     width: 100%;
-    max-width: 700px; /* 与搜索板块一致 */
+    max-width: 800px; /* 增加最大宽度，与搜索板块一致 */
     margin-left: auto;
     margin-right: auto;
 }
@@ -331,7 +303,7 @@
 .weather-details {
     flex: 1;
     min-width: 180px;
-    padding: 10px;
+    padding: 15px; /* 增加内边距 */
     text-align: center;
     position: relative;
     z-index: 1;
@@ -378,7 +350,7 @@
 .forecast-container {
     margin-top: 20px;
     width: 100%;
-    max-width: 700px; /* 与搜索板块和当前天气一致 */
+    max-width: 800px; /* 增加最大宽度，与搜索板块和当前天气一致 */
     margin-left: auto;
     margin-right: auto;
 }
@@ -391,35 +363,21 @@
 
 .forecast {
     display: flex;
-    flex-wrap: wrap; /* 修改：使内容自动换行 */
-    justify-content: center; /* 修改：内容居中 */
+    flex-wrap: wrap; /* 使内容自动换行 */
+    justify-content: center; /* 内容居中 */
     padding: 10px 0;
     margin-bottom: 20px;
-}
-
-/* 保留滚动条样式，以防将来需要 */
-.forecast::-webkit-scrollbar {
-    height: 8px;
-}
-
-.forecast::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-radius: 4px;
-}
-
-.forecast::-webkit-scrollbar-thumb {
-    background-color: #007bff;
-    border-radius: 4px;
+    gap: 15px; /* 添加间隙，使项目之间有均匀的间距 */
 }
 
 .forecast-item {
     flex: 0 0 auto;
     width: 120px;
-    padding: 10px;
-    margin: 5px; /* 修改：增加上下边距 */
-    border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px; /* 增加内边距 */
+    margin: 5px;
+    border-radius: 10px; /* 增加圆角 */
+    background-color: rgba(255, 255, 255, 0.25); /* 增加背景色透明度 */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); /* 增强阴影效果 */
     text-align: center;
     transition: all 0.3s ease;
     position: relative;
@@ -493,30 +451,26 @@
 
 #homeButton {
     background-color: #28a745;
-    margin-top: 50px; /* 进一步增加顶部边距，避免与其他元素重叠 */
+    margin-top: 5px; /* 减少顶部边距 */
     position: relative; /* Ändern von fixed zu relative für bessere Mobilgerätekompatibilität */
-    z-index: 3001; /* 增加z-index，使其高于联想列表 */
+    z-index: 3000; /* 增加z-index，使其高于联想列表 */
     width: auto; /* 自适应宽度 */
-    padding: 10px 20px; /* 增加内边距使按钮更明显 */
+    padding: 12px 20px; /* 与搜索按钮保持一致的内边距 */
     border-radius: 5px; /* 添加圆角 */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
-    max-width: 250px; /* Begrenzt die Breite auf größeren Bildschirmen */
-    margin-left: auto;
-    margin-right: auto;
+    min-width: 120px; /* 与搜索按钮保持一致的最小宽度 */
+    height: 45px; /* 与搜索按钮保持一致的高度 */
     display: block; /* Stellt sicher, dass der Button als Block-Element angezeigt wird */
     clear: both; /* 确保按钮不会与浮动元素重叠 */
 }
 
-/* 添加额外的样式，将返回首页按钮容器固定在页面底部 */
+/* 修改返回首页按钮容器样式，确保在搜索按钮下方显示 */
 .home-button-container {
-    position: fixed; /* 固定定位 */
-    bottom: 20px; /* 距离底部20px */
-    left: 0; /* 左对齐 */
-    width: 100%; /* 宽度100% */
-    text-align: center; /* 文本居中 */
-    z-index: 3001; /* 保持高z-index */
-    padding: 10px 0; /* 上下内边距 */
-    /* 移除背景色和模糊效果 */
+    position: absolute; /* 绝对定位 */
+    right: 20px; /* 与搜索按钮右侧对齐 */
+    top: 110px; /* 位于搜索按钮下方 */
+    z-index: 3000; /* 增加z-index，确保在搜索列表之上 */
+    display: block !important; /* 确保始终显示，即使在搜索时 */
 }
 
 #homeButton:hover {
@@ -584,20 +538,14 @@
     color: #aaa;
 }
 
-.dark-mode .forecast::-webkit-scrollbar-track {
-    background: #333;
-}
-
-.dark-mode .forecast::-webkit-scrollbar-thumb {
-    background-color: #4da3ff;
-}
-
-/* Verbesserte Medienabfragen */
+/* Verbesserte Medienabfragen für verschiedene Bildschirmgrößen */
 @media (max-width: 768px) {
     .weather-search {
         flex-direction: row;
         align-items: flex-start;
         flex-wrap: wrap;
+        padding: 15px;
+        min-height: 250px; /* 在移动设备上增加最小高度 */
     }
     
     .weather-search label {
@@ -622,7 +570,7 @@
     
     .current-weather {
         flex-direction: column;
-        padding: 12px;
+        padding: 15px;
     }
     
     .weather-icon {
@@ -639,11 +587,19 @@
     }
     
     .forecast-item {
-        width: 100px;
+        width: calc(33.33% - 20px); /* 每行显示3个，考虑间距 */
+        min-width: 100px;
     }
     
     .forecast-container h3 {
         font-size: 18px;
+    }
+}
+
+@media (max-width: 576px) {
+    .forecast-item {
+        width: calc(50% - 20px); /* 每行显示2个，考虑间距 */
+        min-width: 120px;
     }
 }
 
@@ -660,8 +616,9 @@
     }
     
     .forecast-item {
-        width: 85px;
-        padding: 8px;
+        width: calc(50% - 15px); /* 每行显示2个，减少间距 */
+        padding: 10px;
+        min-width: 85px;
     }
     
     .forecast-item .day {
@@ -696,6 +653,14 @@
 }
 
 @media (max-width: 320px) {
+    .weather-search {
+        padding: 10px;
+    }
+    
+    .current-weather {
+        padding: 10px;
+    }
+    
     .weather-icon {
         flex: 0 0 70px;
         height: 70px;
@@ -710,8 +675,9 @@
     }
     
     .forecast-item {
-        width: 80px;
-        padding: 6px;
+        width: calc(100% - 10px); /* 每行显示1个 */
+        padding: 8px;
+        margin: 5px;
     }
     
     .data-item {
@@ -731,22 +697,23 @@
 /* Anpassungen für größere Bildschirme */
 @media (min-width: 1025px) {
     .weather-search {
-        max-width: 800px; /* 增加最大宽度 */
-        padding: 20px;
+        max-width: 900px; /* 进一步增加最大宽度 */
+        padding: 25px;
     }
     
     .current-weather {
-        max-width: 800px; /* 增加最大宽度，与搜索板块一致 */
-        padding: 20px;
+        max-width: 900px; /* 与搜索板块一致 */
+        padding: 25px;
     }
     
     .forecast-container {
-        max-width: 800px; /* 与搜索板块和当前天气一致 */
+        max-width: 900px; /* 与搜索板块和当前天气一致 */
     }
     
     .forecast-item {
-        width: 130px;
-        margin: 0 8px;
+        width: 150px; /* 增加宽度 */
+        margin: 0 10px;
+        padding: 15px;
     }
     
     .weather-icon {
@@ -756,5 +723,23 @@
     
     .temperature {
         font-size: 40px;
+    }
+}
+
+/* 超大屏幕适配 */
+@media (min-width: 1440px) {
+    .weather-search,
+    .current-weather,
+    .forecast-container {
+        max-width: 1000px; /* 进一步增加最大宽度 */
+    }
+    
+    .forecast-item {
+        width: 170px; /* 增加宽度 */
+    }
+    
+    .weather-icon {
+        flex: 0 0 160px;
+        height: 160px;
     }
 }

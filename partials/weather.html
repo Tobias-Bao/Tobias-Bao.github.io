@@ -17,6 +17,11 @@
             <button id="searchButton">
                 <i class="fas fa-search"></i> 搜索
             </button>
+            <div class="home-button-container">
+                <button id="homeButton" onclick="window.location.href='../index.html'">
+                    <i class="fas fa-home"></i> 返回首页
+                </button>
+            </div>
         </div>
         <div class="weather-info">
             <div class="current-weather">
@@ -53,11 +58,6 @@
         </div>
         <div class="loader" id="weatherLoader"></div>
         <div class="error-message" id="errorMessage"></div>
-        <div class="home-button-container"><!-- 使用新添加的CSS类 -->
-            <button id="homeButton" onclick="window.location.href='../index.html'">
-                <i class="fas fa-home"></i> 返回首页
-            </button>
-        </div>
     </div>
     <script src="../js/global.js"></script>
     <script src="../js/weather.js"></script>

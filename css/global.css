@@ -6,12 +6,13 @@ body {
     backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start; /* Ändert die Ausrichtung nach oben */
+    min-height: 100vh; /* Mindesthöhe statt fester Höhe */
     margin: 0;
     overflow-x: hidden; /* Verhindert horizontales Scrollen */
-    overflow-y: hidden; /* Verhindert vertikales Scrollen */
+    overflow-y: auto; /* Erlaubt vertikales Scrollen */
     transition: background-color 0.5s ease; /* Übergang für Dunkelmodus */
+    padding: 20px 0; /* Fügt oben und unten Abstand hinzu */
 }
 
 html, body {
@@ -39,15 +40,33 @@ html, body {
     animation: fadeIn 0.8s ease-out; /* Fade-In-Animation beim Laden */
     transition: all 0.3s ease; /* Übergang für Dunkelmodus */
     margin: 15px auto; /* Zentriert den Container und fügt Abstand hinzu */
-    overflow-y: auto; /* Erlaubt Scrollen innerhalb des Containers bei Bedarf */
+    overflow-y: visible; /* Erlaubt Inhalte, über den Container hinauszuragen */
     overflow-x: hidden; /* Verhindert horizontales Scrollen */
-    -ms-overflow-style: none;  /* IE und Edge */
-    scrollbar-width: none;  /* Firefox */
+    max-height: none; /* Entfernt die Höhenbegrenzung */
 }
 
-/* Versteckt die Scrollbar in Webkit-Browsern */
-.container::-webkit-scrollbar {
-    display: none;
+/* Anpassung der Scrollbar für den gesamten Body */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 123, 255, 0.5);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 123, 255, 0.7);
+}
+
+/* Scrollbar-Stil für Firefox */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 123, 255, 0.5) rgba(255, 255, 255, 0.1);
 }
 
 /* Globaler Button-Stil */
@@ -159,15 +178,14 @@ button:focus:not(:active)::after {
 /* Verbesserte Medienabfragen */
 @media (max-width: 768px) {
     body {
-        align-items: flex-start; /* Bessere Ausrichtung für mobile Geräte */
-        padding-top: 20px; /* Abstand oben hinzufügen */
+        padding-top: 15px; /* Reduzierter Abstand oben */
+        padding-bottom: 15px; /* Abstand unten hinzufügen */
     }
     
     .container {
         width: 92%;
         padding: 15px;
         margin: 10px auto;
-        max-height: none; /* Entfernt Höhenbeschränkung */
     }
 
     .currency select {
