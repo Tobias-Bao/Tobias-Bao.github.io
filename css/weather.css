@@ -7,9 +7,14 @@
     animation: slideIn 0.5s ease-out;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 500px;
+    max-width: 700px; /* 增加最大宽度，与天气结果一致 */
     margin-left: auto;
     margin-right: auto;
+    position: relative; /* 添加相对定位，作为子元素的定位参考 */
+    padding: 15px; /* 添加内边距 */
+    border-radius: 10px; /* 添加圆角 */
+    background-color: rgba(255, 255, 255, 0.2); /* 添加背景色 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
 }
 
 .weather-search label {
@@ -40,15 +45,15 @@
 /* Autovervollständigung für Städtesuche */
 .autocomplete-container {
     position: relative;
-    width: 100%;
+    width: calc(100% - 120px); /* 减去按钮的宽度，为按钮留出空间 */
+    margin-right: 10px; /* 与按钮之间的间距 */
 }
 
 .autocomplete-list {
     position: absolute;
-    z-index: 3000; /* 增加z-index，确保下拉列表在最上层 */
+    z-index: 2000; /* 降低z-index，使其低于返回首页按钮 */
     width: 100%;
-    max-height: 120px; /* 进一步减小最大高度，避免遮挡按钮 */
-    overflow-y: auto;
+    max-height: 500px; /* 增加最大高度，与天气结果区域一致 */
     background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 0 0 5px 5px;
@@ -56,6 +61,7 @@
     display: none;
     top: 100%; /* 紧贴输入框底部 */
     left: 0;
+    overflow-y: auto; /* 添加垂直滚动条 */
     -webkit-overflow-scrolling: touch; /* Verbessert das Scrollen auf iOS-Geräten */
 }
 
@@ -109,6 +115,9 @@
     transition: all 0.3s ease;
     min-width: 100px; /* Mindestbreite für bessere Touch-Interaktion */
     font-size: 16px; /* Größere Schrift für bessere Lesbarkeit */
+    position: absolute; /* 绝对定位 */
+    right: 15px; /* 放置在右侧，增加一些间距 */
+    top: 15px; /* 与顶部对齐，增加一些间距 */
 }
 
 .weather-search button:hover {
@@ -143,7 +152,7 @@
     position: relative;
     overflow: hidden;
     width: 100%;
-    max-width: 500px;
+    max-width: 700px; /* 与搜索板块一致 */
     margin-left: auto;
     margin-right: auto;
 }
@@ -325,7 +334,7 @@
 .forecast-container {
     margin-top: 20px;
     width: 100%;
-    max-width: 600px;
+    max-width: 700px; /* 与搜索板块和当前天气一致 */
     margin-left: auto;
     margin-right: auto;
 }
@@ -338,15 +347,13 @@
 
 .forecast {
     display: flex;
-    overflow-x: auto;
+    flex-wrap: wrap; /* 修改：使内容自动换行 */
+    justify-content: center; /* 修改：内容居中 */
     padding: 10px 0;
     margin-bottom: 20px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: #007bff #f0f0f0;
-    scroll-snap-type: x mandatory; /* Verbessert das Scrollen auf Touch-Geräten */
 }
 
+/* 保留滚动条样式，以防将来需要 */
 .forecast::-webkit-scrollbar {
     height: 8px;
 }
@@ -365,7 +372,7 @@
     flex: 0 0 auto;
     width: 120px;
     padding: 10px;
-    margin: 0 5px;
+    margin: 5px; /* 修改：增加上下边距 */
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -373,7 +380,6 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    scroll-snap-align: start; /* Verbessert das Scrollen auf Touch-Geräten */
 }
 
 .forecast-item:hover {
@@ -445,7 +451,7 @@
     background-color: #28a745;
     margin-top: 50px; /* 进一步增加顶部边距，避免与其他元素重叠 */
     position: relative; /* Ändern von fixed zu relative für bessere Mobilgerätekompatibilität */
-    z-index: 1000; /* 降低按钮的z-index，使其低于联想列表 */
+    z-index: 3001; /* 增加z-index，使其高于联想列表 */
     width: auto; /* 自适应宽度 */
     padding: 10px 20px; /* 增加内边距使按钮更明显 */
     border-radius: 5px; /* 添加圆角 */
@@ -457,11 +463,16 @@
     clear: both; /* 确保按钮不会与浮动元素重叠 */
 }
 
-/* 添加额外的样式，确保返回首页按钮容器不会被下拉列表遮挡 */
+/* 添加额外的样式，将返回首页按钮容器固定在页面底部 */
 .home-button-container {
-    margin-top: 100px; /* 为按钮容器添加足够的顶部边距 */
-    position: relative;
-    z-index: 1000;
+    position: fixed; /* 固定定位 */
+    bottom: 20px; /* 距离底部20px */
+    left: 0; /* 左对齐 */
+    width: 100%; /* 宽度100% */
+    text-align: center; /* 文本居中 */
+    z-index: 3001; /* 保持高z-index */
+    padding: 10px 0; /* 上下内边距 */
+    /* 移除背景色和模糊效果 */
 }
 
 #homeButton:hover {
@@ -542,6 +553,12 @@
     .weather-search {
         flex-direction: column;
         align-items: stretch;
+        padding-right: 110px; /* 为右侧的按钮留出空间 */
+    }
+    
+    .autocomplete-container {
+        width: 100%; /* 在移动设备上占满宽度 */
+        margin-right: 0;
     }
     
     .weather-search input {
@@ -550,8 +567,10 @@
     }
     
     .weather-search button {
-        width: 100%;
+        width: auto;
         margin: 5px 0;
+        top: 5px; /* 调整顶部位置 */
+        right: 5px; /* 调整右侧位置 */
     }
     
     .current-weather {
@@ -665,16 +684,17 @@
 /* Anpassungen für größere Bildschirme */
 @media (min-width: 1025px) {
     .weather-search {
-        max-width: 600px;
+        max-width: 800px; /* 增加最大宽度 */
+        padding: 20px;
     }
     
     .current-weather {
-        max-width: 700px;
+        max-width: 800px; /* 增加最大宽度，与搜索板块一致 */
         padding: 20px;
     }
     
     .forecast-container {
-        max-width: 800px;
+        max-width: 800px; /* 与搜索板块和当前天气一致 */
     }
     
     .forecast-item {

@@ -106,6 +106,16 @@ function initAutocomplete() {
     autocompleteList.id = 'autocompleteList';
     autocompleteContainer.appendChild(autocompleteList);
     
+    // 添加滚轮事件监听器，确保只滚动联想栏而不是整个页面
+    autocompleteList.addEventListener('wheel', function(e) {
+        // 阻止事件冒泡和默认行为
+        e.stopPropagation();
+        e.preventDefault();
+        
+        // 手动滚动联想栏
+        this.scrollTop += e.deltaY;
+    }, { passive: false });
+    
     // Event-Listener für Eingabeänderungen
     cityInput.addEventListener('input', function() {
         updateAutocomplete(this.value);
