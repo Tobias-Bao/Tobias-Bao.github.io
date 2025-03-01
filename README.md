@@ -49,8 +49,3 @@ start index.html
 - 🌐 Website: [https://Changlai-Bao.github.io](https://Changlai-Bao.github.io)
 
 ---
-
-🔗 **Nützliche Links / Useful Links / 有用链接**  
-[Projekt Wiki](https://github.com/Tobias-Bao/Tobias-Bao.github.io/wiki) | 
-[Issue Tracker](https://github.com/Tobias-Bao/Tobias-Bao.github.io/issues) | 
-[Changelog](https://github.com/Tobias-Bao/Tobias-Bao.github.io/releases)
