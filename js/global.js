@@ -1,29 +1,29 @@
-// Globale Funktionen und Variablen
+// 全局变量
 
 /**
- * Initialisiert den Dunkelmodus-Schalter
+ * 初始化主题切换
  */
 function initThemeSwitch() {
-    // Erstellt den Dunkelmodus-Schalter
+    // 创建主题切换按钮
     const themeSwitch = document.createElement('div');
     themeSwitch.className = 'theme-switch';
     themeSwitch.innerHTML = '<i class="fas fa-moon"></i>';
     document.body.appendChild(themeSwitch);
 
-    // Lädt den gespeicherten Modus
+    // 加载上次的主题设置
     const darkMode = localStorage.getItem('darkMode') === 'true';
     if (darkMode) {
         document.body.classList.add('dark-mode');
         themeSwitch.innerHTML = '<i class="fas fa-sun"></i>';
     }
 
-    // Event-Listener für den Dunkelmodus-Schalter
+    // 事件监听器，切换主题
     themeSwitch.addEventListener('click', function() {
         document.body.classList.toggle('dark-mode');
         const isDarkMode = document.body.classList.contains('dark-mode');
         localStorage.setItem('darkMode', isDarkMode);
         
-        // Ändert das Icon basierend auf dem Modus
+        // 切换主题图标
         if (isDarkMode) {
             themeSwitch.innerHTML = '<i class="fas fa-sun"></i>';
         } else {
@@ -33,7 +33,7 @@ function initThemeSwitch() {
 }
 
 /**
- * Fügt Font Awesome für Icons hinzu
+ * 加载FontAwesome
  */
 function addFontAwesome() {
     const link = document.createElement('link');
@@ -43,7 +43,7 @@ function addFontAwesome() {
 }
 
 /**
- * Fügt Ripple-Effekt zu Buttons hinzu
+ * 添加涟漪效果
  */
 function addRippleEffect() {
     const buttons = document.querySelectorAll('button');
@@ -67,19 +67,19 @@ function addRippleEffect() {
 }
 
 /**
- * Initialisiert die Seite
+ * 初始化页面
  */
 function initPage() {
     addFontAwesome();
     initThemeSwitch();
     addRippleEffect();
     
-    // Fügt Fade-In-Animation zu allen Elementen hinzu
+    // 添加页面加载动画
     document.querySelectorAll('.container > *').forEach((element, index) => {
         element.style.opacity = '0';
         element.style.animation = `fadeIn 0.5s ease-out ${index * 0.1}s forwards`;
     });
 }
 
-// Initialisiert die Seite, wenn das DOM geladen ist
+// 页面加载完成后执行初始化
 document.addEventListener('DOMContentLoaded', initPage);

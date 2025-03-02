@@ -9,20 +9,16 @@ graph TD
     A --> D[images/]
     A --> E[partials/]
     B --> B1[global.css]
-    B --> B2[weather.css]
-    B --> B3[converter.css]
+    B --> B2[converter.css]
     C --> C1[global.js]
-    C --> C2[weather.js]
-    C --> C3[converter.js]
+    C --> C2[converter.js]
     D --> D1[background.jpg]
     D --> D2[background2.jpg]
     D --> D3[background3.jpg]
-    E --> E1[weather.html]
-    E --> E2[converter.html]
+    E --> E1[converter.html]
 ```
 
 ## ✨Funktionen / Features / 功能
-- 🌦️ Wetterinformationen anzeigen / Display weather information / 显示天气信息
 - 💱 Währungsumrechnung / Currency conversion / 货币转换
 - 📱 Responsives Design / Responsive design / 响应式设计
 
