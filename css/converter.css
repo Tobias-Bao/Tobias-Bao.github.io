@@ -1,21 +1,21 @@
-/* Spezifische Stile für die Währungsumrechner-Seite */
+/* 汇率转换器页面特定样式 */
 .converter {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
     animation: slideIn 0.5s ease-out;
-    flex-wrap: wrap; /* Erlaubt Umbruch auf kleinen Bildschirmen */
+    flex-wrap: wrap; /* 允许在小屏幕上换行 */
     width: 100%;
 }
 
 .currency {
     flex: 1;
-    min-width: 120px; /* Mindestbreite für kleine Bildschirme */
+    min-width: 120px; /* 小屏幕最小宽度 */
     display: flex;
     justify-content: center;
     transition: all 0.3s ease;
-    margin: 5px 0; /* Abstand hinzufügen */
+    margin: 5px 0; /* 添加间距 */
 }
 
 .currency select {
@@ -45,11 +45,11 @@
     display: flex;
     align-items: center;
     margin: 0 10px;
-    padding: 5px 0; /* Zusätzlicher Abstand für bessere Touch-Interaktion */
+    padding: 5px 0; /* 增加间距以改善触摸交互 */
 }
 
 .switch button {
-    width: auto; /* Stellt sicher, dass die Breite des Buttons zum Inhalt passt */
+    width: auto; /* 确保按钮宽度适应内容 */
     padding: 10px;
     font-size: 16px;
     border: none;
@@ -65,7 +65,7 @@
     transform: scale(1.05);
 }
 
-/* Drehanimation für den Umschalter */
+/* 切换按钮旋转动画 */
 .switch button.rotating {
     animation: rotate 0.5s ease-in-out;
 }
@@ -82,7 +82,7 @@
     margin-bottom: 20px;
     animation: fadeInUp 0.5s ease-out;
     animation-fill-mode: both;
-    flex-wrap: wrap; /* Erlaubt Umbruch auf kleinen Bildschirmen */
+    flex-wrap: wrap; /* 允许在小屏幕上换行 */
     width: 100%;
 }
 
@@ -92,14 +92,14 @@
 
 label {
     margin-right: 10px;
-    white-space: nowrap; /* Verhindert Zeilenumbrüche bei Labels */
+    white-space: nowrap; /* 防止标签换行 */
     transition: all 0.3s ease;
-    min-width: 60px; /* Mindestbreite für Labels */
-    text-align: right; /* Rechtsausrichtung für bessere Lesbarkeit */
+    min-width: 60px; /* 标签最小宽度 */
+    text-align: right; /* 右对齐以提高可读性 */
 }
 
 input[type="number"], input[type="text"] {
-    width: calc(100% - 100px); /* Anpassung der Eingabebreite */
+    width: calc(100% - 100px); /* 调整输入框宽度 */
     padding: 10px;
     margin: 5px 0;
     box-sizing: border-box;
@@ -115,20 +115,20 @@ input[type="number"]:focus, input[type="text"]:focus {
 }
 
 #convertButton {
-    font-size: 20px; /* Größere Schrift */
-    margin-bottom: 10px; /* Mehr Abstand nach unten */
-    background-color: #007bff; /* Hintergrundfarbe des Buttons */
+    font-size: 20px; /* 更大的字体 */
+    margin-bottom: 10px; /* 增加底部间距 */
+    background-color: #007bff; /* 按钮背景颜色 */
     animation: pulse 2s infinite;
 }
 
 #convertButton:hover {
-    background-color: #0056b3; /* Hintergrundfarbe bei Hover */
+    background-color: #0056b3; /* 悬停时背景颜色 */
     animation: none;
 }
 
 #homeButton {
-    font-size: 20px; /* Größere Schrift */
-    background-color: #28a745; /* Grüner Button */
+    font-size: 20px; /* 更大的字体 */
+    background-color: #28a745; /* 绿色按钮 */
     margin-top: 10px;
 }
 
@@ -138,7 +138,7 @@ input[type="number"]:focus, input[type="text"]:focus {
 
 .rate {
     text-align: center;
-    font-size: 16px; /* Größere Schrift */
+    font-size: 16px; /* 更大的字体 */
     margin-bottom: 20px;
     padding: 10px;
     border-radius: 5px;
@@ -147,13 +147,13 @@ input[type="number"]:focus, input[type="text"]:focus {
     animation: fadeIn 0.5s ease-out;
 }
 
-/* Währungssymbole */
+/* 货币符号 */
 .currency-symbol {
     font-weight: bold;
     margin-right: 5px;
 }
 
-/* Ergebnisanimation */
+/* 结果高亮动画 */
 .highlight {
     animation: highlight 1s ease;
 }
@@ -179,7 +179,7 @@ input[type="number"]:focus, input[type="text"]:focus {
     100% { transform: scale(1); }
 }
 
-/* Diagramm-Container */
+/* 图表容器 */
 .chart-container {
     width: 100%;
     height: 200px;
@@ -188,10 +188,10 @@ input[type="number"]:focus, input[type="text"]:focus {
     overflow: hidden;
     display: none;
     animation: fadeIn 0.5s ease-out;
-    max-width: 100%; /* Verhindert Überlauf auf kleinen Bildschirmen */
+    max-width: 100%; /* 防止小屏幕溢出 */
 }
 
-/* Umschalter für Diagramm */
+/* 图表切换按钮 */
 .chart-toggle {
     background-color: transparent;
     color: #007bff;
@@ -206,7 +206,7 @@ input[type="number"]:focus, input[type="text"]:focus {
     background-color: rgba(0, 123, 255, 0.1);
 }
 
-/* Verbesserte Responsive Anpassungen */
+/* 响应式布局优化 */
 @media (max-width: 768px) {
     .converter {
         flex-direction: column;
@@ -220,7 +220,7 @@ input[type="number"]:focus, input[type="text"]:focus {
     
     .switch {
         margin: 10px 0;
-        transform: rotate(90deg); /* Dreht den Umschalter für vertikale Anordnung */
+        transform: rotate(90deg); /* 旋转切换按钮为垂直排列 */
     }
     
     .amount, .result {
@@ -299,7 +299,7 @@ input[type="number"]:focus, input[type="text"]:focus {
     }
 }
 
-/* Anpassungen für größere Bildschirme */
+/* 大屏幕适配 */
 @media (min-width: 1025px) {
     .converter {
         max-width: 700px;
@@ -320,7 +320,7 @@ input[type="number"]:focus, input[type="text"]:focus {
     }
 }
 
-/* Dunkelmodus-Anpassungen */
+/* 暗黑模式适配 */
 .dark-mode .currency select {
     background-color: #333;
     color: #f0f0f0;
