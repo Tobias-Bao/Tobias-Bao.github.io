@@ -1,6 +1,6 @@
-# 🚀Projektbeschreibung / Project Description / 项目描述
+# 🚀项目描述
 
-## 📁Übersicht / Overview / 概述
+## 📁概述
 ![Projektstruktur]  
 ```mermaid
 graph TD
@@ -18,30 +18,14 @@ graph TD
     E --> E1[converter.html]
 ```
 
-## ✨Funktionen / Features / 功能
-- 💱 Währungsumrechnung / Currency conversion / 货币转换
-- 📱 Responsives Design / Responsive design / 响应式设计
+## ✨功能
+- 💱 货币转换
+- 📱 响应式设计
 
-## 🛠️Installation / Installation / 安装
-1. Repository klonen:
-```bash
-git clone https://github.com/Tobias-Bao/Tobias-Bao.github.io
-```
-2. Projekt öffnen:
-```bash
-cd Tobias-Bao.github.io
-```
-3. Im Browser öffnen:
-```bash
-start index.html
-```
-
-## 📜Lizenz / License / 许可证
+## 📜许可证
 [MIT License](LICENSE)
 
-## 📫Kontakt / Contact / 联系方式
-- 📧 Email: changlai.bao@outlook.com
+## 📫联系方式
+- 📧 邮箱: changlai.bao@outlook.com
 - 🐙 GitHub: [Changlai-Bao](https://github.com/Changlai-Bao)
-- 🌐 Website: [https://Changlai-Bao.github.io](https://Changlai-Bao.github.io)
-
----
+- 🌐 个人网站: [https://Changlai-Bao.github.io](https://Changlai-Bao.github.io)
