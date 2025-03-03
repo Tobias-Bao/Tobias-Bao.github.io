@@ -1,7 +1,6 @@
 # 🚀项目描述
 
 ## 📁概述
-![Projektstruktur]  
 ```mermaid
 graph TD
     A[index.html] --> B[css/]
