@@ -1,6 +1,7 @@
 # 🚀项目描述
 
 ## 📁概述
+
 ```mermaid
 graph TD
     A[index.html] --> B[css/]
@@ -18,13 +19,16 @@ graph TD
 ```
 
 ## ✨功能
+
 - 💱 货币转换
 - 📱 响应式设计
 
 ## 📜许可证
+
 [MIT License](LICENSE)
 
 ## 📫联系方式
-- 📧 邮箱: changlai.bao@outlook.com
+
+- 📧 邮箱: [changlai.bao@outlook.com](mailto:changlai.bao@outlook.com)
 - 🐙 GitHub: [Changlai-Bao](https://github.com/Changlai-Bao)
 - 🌐 个人网站: [https://Changlai-Bao.github.io](https://Changlai-Bao.github.io)
