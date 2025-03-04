@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>首页</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style> 
+        /* 导航按钮样式 */
+        .nav { 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+            width: 100%;
+        }
+        
+        /* 按钮样式 */
+        .nav button { 
+            position: relative;
+            overflow: hidden;
+            margin: 15px 0;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        /* 按钮动画延迟 */
+        .nav button:nth-child(2) { 
+            animation-delay: 0.1s;
+        }
+        
+        /* 按钮动画延迟 */
+        .nav button:nth-child(3) { 
+            animation-delay: 0.2s;
+        }
+        
+        /* 标题样式 */
+        h1 { 
+            animation: fadeIn 0.8s ease-out;
+            margin-bottom: 30px;
+            color: #333;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 功能列表样式 */
+        .feature-list { 
+            text-align: left;
+            margin: 25px 0;
+            padding: 0 20px;
+            animation: fadeIn 1s ease-out;
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* 列表标题样式 */
+        .feature-list h2 { 
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        /* 列表样式 */
+        .feature-list ul { 
+            list-style-type: none;
+            padding: 0;
+        }
+
+        /* 列表项样式 */
+        .feature-list li { 
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        /* 列表项图标样式 */
+        .feature-list li:before { 
+            content: '✓';
+            color: #28a745;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* 暗黑模式标题样式 */
+        .dark-mode h1 { 
+            color: #f0f0f0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 暗黑模式列表标题样式 */
+        .dark-mode .feature-list h2 { 
+            color: #4da3ff;
+        }
+
+        /* 暗黑模式列表项图标样式 */
+        .dark-mode .feature-list li:before { 
+            color: #5cb85c;
+        }
+
+        /* 按钮动画 */
+        @keyframes fadeInUp { 
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* 页面样式 */
+        body { 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 主要内容样式 */
+        .main-content { 
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 作者信息样式 */
+        .author-info { 
+            margin-top: 30px;
+            padding: 15px 0;
+            text-align: center;
+            border-top: 1px solid #eaeaea;
+            font-size: 0.9em;
+            color: #666;
+            animation: fadeIn 0.8s ease-out;
+            width: 100%;
+            position: relative;
+            clear: both;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        /* 超小屏幕样式 */
+        @media (max-width: 320px) { 
+            h1 {
+                font-size: 20px;
+            }
+            
+            .feature-list h2 {
+                font-size: 16px;
+            }
+            
+            .feature-list li {
+                font-size: 13px;
+            }
+            
+            .nav button {
+                font-size: 15px;
+                padding: 10px;
+            }
+        }
+        
+        /* 小屏幕样式 */
+        @media (max-width: 480px) { 
+            h1 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+            
+            .feature-list {
+                padding: 0 10px;
+                margin: 15px 0;
+            }
+            
+            .feature-list h2 {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            
+            .feature-list li {
+                font-size: 14px;
+                margin-bottom: 6px;
+                padding-left: 20px;
+            }
+            
+            .nav {
+                margin-top: 20px;
+            }
+            
+            .nav button {
+                margin: 10px 0;
+                padding: 12px;
+                font-size: 16px;
+                width: 95%;
+            }
+            
+            .author-info {
+                margin-top: 20px;
+                padding: 10px 0;
+                font-size: 0.8em;
+            }
+        }
+
+        /* 中等屏幕样式 */
+        @media (max-width: 768px) { 
+            .feature-list {
+                padding: 0 15px;
+                margin: 20px 0;
+            }
+            
+            .feature-list h2 {
+                font-size: 20px;
+            }
+            
+            .feature-list li {
+                font-size: 15px;
+                margin-bottom: 8px;
+            }
+            
+            .nav button {
+                width: 90%;
+                max-width: 350px;
+            }
+            
+            .author-info {
+                margin-top: 25px;
+                padding: 12px 0;
+                font-size: 0.85em;
+            }
+        }
+
+        /* 大屏幕样式 */
+        @media (min-width: 1025px) { 
+            .feature-list {
+                max-width: 600px;
+            }
+            
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        .author-info a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        
+        .author-info a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+        
+        .dark-mode .author-info {
+            border-top-color: #444;
+            color: #aaa;
+        }
+        
+        .dark-mode .author-info a {
+            color: #4da3ff;
+        }
+        
+        .dark-mode .author-info a:hover {
+            color: #75b7ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container main-content">
+        <h1>欢迎来到工具首页</h1>
+        
+        <div class="feature-list">
+            <h2>汇率转换器功能</h2>
+            <ul>
+                <li>支持多种货币转换</li>
+                <li>实时获取最新汇率</li>
+                <li>查看历史汇率趋势</li>
+                <li>自动计算转换结果</li>
+                <li>支持暗黑模式</li>
+            </ul>
+        </div>
+        
+        <div class="nav">
+            <button onclick="window.location.href='partials/currency-converter.html'">
+                <i class="fas fa-exchange-alt"></i> 汇率转换器
+            </button>
+            <!-- 在这里可以添加更多按钮 -->
+        </div>
+    </div>
+    
+    <footer class="author-info">
+        <p>
+            <!-- 作者信息 -->
+            <span>作者: </span>
+            <a href="https://changlai-bao.github.io/cn/index.html" target="_blank">Changlai Bao</a>
+        </p>
+    </footer>
+    
+    <script src="js/global.js"></script>
+</body>
+</html>
