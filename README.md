@@ -1,28 +1,34 @@
-# 🚀项目描述
+# 实用工具网站项目
 
-## 📁概述
+## ✨ 项目概述
 
-- `css/`: 样式文件
+本项目是一个实用工具网站，目前仅支持汇率转换功能。
+
+## 📁 概述
+
+- `css/`: css 文件
   - `currency-converter.css`: 汇率转换器样式
   - `global.css`: 全局样式
 - `images/`: 图片资源
-- `js/`: 动画文件
+- `js/`: js 文件
   - `currency-converter.js`: 汇率转换器动画
   - `global.js`: 全局动画
-- `partials/`: 功能页
+- `partials/`: 页面文件
   - `currency-converter.html`: 汇率转换器页
 - `index.html`: 主页
 
-## ✨功能
+## 🚀 使用说明
 
-- 💱 汇率转换
-- 📱 响应式设计
+```bash
+git clone https://github.com/Tobias-Bao/Tobias-Bao.github.io.git
+open index.html
+```
 
-## 📜许可证
+## 📜 许可证
 
-[`MIT License`](LICENSE)
+本项目采用 [`MIT License`](LICENSE)
 
-## 📫联系方式
+## 📫 联系方式
 
 - 📧 邮箱: [`changlai.bao@outlook.com`](mailto:changlai.bao@outlook.com)
 - 🐙 GitHub: [`Changlai-Bao`](https://github.com/Changlai-Bao)
