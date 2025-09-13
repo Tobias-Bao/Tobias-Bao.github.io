@@ -1,368 +1,381 @@
 /* 货币转换器容器 */
-.converter { 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    animation: slideIn 0.5s ease-out;
-    flex-wrap: wrap; 
-    width: 100%;
+.converter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  animation: slideIn 0.5s ease-out;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 /* 货币选择器 */
-.currency { 
-    flex: 1;
-    min-width: 120px; 
-    display: flex;
-    justify-content: center;
-    transition: all 0.3s ease;
-    margin: 5px 0; 
+.currency {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  justify-content: center;
+  transition: all 0.3s ease;
+  margin: 5px 0;
 }
 
 /* 货币选择框 */
-.currency select { 
-    width: 80%;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    background-color: white;
+.currency select {
+  width: 80%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background-color: white;
 }
 
 /* 鼠标悬停时 */
-.currency select:hover { 
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+.currency select:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
 /* 获得焦点时 */
-.currency select:focus { 
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+.currency select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
 /* 切换按钮容器 */
-.switch { 
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    margin: 0 10px;
-    padding: 5px 0; 
+.switch {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+  padding: 5px 0;
 }
 
 /* 切换按钮 */
-.switch button { 
-    width: auto; 
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.switch button {
+  width: auto;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 /* 鼠标悬停时 */
-.switch button:hover { 
-    background-color: #0056b3;
-    transform: scale(1.05);
+.switch button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
 }
 
 /* 切换按钮旋转动画 */
 .switch button.rotating {
-    animation: rotate 0.5s ease-in-out;
+  animation: rotate 0.5s ease-in-out;
 }
 
 /* 旋转动画 */
 @keyframes rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(180deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
 }
 
 /* 输入框和结果容器 */
-.amount, .result {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-    animation: fadeInUp 0.5s ease-out;
-    animation-fill-mode: both;
-    flex-wrap: wrap; 
-    width: 100%;
+.amount,
+.result {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.5s ease-out;
+  animation-fill-mode: both;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 /* 输入框和结果 */
 .result {
-    animation-delay: 0.1s;
+  animation-delay: 0.1s;
 }
 
 /* 标签 */
 label {
-    margin-right: 10px;
-    white-space: nowrap; 
-    transition: all 0.3s ease;
-    min-width: 60px; 
-    text-align: right; 
+  margin-right: 10px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  min-width: 60px;
+  text-align: right;
 }
 
 /* 输入框 */
-input[type="number"], input[type="text"] {
-    width: calc(100% - 100px); 
-    padding: 10px;
-    margin: 5px 0;
-    box-sizing: border-box;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    transition: all 0.3s ease;
+input[type="number"],
+input[type="text"] {
+  width: calc(100% - 100px);
+  padding: 10px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease;
 }
 
 /* 鼠标悬停时 */
-input[type="number"]:focus, input[type="text"]:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+input[type="number"]:focus,
+input[type="text"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
 /* 转换按钮 */
 #convertButton {
-    font-size: 20px; 
-    margin-bottom: 10px; 
-    background-color: #007bff; 
-    animation: pulse 2s infinite;
+  font-size: 20px;
+  margin-bottom: 10px;
+  background-color: #007bff;
+  animation: pulse 2s infinite;
 }
 
 /* 鼠标悬停时 */
 #convertButton:hover {
-    background-color: #0056b3; 
-    animation: none;
+  background-color: #0056b3;
+  animation: none;
 }
 
 /* 返回首页按钮 */
 #homeButton {
-    font-size: 20px; 
-    background-color: #28a745; 
-    margin-top: 10px;
+  font-size: 20px;
+  background-color: #28a745;
+  margin-top: 10px;
 }
 
 /* 鼠标悬停时 */
 #homeButton:hover {
-    background-color: #218838;
+  background-color: #218838;
 }
 
 /* 汇率显示 */
 .rate {
-    text-align: center;
-    font-size: 16px; 
-    margin-bottom: 20px;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: rgba(0, 123, 255, 0.1);
-    transition: all 0.3s ease;
-    animation: fadeIn 0.5s ease-out;
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: rgba(0, 123, 255, 0.1);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
 }
 
 /* 货币符号 */
 .currency-symbol {
-    font-weight: bold;
-    margin-right: 5px;
+  font-weight: bold;
+  margin-right: 5px;
 }
 
 /* 结果高亮动画 */
 .highlight {
-    animation: highlight 1s ease;
+  animation: highlight 1s ease;
 }
 
 /* 动画-高亮 */
 @keyframes highlight {
-    0% { background-color: rgba(255, 255, 0, 0.5); }
-    100% { background-color: transparent; }
+  0% {
+    background-color: rgba(255, 255, 0, 0.5);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 
 /* 动画-淡入 */
 @keyframes slideIn {
-    from { transform: translateX(-20px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* 动画-淡入向上 */
 @keyframes fadeInUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* 动画-脉冲 */
-@keyframes pulse { 
-    0% { transform: scale(1); }
-    50% { transform: scale(1.03); }
-    100% { transform: scale(1); }
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* 图表容器 */
 .chart-container {
-    width: 100%;
-    height: 200px;
-    margin: 20px 0;
-    border-radius: 5px;
-    overflow: hidden;
-    display: none;
-    animation: fadeIn 0.5s ease-out;
-    max-width: 100%; 
+  width: 100%;
+  height: 200px;
+  margin: 20px 0;
+  border-radius: 5px;
+  overflow: hidden;
+  display: none;
+  animation: fadeIn 0.5s ease-out;
+  max-width: 100%;
 }
 
 /* 图表切换按钮 */
 .chart-toggle {
-    background-color: transparent;
-    color: #007bff;
-    border: 1px solid #007bff;
-    width: auto;
-    padding: 5px 10px;
-    font-size: 14px;
-    margin: 5px 0;
+  background-color: transparent;
+  color: #007bff;
+  border: 1px solid #007bff;
+  width: auto;
+  padding: 5px 10px;
+  font-size: 14px;
+  margin: 5px 0;
 }
 
 /* 鼠标悬停时 */
 .chart-toggle:hover {
-    background-color: rgba(0, 123, 255, 0.1);
+  background-color: rgba(0, 123, 255, 0.1);
 }
-
 
 /* 对于超小屏幕 */
 @media (max-width: 320px) {
-    h1 {
-        font-size: 20px;
-    }
-    
-    .currency select, input[type="number"], input[type="text"] {
-        font-size: 13px;
-        padding: 6px;
-    }
-    
-    .rate {
-        font-size: 13px;
-        padding: 6px;
-    }
-    
-    .chart-container {
-        height: 130px;
-    }
+  h1 {
+    font-size: 20px;
+  }
+
+  .currency select,
+  input[type="number"],
+  input[type="text"] {
+    font-size: 13px;
+    padding: 6px;
+  }
+
+  .rate {
+    font-size: 13px;
+    padding: 6px;
+  }
+
+  .chart-container {
+    height: 130px;
+  }
 }
 
 /* 对于小屏幕 */
 @media (max-width: 480px) {
-    h1 {
-        font-size: 22px;
-        margin-bottom: 15px;
-    }
-    
-    .currency select {
-        font-size: 14px;
-        padding: 8px;
-    }
-    
-    .switch button {
-        padding: 8px;
-        font-size: 14px;
-    }
-    
-    input[type="number"], input[type="text"] {
-        font-size: 14px;
-        padding: 8px;
-    }
-    
-    .chart-container {
-        height: 150px;
-    }
-    
-    .chart-toggle {
-        font-size: 12px;
-        padding: 4px 8px;
-    }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .currency select {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .switch button {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  input[type="number"],
+  input[type="text"] {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .chart-container {
+    height: 150px;
+  }
+
+  .chart-toggle {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
 }
 
 /* 对于中等屏幕 */
 @media (max-width: 768px) {
-    .converter {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .currency {
-        width: 100%;
-        margin: 5px 0;
-    }
-    
-    .switch {
-        margin: 10px 0;
-        transform: rotate(90deg); 
-    }
-    
-    .amount, .result {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    label {
-        margin-bottom: 5px;
-        text-align: left;
-        width: 100%;
-    }
-    
-    input[type="number"], input[type="text"] {
-        width: 100%;
-    }
-    
-    .rate {
-        font-size: 14px;
-        padding: 8px;
-    }
-    
-    .chart-container {
-        height: 180px;
-    }
+  .converter {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .currency {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  .switch {
+    margin: 10px 0;
+    transform: rotate(90deg);
+  }
+
+  .amount,
+  .result {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  label {
+    margin-bottom: 5px;
+    text-align: left;
+    width: 100%;
+  }
+
+  input[type="number"],
+  input[type="text"] {
+    width: 100%;
+  }
+
+  .rate {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .chart-container {
+    height: 180px;
+  }
 }
 
 /* 对于大屏幕 */
 @media (min-width: 1025px) {
-    .converter {
-        max-width: 700px;
-        margin: 0 auto 20px;
-    }
-    
-    .amount, .result {
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .chart-container {
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-        height: 250px;
-    }
-}
+  .converter {
+    max-width: 700px;
+    margin: 0 auto 20px;
+  }
 
-/* 暗黑模式适配 */
-.dark-mode .currency select { 
-    background-color: #333;
-    color: #f0f0f0;
-    border-color: #555;
-}
+  .amount,
+  .result {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-.dark-mode .rate {
-    background-color: rgba(0, 123, 255, 0.2);
-    color: #f0f0f0;
-}
-
-.dark-mode .chart-toggle {
-    color: #4da3ff;
-    border-color: #4da3ff;
-}
-
-.dark-mode .chart-toggle:hover {
-    background-color: rgba(77, 163, 255, 0.2);
+  .chart-container {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 250px;
+  }
 }

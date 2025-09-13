@@ -1,75 +1,86 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>汇率转换器</title>
-    <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/currency-converter.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/currency-converter.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+  </head>
+  <body>
     <div class="container">
-        <h1>汇率转换器</h1>
-        <div class="converter">
-            <div class="currency">
-                <select id="fromCurrency">
-                    <option value="AUD">澳元</option>
-                    <option value="CAD">加元</option>
-                    <option value="CHF">瑞士法郎</option>
-                    <option value="CNY">人民币</option>
-                    <option value="EUR" selected>欧元</option>
-                    <option value="GBP">英镑</option>
-                    <option value="HKD">港币</option>
-                    <option value="INR">印度卢比</option>
-                    <option value="JPY">日元</option>
-                    <option value="KRW">韩元</option>
-                    <option value="RUB">俄罗斯卢布</option>
-                    <option value="SGD">新加坡元</option>
-                    <option value="USD">美元</option>
-                </select>
-            </div>
-            <div class="switch">
-                <button id="switchButton" title="切换货币">⇌</button>
-            </div>
-            <div class="currency">
-                <select id="toCurrency">
-                    <option value="AUD">澳元</option>
-                    <option value="CAD">加元</option>
-                    <option value="CHF">瑞士法郎</option>
-                    <option value="CNY" selected>人民币</option>
-                    <option value="EUR">欧元</option>
-                    <option value="GBP">英镑</option>
-                    <option value="HKD">港币</option>
-                    <option value="INR">印度卢比</option>
-                    <option value="JPY">日元</option>
-                    <option value="KRW">韩元</option>
-                    <option value="RUB">俄罗斯卢布</option>
-                    <option value="SGD">新加坡元</option>
-                    <option value="USD">美元</option>
-                </select>
-            </div>
+      <h1>汇率转换器</h1>
+      <div class="converter">
+        <div class="currency">
+          <select id="fromCurrency">
+            <option value="AUD">澳元</option>
+            <option value="CAD">加元</option>
+            <option value="CHF">瑞士法郎</option>
+            <option value="CNY">人民币</option>
+            <option value="EUR" selected>欧元</option>
+            <option value="GBP">英镑</option>
+            <option value="HKD">港币</option>
+            <option value="JPY">日元</option>
+            <option value="KRW">韩元</option>
+            <option value="RUB">俄罗斯卢布</option>
+            <option value="SGD">新加坡元</option>
+            <option value="USD">美元</option>
+            <option value="INR">印度卢比</option>
+          </select>
         </div>
-        <div class="amount">
-            <label for="amount">金额</label>
-            <input type="number" id="amount" value="100" min="0" step="0.01" placeholder="输入金额">
+        <div class="switch">
+          <button id="switchButton" title="切换货币">⇌</button>
         </div>
-        <div class="result">
-            <label for="result">结果</label>
-            <input type="text" id="result" readonly>
+        <div class="currency">
+          <select id="toCurrency">
+            <option value="AUD">澳元</option>
+            <option value="CAD">加元</option>
+            <option value="CHF">瑞士法郎</option>
+            <option value="CNY" selected>人民币</option>
+            <option value="EUR">欧元</option>
+            <option value="GBP">英镑</option>
+            <option value="HKD">港币</option>
+            <option value="JPY">日元</option>
+            <option value="KRW">韩元</option>
+            <option value="RUB">俄罗斯卢布</option>
+            <option value="SGD">新加坡元</option>
+            <option value="USD">美元</option>
+            <option value="INR">印度卢比</option>
+          </select>
         </div>
-        <div class="rate">
-            <span id="rate"></span>
-        </div>
-        <!-- 图表切换按钮和容器将由JavaScript动态添加 -->
-        <button id="convertButton">
-            <i class="fas fa-sync-alt"></i> 兑换
-        </button>
-        <button id="homeButton" onclick="window.location.href='../index.html'">
-            <i class="fas fa-home"></i> 返回首页
-        </button>
+      </div>
+      <div class="amount">
+        <label for="amount">金额</label>
+        <input
+          type="number"
+          id="amount"
+          value="100"
+          min="0"
+          step="0.01"
+          placeholder="输入金额"
+        />
+      </div>
+      <div class="result">
+        <label for="result">结果</label>
+        <input type="text" id="result" readonly />
+      </div>
+      <div class="rate">
+        <span id="rate"></span>
+      </div>
+      <!-- 图表切换按钮和容器将由JavaScript动态添加 -->
+      <button id="convertButton"><i class="fas fa-sync-alt"></i> 兑换</button>
+      <button id="homeButton" onclick="window.location.href='../index.html'">
+        <i class="fas fa-home"></i> 返回首页
+      </button>
     </div>
     <script src="../js/global.js"></script>
     <script src="../js/currency-converter.js"></script>
-</body>
+  </body>
 </html>

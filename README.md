@@ -11,7 +11,7 @@
   - `global.css`: 全局样式
 - `images/`: 图片资源
 - `js/`: js 文件
-  - `currency-converter.js`: 汇率转换器动画
+  - `currency-converter.js`: 汇率转换器功能
   - `global.js`: 全局动画
 - `partials/`: 页面文件
   - `currency-converter.html`: 汇率转换器页
