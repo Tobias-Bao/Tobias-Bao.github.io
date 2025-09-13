@@ -1,304 +1,40 @@
-/* 全局样式 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #4f46e5; /* Indigo-600 */
+    --secondary-color: #10b981; /* Emerald-500 */
+    --background-color: #f3f4f6; /* Gray-100 */
+    --card-background: #ffffff;
+    --text-color: #1f2937; /* Gray-800 */
+    --subtle-text-color: #6b7280; /* Gray-500 */
+}
+
 body {
-  background-image: url("../images/background.jpg");
-  background-size: cover;
-  background-attachment: fixed;
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  margin: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  transition: background-color 0.5s ease;
-  padding: 20px 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    animation: fadeInAnimation ease 1s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
 
-/* 全局字体样式 */
-html,
-body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
+.tool-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* 容器样式 */
-.container {
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 95%;
-  max-width: 600px;
-  text-align: center;
-  animation: fadeIn 0.8s ease-out;
-  transition: all 0.3s ease;
-  margin: 15px auto;
-  overflow-y: visible;
-  overflow-x: hidden;
-  max-height: none;
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* 全局滚动条样式 */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 123, 255, 0.5);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 123, 255, 0.7);
-}
-
-/* 全局样式 */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 123, 255, 0.5) rgba(255, 255, 255, 0.1);
-}
-
-/* 全局按钮样式 */
-button {
-  width: 80%;
-  padding: 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 18px;
-  margin: 10px 0;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  max-width: 400px;
-  touch-action: manipulation;
-}
-
-/* 全局按钮悬停样式 */
-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* 全局按钮激活样式 */
-button::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-
-/* 全局按钮激活样式 */
-button:focus:not(:active)::after {
-  animation: ripple 1s ease-out;
-}
-
-/* 加载动画 */
-.loader {
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #007bff;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 10px auto;
-  display: none;
-}
-
-/* 淡入动画 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 旋转动画 */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* 涟漪动画 */
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 1;
-  }
-  20% {
-    transform: scale(25, 25);
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: scale(40, 40);
-  }
-}
-
-/* 小于等于 320px 的屏幕 */
-@media (max-width: 320px) {
-  .container {
-    width: 98%;
-    padding: 10px;
-  }
-
-  button {
-    padding: 10px;
-    font-size: 16px;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
-
-  input[type="number"],
-  input[type="text"],
-  select {
-    font-size: 14px;
-  }
-}
-
-/* 小于等于 480px 的屏幕 */
-@media (max-width: 480px) {
-  body {
-    padding-top: 10px;
-  }
-
-  .container {
-    width: 95%;
-    padding: 12px;
-    border-radius: 8px;
-  }
-
-  .currency select {
-    width: 100%;
-  }
-
-  input[type="number"],
-  input[type="text"] {
-    width: calc(100% - 40px);
-    padding: 8px;
-    font-size: 16px;
-  }
-
-  #convertButton,
-  #homeButton {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-  }
-
-  h1 {
-    font-size: 22px;
-    margin-top: 10px;
-    margin-bottom: 15px;
-  }
-
-  h2 {
-    font-size: 18px;
-  }
-}
-
-/* 小于等于 768px 的屏幕 */
-@media (max-width: 768px) {
-  body {
-    padding-top: 15px;
-    padding-bottom: 15px;
-  }
-
-  .container {
-    width: 92%;
-    padding: 15px;
-    margin: 10px auto;
-  }
-
-  .currency select {
-    width: 90%;
-  }
-
-  .switch button {
-    padding: 8px;
-    font-size: 14px;
-  }
-
-  input[type="number"],
-  input[type="text"] {
-    width: calc(100% - 60px);
-    padding: 8px;
-    font-size: 16px;
-  }
-
-  #convertButton,
-  #homeButton {
-    width: 90%;
-    padding: 12px;
-    font-size: 18px;
-  }
-
-  h1 {
-    font-size: 24px;
-  }
-
-  h2 {
-    font-size: 20px;
-  }
-
-  p,
-  li {
-    font-size: 16px;
-  }
-}
-
-/* 大于等于 769px 且小于等于 1024px 的屏幕 */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .container {
-    max-width: 700px;
-  }
-
-  button {
-    max-width: 450px;
-  }
-}
-
-/* 大于等于 1025px 的屏幕 */
-@media (min-width: 1025px) {
-  .container {
-    max-width: 800px;
-  }
-
-  button:hover {
-    transform: scale(1.03);
-  }
-}
