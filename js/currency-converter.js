@@ -279,10 +279,10 @@ function convertCurrency() {
     const fromCurrencyName = currencyNames[fromCurrency] || fromCurrency;
     const toCurrencyName = currencyNames[toCurrency] || toCurrency;
 
-    const fromText = `<span class="text-gray-600">${amount.toLocaleString()} ${fromCurrencyName} =</span>`;
+    const fromText = `<span class="text-gray-600">${amount.toLocaleString()} ${fromCurrencyName}</span>`;
     const toText = `<span class="result-value text-indigo-600">${result.toLocaleString(undefined, {maximumFractionDigits: 4})} ${toCurrencyName}</span>`;
     
-    resultDiv.innerHTML = `${fromText} ${toText}`;
+    resultDiv.innerHTML = `${fromText}<span class="text-gray-600 mx-2">=</span>${toText}`;
 }
 
 // 更新“最后更新时间”
