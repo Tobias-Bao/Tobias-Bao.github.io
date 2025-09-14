@@ -26,14 +26,15 @@
             <p class="text-center text-gray-500 mb-8">获取最新的外汇汇率</p>
 
             <div id="converter" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div class="flex flex-col md:flex-row md:items-end gap-4">
                     
-                    <div class="md:col-span-2">
+                    <div class="flex-1">
                         <label for="from-currency" class="block text-sm font-medium text-gray-700 mb-1">从</label>
                         <select id="from-currency" class="converter-select mt-1 block w-full text-lg p-3 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></select>
                     </div>
                     
-                    <div class="text-center">
+                    <!-- 在移动视图中，交换按钮会居中显示；在桌面视图中，它会与其他元素底部对齐 -->
+                    <div class="self-center md:self-end py-1">
                         <button id="swap-button" title="交换货币" class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-transform duration-300">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -41,7 +42,7 @@
                         </button>
                     </div>
 
-                    <div class="md:col-span-2">
+                    <div class="flex-1">
                         <label for="to-currency" class="block text-sm font-medium text-gray-700 mb-1">到</label>
                         <select id="to-currency" class="converter-select mt-1 block w-full text-lg p-3 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"></select>
                     </div>
@@ -64,4 +65,3 @@
 </body>
 <script src="../js/currency-converter.js"></script>
 </html>
-
