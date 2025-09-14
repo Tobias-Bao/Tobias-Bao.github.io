@@ -11,8 +11,8 @@ let rates = {};
 
 // 定义一个主要货币列表
 const majorCurrencies = [
-    "USD", "EUR", "JPY", "GBP", "CNY", "AUD", "CAD", "CHF", "HKD", "SGD", 
-    "NZD", "KRW", "TWD", "THB", "MYR", "PHP", "IDR", "INR", "RUB", "BRL", 
+    "USD", "EUR", "JPY", "GBP", "CNY", "AUD", "CAD", "CHF", "HKD", "SGD",
+    "NZD", "KRW", "TWD", "THB", "MYR", "PHP", "IDR", "INR", "RUB", "BRL",
     "ZAR", "TRY", "SEK", "NOK", "DKK", "PLN", "HUF", "CZK", "ILS", "MXN"
 ];
 
@@ -213,7 +213,7 @@ async function fetchRatesAndPopulate() {
         if (data.result === 'error') {
             throw new Error(`API错误: ${data['error-type']}`);
         }
-        
+
         rates = data.rates;
         const currencies = Object.keys(rates);
 
@@ -222,7 +222,7 @@ async function fetchRatesAndPopulate() {
         const currentTo = toCurrencySelect.value || 'CNY';
 
         populateCurrencyOptions(currencies);
-        
+
         // 恢复之前的选择
         fromCurrencySelect.value = currencies.includes(currentFrom) ? currentFrom : 'EUR';
         toCurrencySelect.value = currencies.includes(currentTo) ? currentTo : 'CNY';
@@ -242,7 +242,7 @@ async function fetchRatesAndPopulate() {
 function populateCurrencyOptions(currencies) {
     fromCurrencySelect.innerHTML = '';
     toCurrencySelect.innerHTML = '';
-    
+
     // 从主要货币列表中筛选出API实际支持的货币
     const availableMajorCurrencies = majorCurrencies.filter(code => currencies.includes(code));
 
@@ -278,17 +278,17 @@ function convertCurrency() {
 
     const fromCurrencyName = currencyNames[fromCurrency] || fromCurrency;
     const toCurrencyName = currencyNames[toCurrency] || toCurrency;
-    
+
     // 使用 'en-US' 区域设置来确保千位分隔符是逗号(,)，小数点是句点(.)
     const formattedAmount = amount.toLocaleString('en-US');
-    const formattedResult = result.toLocaleString('en-US', { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
+    const formattedResult = result.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
     });
 
     const fromText = `<span class="text-gray-600">${formattedAmount} ${fromCurrencyName}</span>`;
     const toText = `<span class="result-value text-indigo-600">${formattedResult} ${toCurrencyName}</span>`;
-    
+
     resultDiv.innerHTML = `${fromText}<span class="text-gray-600 mx-2">=</span>${toText}`;
 }
 

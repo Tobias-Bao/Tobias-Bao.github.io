@@ -9,18 +9,21 @@
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-.converter-input, .converter-select {
+.converter-input,
+.converter-select {
     transition: all 0.3s ease;
     border: 2px solid #D1D5DB;
 }
 
-.converter-input:focus, .converter-select:focus {
+.converter-input:focus,
+.converter-select:focus {
     border-color: var(--primary-color, #4f46e5);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
@@ -70,8 +73,13 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .result-value {
@@ -83,6 +91,7 @@
         opacity: 0;
         transform: scale(0.8);
     }
+
     100% {
         opacity: 1;
         transform: scale(1);
@@ -93,4 +102,3 @@
     opacity: 0;
     animation: fadeInAnimation 1s ease 1s forwards;
 }
-

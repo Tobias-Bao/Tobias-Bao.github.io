@@ -1,12 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-    --primary-color: #4f46e5; /* Indigo-600 */
-    --secondary-color: #10b981; /* Emerald-500 */
-    --background-color: #f3f4f6; /* Gray-100 */
+    --primary-color: #4f46e5;
+    /* Indigo-600 */
+    --secondary-color: #10b981;
+    /* Emerald-500 */
+    --background-color: #f3f4f6;
+    /* Gray-100 */
     --card-background: #ffffff;
-    --text-color: #1f2937; /* Gray-800 */
-    --subtle-text-color: #6b7280; /* Gray-500 */
+    --text-color: #1f2937;
+    /* Gray-800 */
+    --subtle-text-color: #6b7280;
+    /* Gray-500 */
 }
 
 
@@ -31,6 +36,7 @@ body {
         opacity: 0;
         transform: translateY(10px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
