@@ -17,7 +17,7 @@
 
 .converter-input, .converter-select {
     transition: all 0.3s ease;
-    border: 2px solid #D1D5DB; /* border-gray-300 */
+    border: 2px solid #D1D5DB;
 }
 
 .converter-input:focus, .converter-select:focus {
@@ -29,10 +29,23 @@
     transition: transform 0.3s ease-in-out, background-color 0.3s ease;
 }
 
-#swap-button:hover {
+#swap-button:active {
     transform: rotate(180deg);
     background-color: var(--primary-color, #4f46e5);
     color: white;
+}
+
+@media (hover: hover) {
+    #swap-button:hover {
+        transform: rotate(180deg);
+        background-color: var(--primary-color, #4f46e5);
+        color: white;
+    }
+}
+
+#swap-button:focus-visible {
+    outline: 2px solid var(--primary-color, #4f46e5);
+    outline-offset: 2px;
 }
 
 #result {
@@ -47,7 +60,6 @@
     justify-content: center;
 }
 
-/* Loading Spinner */
 .loader {
     width: 24px;
     height: 24px;
@@ -62,7 +74,6 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Result animation */
 .result-value {
     animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
@@ -80,6 +91,6 @@
 
 #last-updated {
     opacity: 0;
-    animation: fadeInAnimation 1s ease 1s forwards; /* Delay fade in */
+    animation: fadeInAnimation 1s ease 1s forwards;
 }
 

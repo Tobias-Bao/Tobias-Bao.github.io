@@ -278,9 +278,16 @@ function convertCurrency() {
 
     const fromCurrencyName = currencyNames[fromCurrency] || fromCurrency;
     const toCurrencyName = currencyNames[toCurrency] || toCurrency;
+    
+    // 使用 'en-US' 区域设置来确保千位分隔符是逗号(,)，小数点是句点(.)
+    const formattedAmount = amount.toLocaleString('en-US');
+    const formattedResult = result.toLocaleString('en-US', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+    });
 
-    const fromText = `<span class="text-gray-600">${amount.toLocaleString()} ${fromCurrencyName}</span>`;
-    const toText = `<span class="result-value text-indigo-600">${result.toLocaleString(undefined, {maximumFractionDigits: 4})} ${toCurrencyName}</span>`;
+    const fromText = `<span class="text-gray-600">${formattedAmount} ${fromCurrencyName}</span>`;
+    const toText = `<span class="result-value text-indigo-600">${formattedResult} ${toCurrencyName}</span>`;
     
     resultDiv.innerHTML = `${fromText}<span class="text-gray-600 mx-2">=</span>${toText}`;
 }
@@ -310,4 +317,3 @@ fetchRatesAndPopulate();
 
 // 每5分钟自动刷新一次汇率
 setInterval(fetchRatesAndPopulate, 5 * 60 * 1000);
-
