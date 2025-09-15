@@ -101,6 +101,7 @@
 
 .stock-item {
     transition: background-color 0.2s ease-in-out;
+    cursor: pointer;
 }
 
 .stock-name {
@@ -297,4 +298,48 @@
     100% {
         transform: rotate(360deg);
     }
+}
+
+/* --- Modal Styles --- */
+#stock-chart-modal .modal-content {
+    animation: modal-pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes modal-pop-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.time-range-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: #f9fafb;
+    color: #4b5563;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.time-range-btn:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.time-range-btn.active {
+    background-color: #fecaca;
+    /* rose-200 */
+    color: #be123c;
+    /* rose-700 */
+    border-color: #fca5a5;
+    /* rose-300 */
+    box-shadow: 0 0 0 2px rgba(251, 113, 133, 0.3), 0 0 15px -3px rgba(251, 113, 133, 0.5);
 }

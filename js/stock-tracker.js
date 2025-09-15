@@ -16,6 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('turnoverAmount-min'), document.getElementById('turnoverAmount-max')
     ];
 
+    // Modal Elements
+    const modal = document.getElementById('stock-chart-modal');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const chartStockName = document.getElementById('chart-stock-name');
+    const chartTimeRangeContainer = document.getElementById('chart-time-range');
+    const chartLoader = document.getElementById('chart-loader');
+    const chartCanvas = document.getElementById('stock-chart');
+
     // App State
     let allStockData = [];
     let filteredStockData = [];
@@ -23,35 +31,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let updateInterval;
     let currentPage = 1;
     const itemsPerPage = 20;
+    let stockChart = null;
+    let currentChartStockCode = null;
 
     // --- Main Functions ---
     async function init() {
         showLoading('正在获取所有A股代码...');
         try {
-            let allCodes = [];
-            let page = 1;
-            const numPerPage = 400; // Fetch 400 at a time, more efficient
-            let keepFetching = true;
-
-            while (keepFetching) {
-                // Fetch the list of stock codes page by page for reliability
-                const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page=${page}&num=${numPerPage}&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
-                const data = await response.json();
-
-                // If data is not an array or is empty, we've reached the end
-                if (!data || !Array.isArray(data) || data.length === 0) {
-                    keepFetching = false;
-                } else {
-                    const codes = data.map(item => item.symbol);
-                    allCodes.push(...codes);
-                    page++;
-                }
+            const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataNew?page=1&num=5000&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
+            const data = await response.json();
+            if (data && Array.isArray(data)) {
+                stockCodes = data.map(item => item.symbol);
             }
 
-            stockCodes = allCodes;
             statusMessage.textContent = `成功获取 ${stockCodes.length} 支A股代码`;
             fetchStockData();
             updateInterval = setInterval(fetchStockData, 5000);
+            initModal();
         } catch (error) {
             showError('获取A股列表失败，请稍后重试');
             console.error('Failed to fetch stock codes:', error);
@@ -94,15 +90,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const lines = rawData.trim().split('\n');
         return lines.map(line => {
             const parts = line.split('~');
-            if (parts.length < 40) return null; // Increased check for safety
+            if (parts.length < 40) return null;
             return {
                 code: parts[2],
                 name: parts[1].trim(),
                 price: parseFloat(parts[3]),
                 changePercent: parseFloat(parts[32]),
-                volume: parseFloat(parts[6]) / 10000, // Convert from shares to 10k shares
+                volume: parseFloat(parts[6]) / 100, // 修正：成交量单位是'手'，除以100为'万手'
                 turnover: parseFloat(parts[38]),
-                turnoverAmount: parseFloat(parts[37]), // 成交额 (万元)
+                turnoverAmount: parseFloat(parts[37]),
                 market: parts[0].includes('sh') ? 'sh' : 'sz'
             };
         }).filter(Boolean);
@@ -110,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function applyFiltersAndRender({ preserveScroll = false, source = 'user' } = {}) {
         if (source === 'user') currentPage = 1;
-
         if (allStockData.length > 0) hideMessage();
 
         const filters = {
@@ -134,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderPage({ preserveScroll = false } = {}) {
         const scrollY = window.scrollY;
-
         const totalPages = Math.ceil(filteredStockData.length / itemsPerPage);
         if (currentPage > totalPages) currentPage = totalPages || 1;
 
@@ -170,6 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const formattedTurnoverAmount = formatTurnoverAmount(stock.turnoverAmount);
             const item = document.createElement('div');
             item.className = 'stock-item';
+            item.dataset.stockCode = `${stock.market}${stock.code}`;
+            item.dataset.stockName = stock.name;
             item.innerHTML = `
                 <div class="stock-item-cell stock-name-cell"><div class="stock-name">${stock.name}</div><div class="stock-code">${stock.market.toUpperCase()}${stock.code}</div></div>
                 <div class="stock-item-cell ${colorClass}"><span class="mobile-label">最新价</span><span class="font-medium">${stock.price.toFixed(2)}</span></div>
@@ -219,6 +215,239 @@ document.addEventListener('DOMContentLoaded', () => {
         paginationControls.appendChild(prevButton);
         paginationControls.appendChild(pageInfo);
         paginationControls.appendChild(nextButton);
+    }
+
+    // --- Chart Modal Functions ---
+    function initModal() {
+        modalCloseBtn.addEventListener('click', closeStockChartModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeStockChartModal();
+        });
+        stockListContainer.addEventListener('click', (e) => {
+            const stockItem = e.target.closest('.stock-item');
+            if (stockItem) {
+                const { stockCode, stockName } = stockItem.dataset;
+                openStockChartModal(stockCode, stockName);
+            }
+        });
+        chartTimeRangeContainer.addEventListener('click', (e) => {
+            if (e.target.matches('.time-range-btn')) {
+                chartTimeRangeContainer.querySelector('.active').classList.remove('active');
+                e.target.classList.add('active');
+                updateChart(currentChartStockCode, e.target.dataset.range);
+            }
+        });
+    }
+
+    function openStockChartModal(stockCode, stockName) {
+        currentChartStockCode = stockCode;
+        chartStockName.textContent = `${stockName} (${stockCode.toUpperCase()})`;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        const currentActive = chartTimeRangeContainer.querySelector('.active');
+        if (currentActive) currentActive.classList.remove('active');
+        chartTimeRangeContainer.querySelector('[data-range="24h"]').classList.add('active');
+
+        updateChart(stockCode, '24h');
+    }
+
+    function closeStockChartModal() {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        if (stockChart) {
+            stockChart.destroy();
+            stockChart = null;
+        }
+    }
+
+    async function updateChart(stockCode, range) {
+        chartLoader.classList.remove('hidden');
+        try {
+            const data = await fetchChartData(stockCode, range);
+            renderChart(data, range);
+        } catch (error) {
+            console.error(`Failed to update chart for ${stockCode}, range ${range}:`, error);
+            if (stockChart) stockChart.destroy();
+            const ctx = chartCanvas.getContext('2d');
+            ctx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#f87171';
+            ctx.font = '16px Inter';
+            ctx.fillText(`加载图表数据失败 (${error.message})`, chartCanvas.width / 2, chartCanvas.height / 2);
+        } finally {
+            chartLoader.classList.add('hidden');
+        }
+    }
+
+    async function fetchChartData(stockCode, range) {
+        let url;
+        const proxy = 'https://api.allorigins.win/raw?url=';
+        let originalUrl;
+
+        switch (range) {
+            case '7d':
+                originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=7`;
+                url = `${proxy}${encodeURIComponent(originalUrl)}`;
+                break;
+            case '1m':
+                originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=30`;
+                url = `${proxy}${encodeURIComponent(originalUrl)}`;
+                break;
+            case '3m':
+                originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=90`;
+                url = `${proxy}${encodeURIComponent(originalUrl)}`;
+                break;
+            case '1y':
+                originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=365`;
+                url = `${proxy}${encodeURIComponent(originalUrl)}`;
+                break;
+            case '24h':
+            default:
+                url = `https://web.ifzq.gtimg.cn/appstock/app/minute/query?code=${stockCode}`;
+                break;
+        }
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`请求失败，状态码: ${response.status}`);
+        }
+
+        let data;
+        if (range === '24h') {
+            const result = await response.json();
+            data = result?.data?.[stockCode]?.data?.data;
+        } else {
+            data = await response.json();
+        }
+
+        if (!data || data.length === 0) {
+            return { labels: [], values: [] };
+        }
+
+        const isDaily = !['24h'].includes(range);
+        if (isDaily) {
+            return {
+                labels: data.map(d => d.day),
+                values: data.map(d => parseFloat(d.close)),
+            };
+        } else {
+            const today = new Date();
+            const datePrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            return {
+                labels: data.map(d => {
+                    const timeStr = d.split(' ')[0];
+                    const hour = timeStr.substring(0, 2);
+                    const minute = timeStr.substring(2, 4);
+                    return `${datePrefix} ${hour}:${minute}`;
+                }),
+                values: data.map(d => parseFloat(d.split(' ')[1])),
+            };
+        }
+    }
+
+    function renderChart({ labels, values }, range) {
+        if (stockChart) {
+            stockChart.destroy();
+        }
+        const ctx = chartCanvas.getContext('2d');
+
+        if (!values || values.length === 0) {
+            ctx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#9ca3af';
+            ctx.font = '16px Inter';
+            ctx.fillText('该时间段无可用数据', chartCanvas.width / 2, chartCanvas.height / 2);
+            return;
+        }
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        const lastValue = values[values.length - 1];
+        const firstValue = values[0];
+        const isUp = lastValue >= firstValue;
+
+        if (isUp) {
+            gradient.addColorStop(0, 'rgba(239, 68, 68, 0.4)');
+            gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+        } else {
+            gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)');
+            gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+        }
+
+        const borderColor = isUp ? '#ef4444' : '#22c55e';
+
+        const timeUnit = range === '24h' ? 'hour' : 'day';
+        const parser = range === '24h' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
+
+        stockChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    borderColor: borderColor,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.1,
+                    fill: true,
+                    backgroundColor: gradient,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: (context) => {
+                                const date = new Date(context[0].parsed.x);
+                                if (timeUnit === 'hour') {
+                                    return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                                }
+                                return date.toLocaleDateString('zh-CN');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            parser: parser,
+                            tooltipFormat: 'yyyy-MM-dd HH:mm',
+                            unit: timeUnit,
+                            displayFormats: {
+                                hour: 'HH:mm',
+                                day: 'yy-MM-dd'
+                            }
+                        },
+                        grid: { display: false },
+                        ticks: {
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 5
+                        }
+                    },
+                    y: {
+                        position: 'right',
+                        grid: {
+                            color: '#f3f4f6',
+                            borderColor: 'transparent'
+                        },
+                        ticks: {
+                            callback: (value) => value.toFixed(2)
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                }
+            }
+        });
     }
 
     // --- UI & Utility Functions ---

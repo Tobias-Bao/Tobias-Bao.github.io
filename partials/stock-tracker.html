@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/stock-tracker.css">
 </head>
@@ -146,6 +148,36 @@
 
         </div>
     </main>
+
+    <!-- Stock Chart Modal -->
+    <div id="stock-chart-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+        <div
+            class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-4xl h-full max-h-[80vh] flex flex-col p-6 relative">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="chart-stock-name" class="text-xl font-bold text-gray-800"></h2>
+                <button id="modal-close-btn" class="text-gray-400 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="flex-grow relative">
+                <div id="chart-loader"
+                    class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10 hidden">
+                    <div class="loader"></div>
+                </div>
+                <canvas id="stock-chart"></canvas>
+            </div>
+            <div id="chart-time-range"
+                class="flex justify-center items-center gap-2 mt-4 pt-4 border-t border-gray-200">
+                <button class="time-range-btn active" data-range="24h">近24小时</button>
+                <button class="time-range-btn" data-range="7d">近7日</button>
+                <button class="time-range-btn" data-range="1m">近1月</button>
+                <button class="time-range-btn" data-range="3m">近3月</button>
+                <button class="time-range-btn" data-range="1y">近1年</button>
+            </div>
+        </div>
+    </div>
+
 
     <script src="../js/stock-tracker.js"></script>
     <script>
