@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>掷骰子</title>
+    <link rel="icon" type="image/png" href="../images/logo.png?v=2">
+    <link rel="apple-touch-icon" href="../images/logo.png?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/dice-roller.css">
+</head>
+
+<body class="bg-gray-100 antialiased">
+
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-6 py-4">
+            <a href="../index.html"
+                class="inline-flex items-center gap-2 rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-800 shadow-sm ring-1 ring-inset ring-gray-200 transition-all hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                返回主页
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div id="dice-roller-card" class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-2xl mx-auto">
+            <div class="text-center mb-8">
+                <div class="flex items-center justify-center w-16 h-16 bg-sky-100 text-sky-500 rounded-lg mx-auto mb-4">
+                    <i data-lucide="dices" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">掷骰子</h1>
+                <p class="text-gray-500 mt-2">点击按钮，生成随机点数</p>
+            </div>
+
+            <div class="flex flex-col items-center gap-8">
+                <!-- Dice Display -->
+                <div id="dice-container" class="w-32 h-32 sm:w-40 sm:h-40">
+                    <div id="dice" class="dice face-1">
+                        <div class="dot d1"></div>
+                        <div class="dot d2"></div>
+                        <div class="dot d3"></div>
+                        <div class="dot d4"></div>
+                        <div class="dot d5"></div>
+                        <div class="dot d6"></div>
+                        <div class="dot d7"></div>
+                    </div>
+                </div>
+
+                <!-- Roll Button -->
+                <button id="roll-button"
+                    class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-md shadow-sm text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-transform hover:scale-105">
+                    <i data-lucide="dices" class="w-5 h-5 mr-3"></i>
+                    <span>掷骰子</span>
+                </button>
+
+                <!-- History Section -->
+                <div id="history-container" class="w-full max-w-md">
+                    <div class="flex justify-between items-center border-b pb-2 mb-3">
+                        <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                            <i data-lucide="history" class="w-5 h-5 mr-2 text-gray-500"></i>
+                            历史记录
+                        </h2>
+                        <button id="clear-history-button" title="清空历史记录"
+                            class="text-sm text-gray-500 hover:text-red-600 font-medium py-1 px-3 rounded-md flex items-center transition-all duration-300 bg-gray-100 hover:bg-red-100">
+                            <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                            清空
+                        </button>
+                    </div>
+                    <ul id="history-list" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                        <!-- History items will be populated by JS -->
+                    </ul>
+                    <p id="no-history" class="text-center text-gray-400 py-4 hidden">暂无历史记录</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/dice-roller.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
