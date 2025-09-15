@@ -270,7 +270,7 @@ function convertCurrency() {
     const toCurrency = toCurrencySelect.value;
 
     if (isNaN(amount) || !fromCurrency || !toCurrency || !rates[fromCurrency] || !rates[toCurrency]) {
-        resultDiv.innerHTML = '<span>请输入有效信息。</span>';
+        resultDiv.innerHTML = '<span>请输入有效信息</span>';
         return;
     }
 

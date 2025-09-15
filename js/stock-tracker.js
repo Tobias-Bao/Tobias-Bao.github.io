@@ -28,14 +28,32 @@ document.addEventListener('DOMContentLoaded', () => {
     async function init() {
         showLoading('正在获取所有A股代码...');
         try {
-            const response = await fetch('https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page=1&num=5000&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page');
-            const data = await response.json();
-            stockCodes = data.map(item => item.symbol);
-            statusMessage.textContent = `成功获取 ${stockCodes.length} 支A股代码。`;
+            let allCodes = [];
+            let page = 1;
+            const numPerPage = 400; // Fetch 400 at a time, more efficient
+            let keepFetching = true;
+
+            while (keepFetching) {
+                // Fetch the list of stock codes page by page for reliability
+                const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page=${page}&num=${numPerPage}&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
+                const data = await response.json();
+
+                // If data is not an array or is empty, we've reached the end
+                if (!data || !Array.isArray(data) || data.length === 0) {
+                    keepFetching = false;
+                } else {
+                    const codes = data.map(item => item.symbol);
+                    allCodes.push(...codes);
+                    page++;
+                }
+            }
+
+            stockCodes = allCodes;
+            statusMessage.textContent = `成功获取 ${stockCodes.length} 支A股代码`;
             fetchStockData();
             updateInterval = setInterval(fetchStockData, 5000);
         } catch (error) {
-            showError('获取A股列表失败，请稍后重试。');
+            showError('获取A股列表失败，请稍后重试');
             console.error('Failed to fetch stock codes:', error);
         }
     }
@@ -58,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             applyFiltersAndRender({ preserveScroll: !isInitialLoad, source: 'fetch' });
             updateTimestamp();
         } catch (error) {
-            if (isInitialLoad) showError('更新数据失败，请检查网络连接。');
+            if (isInitialLoad) showError('更新数据失败，请检查网络连接');
             console.error('Failed to fetch stock data:', error);
         }
     }
@@ -76,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const lines = rawData.trim().split('\n');
         return lines.map(line => {
             const parts = line.split('~');
-            if (parts.length < 39) return null;
+            if (parts.length < 40) return null; // Increased check for safety
             return {
                 code: parts[2],
                 name: parts[1].trim(),
@@ -139,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderStockList(stocks) {
         if (stocks.length === 0 && allStockData.length > 0) {
-            showError('没有满足筛选条件的股票。');
+            showError('没有满足筛选条件的股票');
             stockListContainer.innerHTML = '';
             document.getElementById('stock-list-container').classList.add('hidden');
             return;
