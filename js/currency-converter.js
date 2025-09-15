@@ -283,13 +283,18 @@ function convertCurrency() {
     const formattedAmount = amount.toLocaleString('en-US');
     const formattedResult = result.toLocaleString('en-US', {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        maximumFractionDigits: 4 // 允许更多小数位以提高精度
     });
 
-    const fromText = `<span class="text-gray-600">${formattedAmount} ${fromCurrencyName}</span>`;
-    const toText = `<span class="result-value text-indigo-600">${formattedResult} ${toCurrencyName}</span>`;
+    const fromText = `<div class="from-text">${formattedAmount} ${fromCurrencyName}</div>`;
+    const equalsIcon = `
+        <div class="text-indigo-300 my-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 mx-auto"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+        </div>
+    `;
+    const toText = `<div class="to-text result-value">${formattedResult} ${toCurrencyName}</div>`;
 
-    resultDiv.innerHTML = `${fromText}<span class="text-gray-600 mx-2">=</span>${toText}`;
+    resultDiv.innerHTML = `${fromText}${equalsIcon}${toText}`;
 }
 
 // 更新“最后更新时间”
