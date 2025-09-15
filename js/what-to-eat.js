@@ -7,15 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const shoppingListContainer = document.getElementById('shopping-list-container');
     const shoppingList = document.getElementById('shopping-list');
     const shoppingListRenderArea = document.getElementById('shopping-list-render-area');
+    const shoppingListDate = document.getElementById('shopping-list-date');
     const clearButton = document.getElementById('clear-button');
     const generateImageBtn = document.getElementById('generate-image-btn');
     const initialPrompt = document.getElementById('initial-prompt');
-
-    // Modal Elements
-    const imageModal = document.getElementById('image-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const imagePreview = document.getElementById('image-preview');
-    const downloadLink = document.getElementById('download-link');
 
     // Data - Expanded Dish List
     const dishes = [
@@ -265,29 +260,66 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Image Generation ---
+    // --- Image Generation and Download ---
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}年${month}月${day}日`;
+    }
 
     function generateImage() {
         if (selectedDishes.length === 0) return;
+
+        const today = new Date();
+        const dateString = formatDate(today);
+        shoppingListDate.textContent = dateString;
+
         html2canvas(shoppingListRenderArea, {
             scale: 2,
             backgroundColor: '#f9fafb',
             useCORS: true
         }).then(canvas => {
-            imagePreview.innerHTML = '';
-            const img = new Image();
-            img.src = canvas.toDataURL('image/png');
-            img.className = 'w-full h-auto rounded-md';
-            imagePreview.appendChild(img);
-            downloadLink.href = img.src;
-            imageModal.classList.remove('hidden');
-            imageModal.classList.add('flex');
-        });
-    }
+            const filename = `食材清单-${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}.png`;
 
-    function closeModal() {
-        imageModal.classList.add('hidden');
-        imageModal.classList.remove('flex');
+            // Fallback for browsers that don't support the Web Share API
+            const downloadImage = () => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            // On mobile, try using the Web Share API for a better experience
+            if (navigator.canShare && navigator.share) {
+                canvas.toBlob((blob) => {
+                    const file = new File([blob], filename, { type: 'image/png' });
+                    const shareData = {
+                        files: [file],
+                        title: '食材清单',
+                    };
+                    if (navigator.canShare(shareData)) {
+                        navigator.share(shareData).catch(() => {
+                            // If sharing is cancelled or fails, fall back to download
+                            downloadImage();
+                        });
+                    } else {
+                        // If the data can't be shared, fall back to download
+                        downloadImage();
+                    }
+                }, 'image/png');
+            } else {
+                // For desktop or unsupported browsers, trigger download directly
+                downloadImage();
+            }
+
+        }).finally(() => {
+            // Clean up the date from the UI after image is generated
+            shoppingListDate.textContent = '';
+        });
     }
 
     // --- Event Listeners ---
@@ -303,21 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     generateImageBtn.addEventListener('click', generateImage);
-    closeModalBtn.addEventListener('click', closeModal);
-
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !imageModal.classList.contains('hidden')) {
-            closeModal();
-        }
-    });
-
-    imageModal.addEventListener('click', (e) => {
-        if (e.target === imageModal) {
-            closeModal();
-        }
-    });
 
     // Initial State
     updateUI();
 });
-

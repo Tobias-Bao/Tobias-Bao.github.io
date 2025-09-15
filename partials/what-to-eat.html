@@ -77,8 +77,9 @@
                         </div>
                     </div>
                     <div id="shopping-list-render-area" class="p-6 bg-gray-50 rounded-lg">
-                        <h3 id="shopping-list-title" class="text-2xl font-bold text-center mb-6 text-gray-800">需准备的食材
+                        <h3 id="shopping-list-title" class="text-2xl font-bold text-center mb-2 text-gray-800">需准备的食材
                         </h3>
+                        <p id="shopping-list-date" class="text-center text-sm text-gray-500 mb-6"></p>
                         <ul id="shopping-list" class="space-y-3 text-gray-700 text-lg">
                             <!-- 清单项将通过JS动态添加 -->
                         </ul>
@@ -94,24 +95,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Image Generation Modal -->
-    <div id="image-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg shadow-2xl p-6 max-w-lg w-full relative">
-            <button id="close-modal-btn" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-            <h2 class="text-xl font-bold text-gray-800 mb-4">保存食材清单</h2>
-            <div id="image-preview" class="border-2 border-dashed border-gray-300 rounded-md p-2 mb-4">
-                <!-- Generated image will be shown here -->
-            </div>
-            <a id="download-link" href="#" download="shopping-list.png"
-                class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
-                下载图片
-            </a>
-        </div>
-    </div>
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="../js/what-to-eat.js"></script>
