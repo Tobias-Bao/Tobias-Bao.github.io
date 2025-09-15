@@ -63,42 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!canvas) return;
 
         const filename = 'qrcode.png';
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-        const fallbackSave = () => {
-            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            if (!isTouchDevice) {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } else {
-                showImageInModal(canvas);
-            }
-        };
-
-        if (navigator.share) {
-            canvas.toBlob((blob) => {
-                if (!blob) {
-                    fallbackSave();
-                    return;
-                }
-                const file = new File([blob], filename, { type: 'image/png' });
-                const shareData = {
-                    files: [file],
-                    title: '二维码',
-                };
-                if (navigator.canShare && navigator.canShare(shareData)) {
-                    navigator.share(shareData).catch(() => {
-                        fallbackSave();
-                    });
-                } else {
-                    fallbackSave();
-                }
-            }, 'image/png');
+        // For touch devices, show the modal for long-press saving.
+        if (isTouchDevice) {
+            showImageInModal(canvas);
         } else {
-            fallbackSave();
+            // For desktops, trigger a direct download.
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     });
 

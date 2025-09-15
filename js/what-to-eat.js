@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- 其他常见家常菜 (Other Home-style Dishes) ---
         { name: "罗宋汤", ingredients: ["牛肉", "番茄", "土豆", "胡萝卜", "洋葱", "卷心菜", "番茄酱"] },
         { name: "咖喱鸡", ingredients: ["鸡腿肉", "土豆", "胡萝卜", "洋葱", "咖喱块", "椰浆"] },
-        { name: "香煎三文-鱼", ingredients: ["三文鱼", "芦笋", "柠檬", "黑胡椒", "盐"] },
+        { name: "香煎三文鱼", ingredients: ["三文鱼", "芦笋", "柠檬", "黑胡椒", "盐"] },
         { name: "蒜蓉开背虾", ingredients: ["大虾", "粉丝", "蒜", "小米椒", "生抽"] },
         { name: "清炖狮子头", ingredients: ["猪肉末", "马蹄", "鸡蛋", "青菜", "姜"] },
         { name: "丝瓜炒鸡蛋", ingredients: ["丝瓜", "鸡蛋", "蒜", "盐"] },
@@ -137,14 +137,14 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: "青椒肉丝", ingredients: ["猪里脊", "青椒", "姜", "蒜", "生抽", "淀粉"] },
         { name: "木须肉", ingredients: ["猪里脊", "鸡蛋", "黑木耳", "黄瓜", "黄花菜", "葱", "姜"] },
         { name: "肉末茄子", ingredients: ["长茄子", "猪肉末", "蒜", "姜", "郫县豆瓣酱", "生抽", "蚝油"] },
-        { name: "京酱肉丝", ingredients: ["猪里脊", "大葱", "甜面酱", "蛋清", "淀粉", "豆腐皮(可选)"] },
+        { name: "京酱肉丝", ingredients: ["猪里脊", "大葱", "甜面酱", "蛋清", "淀粉", "豆腐皮"] },
         { name: "清炒西兰花", ingredients: ["西兰花", "胡萝卜", "蒜瓣", "盐", "蚝油"] },
         { name: "手撕包菜", ingredients: ["包菜", "干辣椒", "花椒", "蒜片", "陈醋", "生抽"] },
         { name: "蚝油生菜", ingredients: ["生菜", "蒜蓉", "蚝油", "生抽", "糖"] },
         { name: "虎皮青椒", ingredients: ["青椒", "豆豉", "蒜", "醋", "糖", "生抽"] },
         { name: "白灼菜心", ingredients: ["菜心", "蒜", "姜", "生抽", "食用油"] },
         { name: "韭菜炒鸡蛋", ingredients: ["韭菜", "鸡蛋", "盐"] },
-        { name: "雪菜毛豆", ingredients: ["毛豆", "雪菜", "猪肉末(可选)", "红辣椒"] },
+        { name: "雪菜毛豆", ingredients: ["毛豆", "雪菜", "猪肉末", "红辣椒"] },
         { name: "锅包肉", ingredients: ["猪里脊", "土豆淀粉", "姜丝", "葱丝", "胡萝卜丝", "糖、醋、生抽(酱汁)"] },
         { name: "孜然羊肉", ingredients: ["羊肉片", "洋葱", "香菜", "孜然粉", "辣椒粉", "芝麻"] },
         { name: "葱爆牛肉", ingredients: ["牛肉", "大葱", "蒜", "姜", "生抽", "老抽", "蚝油"] },
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: "酸辣汤", ingredients: ["豆腐", "黑木耳", "笋", "鸡蛋", "火腿丝", "醋", "胡椒粉"] },
         { name: "西湖牛肉羹", ingredients: ["牛肉末", "鸡蛋清", "香菇", "香菜", "水淀粉"] },
         { name: "东坡肉", ingredients: ["五花肉", "葱", "姜", "冰糖", "绍兴黄酒", "老抽", "生抽"] },
-        { name: "麻辣香锅", ingredients: ["（任意食材）", "午餐肉", "藕片", "西兰花", "虾", "麻辣香锅底料", "干辣椒", "花椒"] },
+        { name: "麻辣香锅", ingredients: ["任意食材", "午餐肉", "藕片", "西兰花", "虾", "麻辣香锅底料", "干辣椒", "花椒"] },
         { name: "扬州炒饭", ingredients: ["米饭", "鸡蛋", "虾仁", "火腿", "青豆", "玉米", "胡萝卜"] },
         { name: "啤酒鸭", ingredients: ["鸭子", "啤酒", "八角", "桂皮", "香叶", "干辣椒", "姜", "蒜"] }
     ];
@@ -349,47 +349,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }).then(canvas => {
             const filename = `食材清单-${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}.png`;
 
-            const fallbackSave = () => {
-                const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-                // For non-touch devices (desktops), trigger download directly.
-                // For touch devices (phones/tablets), display in modal for long-press to save.
-                if (!isTouchDevice) {
-                    const link = document.createElement('a');
-                    link.href = canvas.toDataURL('image/png');
-                    link.download = filename;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else {
-                    showImageInModal(canvas);
-                }
-            };
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-            // Try using the Web Share API first for a better mobile experience
-            if (navigator.share) {
-                canvas.toBlob((blob) => {
-                    if (!blob) {
-                        fallbackSave();
-                        return;
-                    }
-                    const file = new File([blob], filename, { type: 'image/png' });
-                    const shareData = {
-                        files: [file],
-                        title: '食材清单',
-                    };
-                    if (navigator.canShare && navigator.canShare(shareData)) {
-                        navigator.share(shareData).catch(() => {
-                            // If sharing is cancelled or fails, fall back
-                            fallbackSave();
-                        });
-                    } else {
-                        // If the data can't be shared, fall back
-                        fallbackSave();
-                    }
-                }, 'image/png');
+            // For touch devices (phones/tablets), display in a modal for the user to long-press and save.
+            if (isTouchDevice) {
+                showImageInModal(canvas);
             } else {
-                // For desktop or unsupported browsers, use the fallback
-                fallbackSave();
+                // For non-touch devices (desktops), trigger a direct download.
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
 
         }).finally(() => {
@@ -424,4 +396,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial State
     updateUI();
 });
-
