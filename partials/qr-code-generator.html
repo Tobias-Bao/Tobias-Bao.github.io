@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二维码生成器</title>
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <link rel="apple-touch-icon" href="../images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/qr-code-generator.css">
+</head>
+
+<body class="bg-gray-100 antialiased">
+
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <a href="../index.html"
+                class="text-xl sm:text-2xl font-bold text-gray-800 hover:text-indigo-600 transition-colors">&larr;
+                返回主页</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 lg:p-8">
+        <div id="generator-card" class="bg-white rounded-xl shadow-2xl p-8 max-w-lg mx-auto">
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 text-center">二维码生成器</h1>
+            <p class="text-center text-gray-500 mb-8">输入文本或链接，立即生成二维码</p>
+
+            <div class="space-y-6">
+                <div>
+                    <label for="qr-text" class="block text-sm font-medium text-gray-700 mb-2">文本内容</label>
+                    <textarea id="qr-text" rows="4"
+                        class="generator-textarea block w-full text-base p-3 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="在此输入任何文本或网址..."></textarea>
+                </div>
+
+                <div id="qrcode-container" class="flex justify-center p-4 bg-gray-50 rounded-lg">
+                    <div id="qrcode" class="border border-gray-200 p-2 rounded-md bg-white"></div>
+                </div>
+
+                <div class="text-center">
+                    <button id="download-btn"
+                        class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform hover:scale-105">
+                        下载二维码
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="../js/qr-code-generator.js"></script>
+</body>
+
+</html>

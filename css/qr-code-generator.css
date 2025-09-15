@@ -1,0 +1,47 @@
+#generator-card {
+    background: linear-gradient(145deg, #ffffff, #f9fafb);
+    animation: slideInUp 0.8s ease-out;
+    box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.generator-textarea {
+    transition: all 0.3s ease;
+    border: 2px solid #D1D5DB;
+}
+
+.generator-textarea:focus {
+    border-color: var(--primary-color, #4f46e5);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    transform: translateY(-2px);
+}
+
+#qrcode-container {
+    min-height: 288px;
+    /* 256px + padding */
+}
+
+#qrcode canvas {
+    display: block;
+    margin: auto;
+}
+
+#download-btn {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#download-btn:disabled {
+    background-color: #a5b4fc;
+    /* a lighter indigo */
+}
