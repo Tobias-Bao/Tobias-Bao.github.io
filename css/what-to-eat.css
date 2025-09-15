@@ -1,0 +1,111 @@
+#decision-card {
+    background: linear-gradient(145deg, #ffffff, #f9fafb);
+    animation: slideInUp 0.8s ease-out;
+    box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dish-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #FFFBEB;
+    /* amber-50 */
+    color: #B45309;
+    /* amber-700 */
+    padding: 6px 12px;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border: 1px solid #FDE68A;
+    /* amber-200 */
+    transition: all 0.2s ease-in-out;
+}
+
+.remove-dish-btn {
+    margin-left: 8px;
+    color: #FBBF24;
+    /* amber-400 */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+}
+
+.remove-dish-btn:hover {
+    color: #D97706;
+    /* amber-600 */
+    background-color: #FEF3C7;
+    /* amber-100 */
+}
+
+/* Modal styles */
+#image-modal {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+#image-modal>div {
+    animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Shopping List Styles */
+#shopping-list {
+    list-style: none;
+    /* 移除列表项前面的默认符号 */
+    padding: 0;
+    margin: 0;
+}
+
+#shopping-list li {
+    /* 增加垂直内边距以改善间距 */
+    padding-top: 0.75rem;
+    /* 12px */
+    padding-bottom: 0.75rem;
+    /* 12px */
+}
+
+#shopping-list .font-medium {
+    flex-shrink: 0;
+    /* 防止食材名称在空间不足时被压缩 */
+}
+
+#shopping-list .text-sm {
+    word-break: break-word;
+    /* 确保菜品名称过长时能正常换行 */
+}

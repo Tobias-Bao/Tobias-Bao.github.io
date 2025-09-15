@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天吃什么</title>
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <link rel="apple-touch-icon" href="../images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/what-to-eat.css">
+</head>
+
+<body class="bg-gray-100 antialiased">
+
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <a href="../index.html"
+                class="text-xl sm:text-2xl font-bold text-gray-800 hover:text-indigo-600 transition-colors">&larr;
+                返回主页</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 lg:p-8">
+        <div id="decision-card" class="bg-white rounded-xl shadow-2xl p-8 max-w-2xl mx-auto">
+            <div class="text-center">
+                <i data-lucide="chef-hat" class="w-16 h-16 mx-auto text-amber-500"></i>
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mt-4 mb-2">今天吃什么</h1>
+                <p class="text-gray-500 mb-8">多次抽签添加菜品，自动汇总食材</p>
+            </div>
+
+            <div class="space-y-8">
+                <!-- 操作按钮 -->
+                <div class="text-center">
+                    <button id="draw-button"
+                        class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-md shadow-sm text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-transform hover:scale-105">
+                        <i data-lucide="dices" class="w-5 h-5 mr-3"></i>
+                        <span id="draw-button-text">抽一道菜</span>
+                    </button>
+                </div>
+
+                <!-- 已选菜品 -->
+                <div id="selected-dishes-container" class="hidden">
+                    <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4 flex items-center">
+                        <i data-lucide="album" class="w-5 h-5 mr-2 text-gray-500"></i>
+                        已选菜品
+                    </h2>
+                    <div id="selected-dishes-list" class="flex flex-wrap gap-3">
+                        <!-- JS will populate this -->
+                    </div>
+                </div>
+
+
+                <!-- 需准备的食材 -->
+                <div id="shopping-list-container" class="hidden">
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-xl font-semibold text-gray-700 flex items-center">
+                            <i data-lucide="shopping-cart" class="w-5 h-5 mr-2 text-gray-500"></i>
+                            食材
+                        </h2>
+                        <div class="flex items-center gap-2">
+                            <button id="generate-image-btn" title="保存为图片"
+                                class="text-sm text-white bg-indigo-500 hover:bg-indigo-600 font-medium py-2 px-4 rounded-md flex items-center transition-all duration-300">
+                                <i data-lucide="download" class="w-4 h-4 mr-1"></i>
+                                保存图片
+                            </button>
+                            <button id="clear-button" title="清空所有已选菜品和清单"
+                                class="text-sm text-gray-500 hover:text-red-600 font-medium py-2 px-4 rounded-md flex items-center transition-all duration-300 bg-gray-100 hover:bg-red-100">
+                                <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                                清空
+                            </button>
+                        </div>
+                    </div>
+                    <div id="shopping-list-render-area" class="p-6 bg-gray-50 rounded-lg">
+                        <h3 id="shopping-list-title" class="text-2xl font-bold text-center mb-6 text-gray-800">需准备的食材
+                        </h3>
+                        <ul id="shopping-list" class="space-y-3 text-gray-700 text-lg">
+                            <!-- 清单项将通过JS动态添加 -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 提示信息 -->
+                <div id="initial-prompt" class="text-center text-gray-400 py-8">
+                    <i data-lucide="mouse-pointer-click" class="w-10 h-10 mx-auto mb-4"></i>
+                    <p>点击上方按钮，开始添加菜品</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Image Generation Modal -->
+    <div id="image-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-2xl p-6 max-w-lg w-full relative">
+            <button id="close-modal-btn" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">保存食材清单</h2>
+            <div id="image-preview" class="border-2 border-dashed border-gray-300 rounded-md p-2 mb-4">
+                <!-- Generated image will be shown here -->
+            </div>
+            <a id="download-link" href="#" download="shopping-list.png"
+                class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
+                下载图片
+            </a>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="../js/what-to-eat.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
