@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/qr-code-generator.css">
 </head>
@@ -20,15 +21,23 @@
     <header class="bg-white shadow-md">
         <div class="container mx-auto px-6 py-4">
             <a href="../index.html"
-                class="text-xl sm:text-2xl font-bold text-gray-800 hover:text-indigo-600 transition-colors">&larr;
-                返回主页</a>
+                class="inline-flex items-center gap-2 rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-800 shadow-sm ring-1 ring-inset ring-gray-200 transition-all hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                返回主页
+            </a>
         </div>
     </header>
 
     <main class="container mx-auto p-6 lg:p-8">
         <div id="generator-card" class="bg-white rounded-xl shadow-2xl p-8 max-w-lg mx-auto">
-            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 text-center">二维码生成器</h1>
-            <p class="text-center text-gray-500 mb-8">输入文本或链接，立即生成二维码</p>
+            <div class="text-center mb-8">
+                <div
+                    class="flex items-center justify-center w-16 h-16 bg-teal-100 text-teal-500 rounded-lg mx-auto mb-4">
+                    <i data-lucide="qr-code" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800">二维码生成器</h1>
+                <p class="text-gray-500 mt-2">输入文本或链接，立即生成二维码</p>
+            </div>
 
             <div class="space-y-6">
                 <div>
@@ -77,6 +86,9 @@
     <!-- QR Code Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="../js/qr-code-generator.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>
