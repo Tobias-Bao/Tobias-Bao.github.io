@@ -45,3 +45,25 @@
     background-color: #a5b4fc;
     /* a lighter indigo */
 }
+
+/* Modal styles */
+#image-preview-modal {
+    opacity: 0;
+}
+
+#image-preview-modal.opacity-100 {
+    opacity: 1;
+}
+
+#image-preview-modal>div {
+    transform: scale(0.95);
+    opacity: 0;
+}
+
+#image-preview-modal>div.scale-100 {
+    transform: scale(1);
+}
+
+#image-preview-modal>div.opacity-100 {
+    opacity: 1;
+}

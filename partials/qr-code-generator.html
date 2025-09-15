@@ -45,12 +45,34 @@
                 <div class="text-center">
                     <button id="download-btn"
                         class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform hover:scale-105">
-                        下载二维码
+                        保存二维码
                     </button>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Image Preview Modal -->
+    <div id="image-preview-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 transition-opacity duration-300">
+        <div
+            class="bg-white rounded-lg shadow-xl p-6 max-w-xs w-full text-center relative transform transition-all duration-300 scale-95 opacity-0">
+            <button id="close-modal-btn"
+                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="w-6 h-6">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">保存二维码</h3>
+            <p class="text-sm text-gray-500 mb-4">请长按下方图片，然后选择“添加到照相册”</p>
+            <div id="image-preview-container" class="bg-gray-100 p-2 rounded-md">
+                <!-- Generated image will be placed here -->
+            </div>
+        </div>
+    </div>
 
     <!-- QR Code Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>

@@ -2,17 +2,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrText = document.getElementById('qr-text');
     const qrcodeContainer = document.getElementById('qrcode');
     const downloadBtn = document.getElementById('download-btn');
+    const imagePreviewModal = document.getElementById('image-preview-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+    const modalContent = imagePreviewModal.querySelector('div');
 
     let qrcode = null;
 
     function generateQRCode() {
         const text = qrText.value.trim();
 
-        // 清空之前的二维码
         qrcodeContainer.innerHTML = '';
 
         if (text) {
-            // 创建新的QRCode实例
             qrcode = new QRCode(qrcodeContainer, {
                 text: text,
                 width: 256,
@@ -25,33 +27,89 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
         } else {
-            // 如果没有输入，显示一个占位符
             qrcodeContainer.innerHTML = '<div class="w-64 h-64 bg-gray-200 flex items-center justify-center text-gray-400 text-center p-4 rounded-md">请在上方输入内容以生成二维码</div>';
             downloadBtn.disabled = true;
             downloadBtn.classList.add('opacity-50', 'cursor-not-allowed');
         }
     }
 
-    // 下载二维码
+    function showImageInModal(canvas) {
+        imagePreviewContainer.innerHTML = ''; // Clear previous image
+        const img = document.createElement('img');
+        img.src = canvas.toDataURL('image/png');
+        img.className = 'w-full h-auto rounded-md shadow-inner';
+        imagePreviewContainer.appendChild(img);
+
+        imagePreviewModal.classList.remove('hidden');
+        setTimeout(() => {
+            imagePreviewModal.classList.add('opacity-100');
+            modalContent.classList.add('scale-100', 'opacity-100');
+            modalContent.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+    }
+
+    function hideImageModal() {
+        imagePreviewModal.classList.remove('opacity-100');
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            imagePreviewModal.classList.add('hidden');
+        }, 300);
+    }
+
     downloadBtn.addEventListener('click', () => {
         if (!qrcode) return;
-
-        // 获取由库生成的 canvas 元素
         const canvas = qrcodeContainer.getElementsByTagName('canvas')[0];
-        if (canvas) {
-            const dataUrl = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = 'qrcode.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        if (!canvas) return;
+
+        const filename = 'qrcode.png';
+
+        const fallbackSave = () => {
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            if (!isTouchDevice) {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                showImageInModal(canvas);
+            }
+        };
+
+        if (navigator.share) {
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    fallbackSave();
+                    return;
+                }
+                const file = new File([blob], filename, { type: 'image/png' });
+                const shareData = {
+                    files: [file],
+                    title: '二维码',
+                };
+                if (navigator.canShare && navigator.canShare(shareData)) {
+                    navigator.share(shareData).catch(() => {
+                        fallbackSave();
+                    });
+                } else {
+                    fallbackSave();
+                }
+            }, 'image/png');
+        } else {
+            fallbackSave();
         }
     });
 
-    // 监听输入
     qrText.addEventListener('input', generateQRCode);
 
-    // 页面加载时生成一次
+    closeModalBtn.addEventListener('click', hideImageModal);
+    imagePreviewModal.addEventListener('click', (e) => {
+        if (e.target === imagePreviewModal) {
+            hideImageModal();
+        }
+    });
+
     generateQRCode();
 });
