@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
-    const diceElement = document.getElementById('dice');
+    const diceCountSelect = document.getElementById('dice-count');
+    const resultText = document.getElementById('result-text');
     const rollButton = document.getElementById('roll-button');
     const historyList = document.getElementById('history-list');
     const clearHistoryButton = document.getElementById('clear-history-button');
@@ -9,52 +10,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // State
     let history = [];
     const HISTORY_KEY = 'diceRollerHistory';
-    let isRolling = false;
 
     // --- Core Functions ---
 
     function rollDice() {
-        if (isRolling) return;
-        isRolling = true;
-        rollButton.disabled = true;
+        const count = parseInt(diceCountSelect.value, 10);
+        resultText.classList.remove('opacity-50');
 
-        // Add rolling animation
-        diceElement.classList.add('rolling');
+        if (isNaN(count) || count <= 0) {
+            return;
+        }
 
-        // Generate a random number between 1 and 6
-        const result = Math.floor(Math.random() * 6) + 1;
+        const results = [];
+        let total = 0;
 
-        // Wait for the animation to be noticeable before showing the result
-        setTimeout(() => {
-            // Update dice face
-            diceElement.className = 'dice'; // Reset classes
-            diceElement.classList.add(`face-${result}`);
+        for (let i = 0; i < count; i++) {
+            const result = Math.floor(Math.random() * 6) + 1;
+            results.push(result);
+            total += result;
+        }
 
-            // Add to history
-            addToHistory(result);
+        // Display results directly
+        const resultsString = results.join(' , ');
+        if (count > 1) {
+            resultText.innerHTML = `<span class="block text-4xl tracking-widest">${resultsString}</span><span class="block text-xl text-gray-500 mt-2">总点数: ${total}</span>`;
+        } else {
+            resultText.textContent = resultsString;
+        }
 
-            // Remove rolling animation class after it's done
-            setTimeout(() => {
-                diceElement.classList.remove('rolling');
-                isRolling = false;
-                rollButton.disabled = false;
-            }, 500);
-
-        }, 350);
+        addToHistory(results, total);
     }
 
-    function addToHistory(result) {
+    function addToHistory(results, total) {
         const now = new Date();
         const timestamp = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        const historyItem = { result, timestamp };
+        const historyItem = { results, total, timestamp };
 
-        // Add to the beginning of the array
         history.unshift(historyItem);
-
-        // Keep history limited to a reasonable number (e.g., 50)
-        if (history.length > 50) {
-            history.pop();
-        }
+        if (history.length > 50) history.pop();
 
         saveHistory();
         renderHistory();
@@ -72,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
     }
 
+
+
     function loadHistory() {
         const storedHistory = localStorage.getItem(HISTORY_KEY);
         if (storedHistory) {
@@ -83,14 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- UI Update Functions ---
 
     function renderHistory() {
-        // Clear current list
         historyList.innerHTML = '';
 
         if (history.length === 0) {
             noHistoryMessage.classList.remove('hidden');
             clearHistoryButton.classList.add('opacity-50', 'cursor-not-allowed');
             clearHistoryButton.disabled = true;
-
         } else {
             noHistoryMessage.classList.add('hidden');
             clearHistoryButton.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -100,8 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const li = document.createElement('li');
                 li.className = 'history-item';
 
+                const resultsText = `点数: ${item.results.join(', ')}`;
+                const totalText = item.results.length > 1 ? ` (总计: ${item.total})` : '';
+
                 li.innerHTML = `
-                    <span class="font-bold text-lg text-emerald-600">点数: ${item.result}</span>
+                    <span class="font-bold text-lg text-sky-600">${resultsText}${totalText}</span>
                     <span class="text-sm text-gray-500">${item.timestamp}</span>
                 `;
 
@@ -110,10 +106,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function setInitialState() {
+        resultText.textContent = `点击按钮开始`;
+        resultText.classList.add('opacity-50');
+    }
+
     // --- Event Listeners ---
     rollButton.addEventListener('click', rollDice);
     clearHistoryButton.addEventListener('click', clearHistory);
 
     // --- Initial Load ---
     loadHistory();
+    setInitialState();
 });
+
