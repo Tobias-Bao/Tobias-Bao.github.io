@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chartTimeRangeContainer = document.getElementById('chart-time-range');
     const chartLoader = document.getElementById('chart-loader');
     const chartCanvas = document.getElementById('stock-chart');
+    const companyInfoContent = document.getElementById('company-info-content');
+    const companyInfoLoader = document.getElementById('company-info-loader');
 
     // App State
     let allStockData = [];
@@ -250,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chartTimeRangeContainer.querySelector('[data-range="intraday"]').classList.add('active');
 
         updateChart(stockCode, 'intraday');
+        updateCompanyProfile(stockCode);
     }
 
     function closeStockChartModal() {
@@ -277,6 +280,50 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(`加载图表数据失败 (${error.message})`, chartCanvas.width / 2, chartCanvas.height / 2);
         } finally {
             chartLoader.classList.add('hidden');
+        }
+    }
+
+    async function updateCompanyProfile(stockCode) {
+        companyInfoContent.innerHTML = '';
+        companyInfoLoader.classList.remove('hidden');
+        companyInfoContent.appendChild(companyInfoLoader);
+
+        try {
+            const profileText = await fetchCompanyProfile(stockCode);
+            companyInfoLoader.classList.add('hidden');
+            const profileParagraph = document.createElement('p');
+            profileParagraph.innerHTML = profileText.replace(/　　/g, '<br><br>').trim();
+            companyInfoContent.innerHTML = ''; // Clear loader
+            companyInfoContent.appendChild(profileParagraph);
+
+        } catch (error) {
+            console.error(`Failed to fetch company profile for ${stockCode}:`, error);
+            companyInfoLoader.classList.add('hidden');
+            companyInfoContent.innerHTML = `<p class="text-red-500 text-center">加载公司信息失败: ${error.message}</p>`;
+        }
+    }
+
+    async function fetchCompanyProfile(stockCode) {
+        const url = `https://f10.eastmoney.com/CompanySurvey/CompanySurveyAjax?code=${stockCode}`;
+        const proxy = 'https://api.allorigins.win/raw?url=';
+        const proxiedUrl = `${proxy}${encodeURIComponent(url)}`;
+
+        const response = await fetch(proxiedUrl);
+        if (!response.ok) {
+            throw new Error(`请求失败，状态码: ${response.status}`);
+        }
+
+        const responseText = await response.text();
+        try {
+            const data = JSON.parse(responseText);
+            if (data && data.jbzl && data.jbzl.gsjj) {
+                return data.jbzl.gsjj; // 公司简介
+            } else {
+                throw new Error('未找到公司简介数据');
+            }
+        } catch (e) {
+            console.error("Failed to parse company profile JSON:", responseText);
+            throw new Error('返回数据格式错误');
         }
     }
 
@@ -422,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ticks: {
                         maxRotation: 0,
                         autoSkip: true,
-                        maxTicksLimit: 9 // Increased for more detail
+                        maxTicksLimit: 7
                     }
                 },
                 y: {
@@ -445,6 +492,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (range === 'intraday') {
             chartOptions.scales.x.min = `${todayDateString} 09:30:00`;
             chartOptions.scales.x.max = `${todayDateString} 15:00:00`;
+            chartOptions.scales.x.time.unit = 'minute';
+            chartOptions.scales.x.time.stepSize = 60;
+            chartOptions.scales.x.ticks.source = 'labels';
         }
 
         stockChart = new Chart(ctx, {

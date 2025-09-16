@@ -42,10 +42,10 @@
                 <p id="last-updated" class="text-sm text-gray-400 mt-2 h-4"></p>
             </div>
 
-            <!-- 筛选和排序 -->
+            <!-- Filter and Sort Controls -->
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
                 <div class="filter-grid">
-                    <!-- 最新价 -->
+                    <!-- Price -->
                     <div class="filter-item">
                         <label class="filter-label">最新价 (元)</label>
                         <div class="flex items-center gap-1 sm:gap-2">
@@ -54,7 +54,7 @@
                             <input type="number" id="price-max" placeholder="最大" class="filter-input">
                         </div>
                     </div>
-                    <!-- 涨跌幅 -->
+                    <!-- Change Percent -->
                     <div class="filter-item">
                         <label class="filter-label">涨跌幅 (%)</label>
                         <div class="flex items-center gap-1 sm:gap-2">
@@ -63,7 +63,7 @@
                             <input type="number" id="changePercent-max" placeholder="最大" class="filter-input">
                         </div>
                     </div>
-                    <!-- 换手率 -->
+                    <!-- Turnover Rate -->
                     <div class="filter-item">
                         <label class="filter-label">换手率 (%)</label>
                         <div class="flex items-center gap-1 sm:gap-2">
@@ -72,7 +72,7 @@
                             <input type="number" id="turnover-max" placeholder="最大" class="filter-input">
                         </div>
                     </div>
-                    <!-- 成交量 -->
+                    <!-- Volume -->
                     <div class="filter-item">
                         <label class="filter-label">成交量 (万手)</label>
                         <div class="flex items-center gap-1 sm:gap-2">
@@ -81,7 +81,7 @@
                             <input type="number" id="volume-max" placeholder="最大" class="filter-input">
                         </div>
                     </div>
-                    <!-- 成交额 -->
+                    <!-- Turnover Amount -->
                     <div class="filter-item">
                         <label class="filter-label">成交额 (万元)</label>
                         <div class="flex items-center gap-1 sm:gap-2">
@@ -90,7 +90,7 @@
                             <input type="number" id="turnoverAmount-max" placeholder="最大" class="filter-input">
                         </div>
                     </div>
-                    <!-- 排序指标 -->
+                    <!-- Sort By -->
                     <div class="filter-item">
                         <label class="filter-label">排序指标</label>
                         <select id="sort-by" class="filter-input">
@@ -101,7 +101,7 @@
                             <option value="price">最新价</option>
                         </select>
                     </div>
-                    <!-- 排序方向 -->
+                    <!-- Sort Direction -->
                     <div class="filter-item">
                         <label class="filter-label">排序方向</label>
                         <select id="sort-direction" class="filter-input">
@@ -112,14 +112,14 @@
                 </div>
             </div>
 
-            <!-- 状态信息 -->
+            <!-- Status Message -->
             <div id="status-message" class="text-center py-10 text-gray-500">
                 <!-- JS will populate this -->
             </div>
 
-            <!-- 股票列表 -->
+            <!-- Stock List -->
             <div id="stock-list-container" class="hidden">
-                <!-- 列表表头 (仅桌面端显示) -->
+                <!-- Desktop Header -->
                 <div class="stock-grid-header">
                     <div class="text-left font-semibold text-gray-600">股票名称</div>
                     <div class="text-right font-semibold text-gray-600">最新价</div>
@@ -128,13 +128,13 @@
                     <div class="text-right font-semibold text-gray-600">成交量</div>
                     <div class="text-right font-semibold text-gray-600">成交额</div>
                 </div>
-                <!-- 列表内容 -->
+                <!-- List Content -->
                 <div id="stock-list" class="space-y-2 md:space-y-1">
                     <!-- JS will populate this -->
                 </div>
             </div>
 
-            <!-- 分页控件 -->
+            <!-- Pagination Controls -->
             <div id="pagination-controls" class="flex flex-wrap items-center justify-between mt-6">
                 <!-- JS will populate this -->
             </div>
@@ -142,7 +142,7 @@
 
             <!-- Data Source Disclaimer -->
             <div class="text-center text-xs text-gray-400 mt-6 border-t pt-4">
-                <p>数据来源：新浪财经 & 腾讯财经</p>
+                <p>数据来源：新浪财经、腾讯财经、东方财富</p>
                 <p>行情数据仅供参考，不构成任何投资建议</p>
             </div>
 
@@ -153,27 +153,42 @@
     <div id="stock-chart-modal"
         class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
         <div
-            class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-4xl h-full max-h-[80vh] flex flex-col p-6 relative">
-            <div class="flex justify-between items-center mb-4">
+            class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-6xl h-full max-h-[85vh] flex flex-col p-6 relative">
+            <div class="flex justify-between items-center mb-4 flex-shrink-0">
                 <h2 id="chart-stock-name" class="text-xl font-bold text-gray-800"></h2>
                 <button id="modal-close-btn" class="text-gray-400 hover:text-gray-700">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-            <div class="flex-grow relative">
-                <div id="chart-loader"
-                    class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10 hidden">
-                    <div class="loader"></div>
+            <!-- Main content area with grid layout -->
+            <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-6 min-h-0">
+                <!-- Left column for chart -->
+                <div class="md:col-span-2 flex flex-col min-h-0">
+                    <div class="flex-grow relative">
+                        <div id="chart-loader"
+                            class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10 hidden">
+                            <div class="loader"></div>
+                        </div>
+                        <canvas id="stock-chart"></canvas>
+                    </div>
+                    <div id="chart-time-range"
+                        class="flex justify-center items-center gap-2 mt-4 pt-4 border-t border-gray-200 flex-shrink-0">
+                        <button class="time-range-btn active" data-range="intraday">今日分时</button>
+                        <button class="time-range-btn" data-range="7d">近7日</button>
+                        <button class="time-range-btn" data-range="1m">近1月</button>
+                        <button class="time-range-btn" data-range="3m">近3月</button>
+                        <button class="time-range-btn" data-range="1y">近1年</button>
+                    </div>
                 </div>
-                <canvas id="stock-chart"></canvas>
-            </div>
-            <div id="chart-time-range"
-                class="flex justify-center items-center gap-2 mt-4 pt-4 border-t border-gray-200">
-                <button class="time-range-btn active" data-range="intraday">今日分时</button>
-                <button class="time-range-btn" data-range="7d">近7日</button>
-                <button class="time-range-btn" data-range="1m">近1月</button>
-                <button class="time-range-btn" data-range="3m">近3月</button>
-                <button class="time-range-btn" data-range="1y">近1年</button>
+                <!-- Right column for company info -->
+                <div class="md:col-span-1 flex flex-col min-h-0 bg-gray-50 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3 flex-shrink-0 border-b pb-2">公司概况</h3>
+                    <div id="company-info-content" class="flex-grow overflow-y-auto pr-2">
+                        <div id="company-info-loader" class="flex items-center justify-center h-full">
+                            <div class="loader"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
