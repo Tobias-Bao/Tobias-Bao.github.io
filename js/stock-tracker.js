@@ -110,9 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: parts[1].trim(),
                 price: parseFloat(parts[3]),
                 changePercent: parseFloat(parts[32]),
-                volume: parseFloat(parts[6]) / 100,
+                volume: parseFloat(parts[6]), // Volume in '手' (lots)
                 turnover: parseFloat(parts[38]),
-                turnoverAmount: parseFloat(parts[37]),
+                turnoverAmount: parseFloat(parts[37]), // Turnover amount in '万元'
                 market: market
             };
         }).filter(Boolean);
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             price: { min: parseFloat(document.getElementById('price-min').value) || 0, max: parseFloat(document.getElementById('price-max').value) || Infinity },
             changePercent: { min: parseFloat(document.getElementById('changePercent-min').value) || -Infinity, max: parseFloat(document.getElementById('changePercent-max').value) || Infinity },
             turnover: { min: parseFloat(document.getElementById('turnover-min').value) || 0, max: parseFloat(document.getElementById('turnover-max').value) || Infinity },
-            volume: { min: parseFloat(document.getElementById('volume-min').value) || 0, max: parseFloat(document.getElementById('volume-max').value) || Infinity },
+            volume: { min: (parseFloat(document.getElementById('volume-min').value) || 0) * 10000, max: (parseFloat(document.getElementById('volume-max').value) || Infinity) * 10000 },
             turnoverAmount: { min: parseFloat(document.getElementById('turnoverAmount-min').value) || 0, max: parseFloat(document.getElementById('turnoverAmount-max').value) || Infinity }
         };
 
@@ -157,11 +157,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (preserveScroll) window.scrollTo({ top: scrollY, behavior: 'instant' });
     }
 
-    function formatTurnoverAmount(amount) {
-        if (amount >= 10000) {
-            return `${(amount / 10000).toFixed(2)}亿`;
+    function formatVolume(volumeInShou) {
+        if (volumeInShou >= 100000000) {
+            return `${(volumeInShou / 100000000).toFixed(2)}亿手`;
         }
-        return `${amount.toFixed(0)}万`;
+        if (volumeInShou >= 10000) {
+            return `${(volumeInShou / 10000).toFixed(2)}万手`;
+        }
+        return `${volumeInShou.toFixed(0)}手`;
+    }
+
+    function formatTurnoverAmount(amountInWanYuan) {
+        if (amountInWanYuan >= 10000) {
+            return `${(amountInWanYuan / 10000).toFixed(2)}亿`;
+        }
+        return `${amountInWanYuan.toFixed(0)}万`;
     }
 
     function renderStockList(stocks) {
@@ -176,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stocks.forEach(stock => {
             const colorClass = stock.changePercent > 0 ? 'stock-up' : (stock.changePercent < 0 ? 'stock-down' : 'stock-flat');
             const sign = stock.changePercent > 0 ? '+' : '';
+            const formattedVolume = formatVolume(stock.volume);
             const formattedTurnoverAmount = formatTurnoverAmount(stock.turnoverAmount);
             const item = document.createElement('div');
             item.className = 'stock-item';
@@ -186,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="stock-item-cell ${colorClass}"><span class="mobile-label">最新价</span><span class="font-medium">${stock.price.toFixed(2)}</span></div>
                 <div class="stock-item-cell ${colorClass}"><span class="mobile-label">涨跌幅</span><span class="font-bold">${sign}${stock.changePercent.toFixed(2)}%</span></div>
                 <div class="stock-item-cell"><span class="mobile-label">换手率</span><span>${stock.turnover.toFixed(2)}%</span></div>
-                <div class="stock-item-cell"><span class="mobile-label">成交量</span><span>${stock.volume.toFixed(2)}万手</span></div>
+                <div class="stock-item-cell"><span class="mobile-label">成交量</span><span>${formattedVolume}</span></div>
                 <div class="stock-item-cell"><span class="mobile-label">成交额</span><span>${formattedTurnoverAmount}</span></div>
             `;
             fragment.appendChild(item);
@@ -394,9 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeUnit = range === 'intraday' ? 'hour' : 'day';
         const parser = range === 'intraday' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
 
-        const today = new Date();
-        const todayDateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
         const chartOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -408,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     callbacks: {
                         title: (context) => {
                             const date = new Date(context[0].parsed.x);
-                            if (timeUnit === 'hour') {
+                            if (range === 'intraday') {
                                 return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
                             }
                             return date.toLocaleDateString('zh-CN');
@@ -430,9 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     grid: { display: false },
                     ticks: {
-                        maxRotation: 0,
-                        autoSkip: true,
-                        maxTicksLimit: 7
+                        display: false // Hide the time axis labels
                     }
                 },
                 y: {
@@ -451,14 +457,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 intersect: false
             }
         };
-
-        if (range === 'intraday') {
-            chartOptions.scales.x.min = `${todayDateString} 09:30:00`;
-            chartOptions.scales.x.max = `${todayDateString} 15:00:00`;
-            chartOptions.scales.x.time.unit = 'minute';
-            chartOptions.scales.x.time.stepSize = 60;
-            chartOptions.scales.x.ticks.source = 'labels';
-        }
 
         stockChart = new Chart(ctx, {
             type: 'line',
@@ -521,3 +519,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initial Load ---
     init();
 });
+

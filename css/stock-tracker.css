@@ -342,3 +342,32 @@
     color: white;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
+
+/* --- Mobile Chart Modal Optimizations --- */
+@media (max-width: 767px) {
+    #stock-chart-modal .modal-content {
+        padding: 1rem;
+        /* 16px */
+        max-height: 90vh;
+        /* More vertical space */
+    }
+
+    #stock-chart-modal #chart-stock-name {
+        font-size: 1.125rem;
+        /* text-lg */
+    }
+
+    #stock-chart-modal #chart-time-range {
+        flex-wrap: wrap;
+        /* Allow buttons to wrap */
+        gap: 0.5rem;
+        /* Reduce gap */
+    }
+
+    #stock-chart-modal .time-range-btn {
+        padding: 0.375rem 0.75rem;
+        /* Smaller buttons */
+        font-size: 0.875rem;
+        /* text-sm */
+    }
+}
