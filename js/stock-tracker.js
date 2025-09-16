@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function init() {
         showLoading('正在获取所有A股代码...');
         try {
+            // This API primarily gets SH and SZ stocks. BJ stocks might not be included here.
+            // However, the subsequent Tencent API can handle BJ stock codes if they are manually added or sourced elsewhere.
             const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataNew?page=1&num=5000&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
             const data = await response.json();
             if (data && Array.isArray(data)) {
@@ -93,6 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return lines.map(line => {
             const parts = line.split('~');
             if (parts.length < 40) return null;
+
+            // FIX: Correctly identify stock market including Beijing (bj)
+            const marketInfo = parts[0];
+            let market;
+            if (marketInfo.includes('sh')) {
+                market = 'sh';
+            } else if (marketInfo.includes('bj')) {
+                market = 'bj';
+            } else {
+                market = 'sz'; // Default to Shenzhen
+            }
+
             return {
                 code: parts[2],
                 name: parts[1].trim(),
@@ -101,10 +115,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 volume: parseFloat(parts[6]) / 100,
                 turnover: parseFloat(parts[38]),
                 turnoverAmount: parseFloat(parts[37]),
-                market: parts[0].includes('sh') ? 'sh' : 'sz'
+                market: market
             };
         }).filter(Boolean);
     }
+
 
     function applyFiltersAndRender({ preserveScroll = false, source = 'user' } = {}) {
         if (source === 'user') currentPage = 1;
@@ -292,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const profileText = await fetchCompanyProfile(stockCode);
             companyInfoLoader.classList.add('hidden');
             const profileParagraph = document.createElement('p');
+            // FIX: Handle indentation from Eastmoney API
             profileParagraph.innerHTML = profileText.replace(/　　/g, '<br><br>').trim();
             companyInfoContent.innerHTML = ''; // Clear loader
             companyInfoContent.appendChild(profileParagraph);
@@ -302,11 +318,11 @@ document.addEventListener('DOMContentLoaded', () => {
             companyInfoContent.innerHTML = `<p class="text-red-500 text-center">加载公司信息失败: ${error.message}</p>`;
         }
     }
-
+    // FIX: Switched to a more reliable proxy and added robust JSON parsing.
     async function fetchCompanyProfile(stockCode) {
-        const url = `https://f10.eastmoney.com/CompanySurvey/CompanySurveyAjax?code=${stockCode}`;
-        const proxy = 'https://api.allorigins.win/raw?url=';
-        const proxiedUrl = `${proxy}${encodeURIComponent(url)}`;
+        const url = `https://f10.eastmoney.com/CompanySurvey/CompanySurveyAjax?code=${stockCode.toUpperCase()}`;
+        const proxy = 'https://cors.eu.org/'; // Using a different, potentially more stable proxy
+        const proxiedUrl = `${proxy}${url}`;
 
         const response = await fetch(proxiedUrl);
         if (!response.ok) {
@@ -318,71 +334,65 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = JSON.parse(responseText);
             if (data && data.jbzl && data.jbzl.gsjj) {
                 return data.jbzl.gsjj; // 公司简介
-            } else {
-                throw new Error('未找到公司简介数据');
             }
         } catch (e) {
-            console.error("Failed to parse company profile JSON:", responseText);
+            console.error("Failed to parse company profile JSON. Response was:", responseText);
             throw new Error('返回数据格式错误');
         }
+
+        throw new Error('未找到公司简介数据');
     }
 
+    // FIX: Using a hybrid approach. Sina for reliable historical K-line (via proxy), Tencent for intraday.
     async function fetchChartData(stockCode, range) {
         let url;
-        const proxy = 'https://api.allorigins.win/raw?url=';
-        let originalUrl;
+        const isIntraday = range === 'intraday';
 
-        switch (range) {
-            case '7d':
-                originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=7`;
-                url = `${proxy}${encodeURIComponent(originalUrl)}`;
-                break;
-            case '1m':
-                originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=30`;
-                url = `${proxy}${encodeURIComponent(originalUrl)}`;
-                break;
-            case '3m':
-                originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=90`;
-                url = `${proxy}${encodeURIComponent(originalUrl)}`;
-                break;
-            case '1y':
-                originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=365`;
-                url = `${proxy}${encodeURIComponent(originalUrl)}`;
-                break;
-            case 'intraday':
-            default:
-                url = `https://web.ifzq.gtimg.cn/appstock/app/minute/query?code=${stockCode}`;
-                break;
+        if (isIntraday) {
+            url = `https://web.ifzq.gtimg.cn/appstock/app/minute/query?code=${stockCode}`;
+        } else {
+            let dataLen;
+            switch (range) {
+                case '7d': dataLen = 7; break;
+                case '1m': dataLen = 30; break;
+                case '3m': dataLen = 90; break;
+                case '1y': dataLen = 365; break;
+                default: dataLen = 30; // Fallback
+            }
+            const sinaUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=${dataLen}`;
+            const proxy = 'https://cors.eu.org/'; // FIX: Added proxy to fix NetworkError
+            url = `${proxy}${sinaUrl}`;
         }
 
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`请求失败，状态码: ${response.status}`);
         }
+        const result = await response.json();
 
-        let data;
-        if (range === 'intraday') {
-            const result = await response.json();
-            data = result?.data?.[stockCode]?.data?.data;
-        } else {
-            data = await response.json();
-        }
-
-        if (!data || data.length === 0) {
-            return { labels: [], values: [] };
-        }
-
-        const isDaily = range !== 'intraday';
-        if (isDaily) {
+        // Handle daily data (K-line from Sina)
+        if (!isIntraday) {
+            const klineData = result;
+            if (!klineData || klineData.length === 0) {
+                return { labels: [], values: [] };
+            }
             return {
-                labels: data.map(d => d.day),
-                values: data.map(d => parseFloat(d.close)),
+                labels: klineData.map(d => d.day), // Date
+                values: klineData.map(d => parseFloat(d.close)), // Closing price
             };
-        } else {
+        }
+        // Handle intraday data (time-sharing from Tencent)
+        else {
+            const intradayData = result?.data?.[stockCode]?.data?.data;
+            if (!intradayData || intradayData.length === 0) {
+                return { labels: [], values: [] };
+            }
+
             const today = new Date();
             const datePrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
             return {
-                labels: data.map(d => {
+                labels: intradayData.map(d => {
                     const parts = d.split(' ');
                     if (parts.length < 2) return null;
                     const timeStr = parts[0];
@@ -390,13 +400,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const minute = timeStr.substring(2, 4);
                     return `${datePrefix} ${hour}:${minute}`;
                 }).filter(Boolean),
-                values: data.map(d => {
+                values: intradayData.map(d => {
                     const parts = d.split(' ');
                     return parts.length < 2 ? null : parseFloat(parts[1]);
                 }).filter(v => v !== null),
             };
         }
     }
+
 
     function renderChart({ labels, values }, range) {
         if (stockChart) {
@@ -558,4 +569,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initial Load ---
     init();
 });
+
+
+
+
 
