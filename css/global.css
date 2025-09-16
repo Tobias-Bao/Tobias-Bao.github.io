@@ -31,14 +31,19 @@ body {
     animation-fill-mode: forwards;
 }
 
+/*
+ * Modified the animation to only use 'opacity'.
+ * The 'transform' property was causing 'position: fixed' elements (like modals)
+ * to be positioned relative to the body instead of the viewport, which created
+ * positioning issues on scrolled pages. This change fixes the modal centering
+ * while keeping a global fade-in effect.
+*/
 @keyframes fadeInAnimation {
     0% {
         opacity: 0;
-        transform: translateY(10px);
     }
 
     100% {
         opacity: 1;
-        transform: translateY(0);
     }
 }
