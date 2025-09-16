@@ -420,6 +420,17 @@ document.addEventListener('DOMContentLoaded', () => {
                                 return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
                             }
                             return date.toLocaleDateString('zh-CN');
+                        },
+                        label: (context) => {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                // Always format with toFixed(2) to ensure a period decimal separator
+                                label += context.parsed.y.toFixed(2);
+                            }
+                            return label;
                         }
                     }
                 }
