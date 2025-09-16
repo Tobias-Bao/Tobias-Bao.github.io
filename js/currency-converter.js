@@ -279,15 +279,15 @@ function convertCurrency() {
     const fromCurrencyName = currencyNames[fromCurrency] || fromCurrency;
     const toCurrencyName = currencyNames[toCurrency] || toCurrency;
 
-    // Formatting options to use period for decimal and no thousand separators.
-    const formattingOptions = {
-        useGrouping: false,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 4
-    };
+    // 格式化输入的金额，添加千位分隔符
+    const formattedAmount = amount.toLocaleString('en-US');
 
-    const formattedAmount = amount.toLocaleString('en-US', { useGrouping: false });
-    const formattedResult = result.toLocaleString('en-US', formattingOptions);
+    // 格式化转换结果，添加千位分隔符并保留两位小数
+    const formattedResult = result.toLocaleString('en-US', {
+        useGrouping: true,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 
     const fromText = `<div class="from-text">${formattedAmount} ${fromCurrencyName}</div>`;
     const equalsIcon = `
