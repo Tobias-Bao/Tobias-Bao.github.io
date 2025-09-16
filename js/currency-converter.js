@@ -68,7 +68,7 @@ const currencyNames = {
     "GEL": "格鲁吉亚拉里",
     "GGP": "根西岛镑",
     "GHS": "加纳塞地",
-    "GIP": "直布罗陀镑",
+    "GIP": "直布陀罗镑",
     "GMD": "冈比亚达拉西",
     "GNF": "几内亚法郎",
     "GTQ": "危地马拉格查尔",
@@ -279,12 +279,15 @@ function convertCurrency() {
     const fromCurrencyName = currencyNames[fromCurrency] || fromCurrency;
     const toCurrencyName = currencyNames[toCurrency] || toCurrency;
 
-    // 使用 'en-US' 区域设置来确保千位分隔符是逗号(,)，小数点是句点(.)
-    const formattedAmount = amount.toLocaleString('en-US');
-    const formattedResult = result.toLocaleString('en-US', {
+    // Formatting options to use period for decimal and no thousand separators.
+    const formattingOptions = {
+        useGrouping: false,
         minimumFractionDigits: 2,
-        maximumFractionDigits: 4 // 允许更多小数位以提高精度
-    });
+        maximumFractionDigits: 4
+    };
+
+    const formattedAmount = amount.toLocaleString('en-US', { useGrouping: false });
+    const formattedResult = result.toLocaleString('en-US', formattingOptions);
 
     const fromText = `<div class="from-text">${formattedAmount} ${fromCurrencyName}</div>`;
     const equalsIcon = `
