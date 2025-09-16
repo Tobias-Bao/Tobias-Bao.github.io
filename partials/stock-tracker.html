@@ -45,6 +45,17 @@
             <!-- Filter and Sort Controls -->
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
                 <div class="filter-grid">
+                    <!-- Search Input -->
+                    <div class="filter-item" style="grid-column: 1 / -1; margin-bottom: 0.5rem;">
+                        <label for="search-input" class="filter-label">搜索股票 (名称/代码)</label>
+                        <div class="relative">
+                            <input type="text" id="search-input" placeholder="例如: 贵州茅台 or 600519"
+                                class="filter-input w-full pl-10">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <i data-lucide="search" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Price -->
                     <div class="filter-item">
                         <label class="filter-label">最新价 (元)</label>

@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortDirectionSelect = document.getElementById('sort-direction');
     const lastUpdated = document.getElementById('last-updated');
     const paginationControls = document.getElementById('pagination-controls');
+    const searchInput = document.getElementById('search-input');
+
 
     // Filter Inputs
     const allFilterInputs = [
@@ -123,6 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (source === 'user') currentPage = 1;
         if (allStockData.length > 0) hideMessage();
 
+        const searchTerm = searchInput.value.trim().toLowerCase();
+
         const filters = {
             price: { min: parseFloat(document.getElementById('price-min').value) || 0, max: parseFloat(document.getElementById('price-max').value) || Infinity },
             changePercent: { min: parseFloat(document.getElementById('changePercent-min').value) || -Infinity, max: parseFloat(document.getElementById('changePercent-max').value) || Infinity },
@@ -131,9 +135,16 @@ document.addEventListener('DOMContentLoaded', () => {
             turnoverAmount: { min: parseFloat(document.getElementById('turnoverAmount-min').value) || 0, max: parseFloat(document.getElementById('turnoverAmount-max').value) || Infinity }
         };
 
-        filteredStockData = allStockData.filter(stock =>
-            Object.keys(filters).every(key => stock[key] >= filters[key].min && stock[key] <= filters[key].max)
-        );
+        filteredStockData = allStockData.filter(stock => {
+            const matchesSearch = searchTerm === '' ||
+                stock.name.toLowerCase().includes(searchTerm) ||
+                stock.code.includes(searchTerm);
+
+            const matchesFilters = Object.keys(filters).every(key => stock[key] >= filters[key].min && stock[key] <= filters[key].max);
+
+            return matchesSearch && matchesFilters;
+        });
+
 
         const sortBy = sortBySelect.value;
         const sortDirection = sortDirectionSelect.value;
@@ -524,10 +535,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Event Listeners ---
     const debouncedRender = debounce(() => applyFiltersAndRender({ preserveScroll: true, source: 'user' }), 400);
     allFilterInputs.forEach(input => input.addEventListener('input', debouncedRender));
+    searchInput.addEventListener('input', debouncedRender);
     sortBySelect.addEventListener('change', () => applyFiltersAndRender({ preserveScroll: true, source: 'user' }));
     sortDirectionSelect.addEventListener('change', () => applyFiltersAndRender({ preserveScroll: true, source: 'user' }));
 
     // --- Initial Load ---
     init();
 });
-
