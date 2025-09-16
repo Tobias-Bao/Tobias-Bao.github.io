@@ -23,8 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const chartTimeRangeContainer = document.getElementById('chart-time-range');
     const chartLoader = document.getElementById('chart-loader');
     const chartCanvas = document.getElementById('stock-chart');
-    const companyInfoContent = document.getElementById('company-info-content');
-    const companyInfoLoader = document.getElementById('company-info-loader');
 
     // App State
     let allStockData = [];
@@ -42,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // This API primarily gets SH and SZ stocks. BJ stocks might not be included here.
             // However, the subsequent Tencent API can handle BJ stock codes if they are manually added or sourced elsewhere.
-            const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataNew?page=1&num=5000&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
+            const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataNew?page=1&num=8000&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
             const data = await response.json();
             if (data && Array.isArray(data)) {
                 stockCodes = data.map(item => item.symbol);
@@ -267,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chartTimeRangeContainer.querySelector('[data-range="intraday"]').classList.add('active');
 
         updateChart(stockCode, 'intraday');
-        updateCompanyProfile(stockCode);
     }
 
     function closeStockChartModal() {
@@ -296,51 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             chartLoader.classList.add('hidden');
         }
-    }
-
-    async function updateCompanyProfile(stockCode) {
-        companyInfoContent.innerHTML = '';
-        companyInfoLoader.classList.remove('hidden');
-        companyInfoContent.appendChild(companyInfoLoader);
-
-        try {
-            const profileText = await fetchCompanyProfile(stockCode);
-            companyInfoLoader.classList.add('hidden');
-            const profileParagraph = document.createElement('p');
-            // FIX: Handle indentation from Eastmoney API
-            profileParagraph.innerHTML = profileText.replace(/　　/g, '<br><br>').trim();
-            companyInfoContent.innerHTML = ''; // Clear loader
-            companyInfoContent.appendChild(profileParagraph);
-
-        } catch (error) {
-            console.error(`Failed to fetch company profile for ${stockCode}:`, error);
-            companyInfoLoader.classList.add('hidden');
-            companyInfoContent.innerHTML = `<p class="text-red-500 text-center">加载公司信息失败: ${error.message}</p>`;
-        }
-    }
-    // FIX: Switched to a more reliable proxy and added robust JSON parsing.
-    async function fetchCompanyProfile(stockCode) {
-        const url = `https://f10.eastmoney.com/CompanySurvey/CompanySurveyAjax?code=${stockCode.toUpperCase()}`;
-        const proxy = 'https://cors.eu.org/'; // Using a different, potentially more stable proxy
-        const proxiedUrl = `${proxy}${url}`;
-
-        const response = await fetch(proxiedUrl);
-        if (!response.ok) {
-            throw new Error(`请求失败，状态码: ${response.status}`);
-        }
-
-        const responseText = await response.text();
-        try {
-            const data = JSON.parse(responseText);
-            if (data && data.jbzl && data.jbzl.gsjj) {
-                return data.jbzl.gsjj; // 公司简介
-            }
-        } catch (e) {
-            console.error("Failed to parse company profile JSON. Response was:", responseText);
-            throw new Error('返回数据格式错误');
-        }
-
-        throw new Error('未找到公司简介数据');
     }
 
     // FIX: Using a hybrid approach. Sina for reliable historical K-line (via proxy), Tencent for intraday.
@@ -569,8 +521,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initial Load ---
     init();
 });
-
-
-
-
-

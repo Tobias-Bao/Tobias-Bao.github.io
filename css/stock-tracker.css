@@ -342,32 +342,3 @@
     color: white;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
-
-/* Company Info in Modal */
-#company-info-content {
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 #f1f5f9;
-}
-
-#company-info-content::-webkit-scrollbar {
-    width: 6px;
-}
-
-#company-info-content::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    /* gray-100 */
-    border-radius: 3px;
-}
-
-#company-info-content::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    /* gray-300 */
-    border-radius: 3px;
-}
-
-#company-info-content p {
-    line-height: 1.6;
-    color: #4b5563;
-    /* gray-600 */
-    font-size: 0.9rem;
-}
