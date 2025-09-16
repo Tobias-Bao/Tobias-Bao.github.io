@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: parts[1].trim(),
                 price: parseFloat(parts[3]),
                 changePercent: parseFloat(parts[32]),
-                volume: parseFloat(parts[6]) / 100, // 修正：成交量单位是'手'，除以100为'万手'
+                volume: parseFloat(parts[6]) / 100,
                 turnover: parseFloat(parts[38]),
                 turnoverAmount: parseFloat(parts[37]),
                 market: parts[0].includes('sh') ? 'sh' : 'sz'
@@ -247,9 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const currentActive = chartTimeRangeContainer.querySelector('.active');
         if (currentActive) currentActive.classList.remove('active');
-        chartTimeRangeContainer.querySelector('[data-range="24h"]').classList.add('active');
+        chartTimeRangeContainer.querySelector('[data-range="intraday"]').classList.add('active');
 
-        updateChart(stockCode, '24h');
+        updateChart(stockCode, 'intraday');
     }
 
     function closeStockChartModal() {
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 originalUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=365`;
                 url = `${proxy}${encodeURIComponent(originalUrl)}`;
                 break;
-            case '24h':
+            case 'intraday':
             default:
                 url = `https://web.ifzq.gtimg.cn/appstock/app/minute/query?code=${stockCode}`;
                 break;
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let data;
-        if (range === '24h') {
+        if (range === 'intraday') {
             const result = await response.json();
             data = result?.data?.[stockCode]?.data?.data;
         } else {
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { labels: [], values: [] };
         }
 
-        const isDaily = !['24h'].includes(range);
+        const isDaily = range !== 'intraday';
         if (isDaily) {
             return {
                 labels: data.map(d => d.day),
@@ -336,12 +336,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const datePrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
             return {
                 labels: data.map(d => {
-                    const timeStr = d.split(' ')[0];
+                    const parts = d.split(' ');
+                    if (parts.length < 2) return null;
+                    const timeStr = parts[0];
                     const hour = timeStr.substring(0, 2);
                     const minute = timeStr.substring(2, 4);
                     return `${datePrefix} ${hour}:${minute}`;
-                }),
-                values: data.map(d => parseFloat(d.split(' ')[1])),
+                }).filter(Boolean),
+                values: data.map(d => {
+                    const parts = d.split(' ');
+                    return parts.length < 2 ? null : parseFloat(parts[1]);
+                }).filter(v => v !== null),
             };
         }
     }
@@ -376,8 +381,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const borderColor = isUp ? '#ef4444' : '#22c55e';
 
-        const timeUnit = range === '24h' ? 'hour' : 'day';
-        const parser = range === '24h' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
+        const timeUnit = range === 'intraday' ? 'hour' : 'day';
+        const parser = range === 'intraday' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
+
+        const today = new Date();
+        const todayDateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        title: (context) => {
+                            const date = new Date(context[0].parsed.x);
+                            if (timeUnit === 'hour') {
+                                return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                            }
+                            return date.toLocaleDateString('zh-CN');
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        parser: parser,
+                        tooltipFormat: 'yyyy-MM-dd HH:mm',
+                        unit: timeUnit,
+                        displayFormats: {
+                            hour: 'HH:mm',
+                            day: 'yy-MM-dd'
+                        }
+                    },
+                    grid: { display: false },
+                    ticks: {
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 9 // Increased for more detail
+                    }
+                },
+                y: {
+                    position: 'right',
+                    grid: {
+                        color: '#f3f4f6',
+                        borderColor: 'transparent'
+                    },
+                    ticks: {
+                        callback: (value) => value.toFixed(2)
+                    }
+                }
+            },
+            interaction: {
+                mode: 'index',
+                intersect: false
+            }
+        };
+
+        if (range === 'intraday') {
+            chartOptions.scales.x.min = `${todayDateString} 09:30:00`;
+            chartOptions.scales.x.max = `${todayDateString} 15:00:00`;
+        }
 
         stockChart = new Chart(ctx, {
             type: 'line',
@@ -393,60 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     backgroundColor: gradient,
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            title: (context) => {
-                                const date = new Date(context[0].parsed.x);
-                                if (timeUnit === 'hour') {
-                                    return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-                                }
-                                return date.toLocaleDateString('zh-CN');
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            parser: parser,
-                            tooltipFormat: 'yyyy-MM-dd HH:mm',
-                            unit: timeUnit,
-                            displayFormats: {
-                                hour: 'HH:mm',
-                                day: 'yy-MM-dd'
-                            }
-                        },
-                        grid: { display: false },
-                        ticks: {
-                            maxRotation: 0,
-                            autoSkip: true,
-                            maxTicksLimit: 5
-                        }
-                    },
-                    y: {
-                        position: 'right',
-                        grid: {
-                            color: '#f3f4f6',
-                            borderColor: 'transparent'
-                        },
-                        ticks: {
-                            callback: (value) => value.toFixed(2)
-                        }
-                    }
-                },
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                }
-            }
+            options: chartOptions
         });
     }
 
