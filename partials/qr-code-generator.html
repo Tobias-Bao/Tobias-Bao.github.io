@@ -48,7 +48,7 @@
                 </div>
 
                 <div id="qrcode-container" class="flex justify-center p-4 bg-gray-50 rounded-lg">
-                    <div id="qrcode" class="border border-gray-200 p-2 rounded-md bg-white"></div>
+                    <div id="qrcode" class="border border-gray-200 rounded-md bg-white overflow-hidden"></div>
                 </div>
 
                 <div class="text-center">
@@ -83,8 +83,8 @@
         </div>
     </div>
 
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Switched to the definitive qrcode-generator library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
     <script src="../js/qr-code-generator.js"></script>
     <script>
         lucide.createIcons();
