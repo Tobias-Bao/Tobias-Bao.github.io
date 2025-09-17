@@ -317,69 +317,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // FIX: Using a hybrid approach. Sina for reliable historical K-line (via proxy), Tencent for intraday.
     async function fetchChartData(stockCode, range) {
-        let url;
-        const isIntraday = range === 'intraday';
-
-        if (isIntraday) {
-            url = `https://web.ifzq.gtimg.cn/appstock/app/minute/query?code=${stockCode}`;
-        } else {
-            let dataLen;
-            switch (range) {
-                case '7d': dataLen = 7; break;
-                case '1m': dataLen = 30; break;
-                case '3m': dataLen = 90; break;
-                case '1y': dataLen = 365; break;
-                default: dataLen = 30; // Fallback
-            }
-            const sinaUrl = `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${stockCode}&scale=240&ma=no&datalen=${dataLen}`;
-            const proxy = 'https://cors.eu.org/'; // FIX: Added proxy to fix NetworkError
-            url = `${proxy}${sinaUrl}`;
-        }
-
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`请求失败，状态码: ${response.status}`);
-        }
-        const result = await response.json();
-
-        // Handle daily data (K-line from Sina)
-        if (!isIntraday) {
-            const klineData = result;
-            if (!klineData || klineData.length === 0) {
-                return { labels: [], values: [] };
-            }
-            return {
-                labels: klineData.map(d => d.day), // Date
-                values: klineData.map(d => parseFloat(d.close)), // Closing price
-            };
-        }
-        // Handle intraday data (time-sharing from Tencent)
-        else {
+        // Intraday (分时) still uses Tencent API
+        if (range === 'intraday') {
+            const url = `https://web.ifzq.gtimg.cn/appstock/app/minute/query?code=${stockCode}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`请求失败: ${response.status}`);
+            const result = await response.json();
             const intradayData = result?.data?.[stockCode]?.data?.data;
-            if (!intradayData || intradayData.length === 0) {
-                return { labels: [], values: [] };
-            }
+            if (!intradayData || intradayData.length === 0) return { labels: [], values: [] };
 
             const today = new Date();
             const datePrefix = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
             return {
                 labels: intradayData.map(d => {
-                    const parts = d.split(' ');
-                    if (parts.length < 2) return null;
-                    const timeStr = parts[0];
-                    const hour = timeStr.substring(0, 2);
-                    const minute = timeStr.substring(2, 4);
-                    return `${datePrefix} ${hour}:${minute}`;
-                }).filter(Boolean),
-                values: intradayData.map(d => {
-                    const parts = d.split(' ');
-                    return parts.length < 2 ? null : parseFloat(parts[1]);
-                }).filter(v => v !== null),
+                    const timeStr = d.split(' ')[0];
+                    return `${datePrefix} ${timeStr.substring(0, 2)}:${timeStr.substring(2, 4)}`;
+                }),
+                values: intradayData.map(d => parseFloat(d.split(' ')[1])),
             };
         }
+
+        // For K-line (daily, weekly, etc.), use Eastmoney API
+        let klt;
+        switch (range) {
+            case 'daily': klt = 101; break;
+            case 'weekly': klt = 102; break;
+            case 'monthly': klt = 103; break;
+            case 'quarterly': klt = 104; break;
+            case 'yearly': klt = 105; break;
+            default: klt = 101; // Default to daily
+        }
+
+        const market = stockCode.substring(0, 2);
+        const code = stockCode.substring(2);
+        const marketCode = (market === 'sh') ? '1' : '0';
+        const secid = `${marketCode}.${code}`;
+
+        const url = `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${secid}&ut=fa5fd1943c7b386f172d6893dbfba10b&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55&klt=${klt}&fqt=1&end=20500101&lmt=1000`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`请求失败: ${response.status}`);
+        const result = await response.json();
+
+        const klines = result?.data?.klines;
+        if (!klines || !result.data || klines.length === 0) {
+            return { labels: [], values: [] };
+        }
+
+        return {
+            labels: klines.map(d => d.split(',')[0]), // Date is the first element
+            values: klines.map(d => parseFloat(d.split(',')[2])), // Close price is the third element
+        };
     }
 
 
@@ -412,9 +402,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const borderColor = isUp ? '#ef4444' : '#22c55e';
-
-        const timeUnit = range === 'intraday' ? 'hour' : 'day';
         const parser = range === 'intraday' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
+
+        let timeUnit;
+        switch (range) {
+            case 'intraday': timeUnit = 'hour'; break;
+            case 'daily': timeUnit = 'day'; break;
+            case 'weekly': timeUnit = 'week'; break;
+            case 'monthly': timeUnit = 'month'; break;
+            case 'quarterly': timeUnit = 'quarter'; break;
+            case 'yearly': timeUnit = 'year'; break;
+            default: timeUnit = 'day';
+        }
 
         const chartOptions = {
             responsive: true,
@@ -451,11 +450,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     type: 'time',
                     time: {
                         parser: parser,
-                        tooltipFormat: 'yyyy-MM-dd HH:mm',
                         unit: timeUnit,
+                        tooltipFormat: 'yyyy-MM-dd',
                         displayFormats: {
                             hour: 'HH:mm',
-                            day: 'yy-MM-dd'
+                            day: 'yy-MM-dd',
+                            week: 'yy-MM-dd',
+                            month: 'yy-MM',
+                            quarter: "yy-'Q'Q",
+                            year: 'yyyy'
                         }
                     },
                     grid: { display: false },
@@ -489,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     borderColor: borderColor,
                     borderWidth: 2,
                     pointRadius: 0,
-                    tension: 0.1,
+                    tension: range === 'intraday' ? 0.1 : 0, // No tension for k-lines
                     fill: true,
                     backgroundColor: gradient,
                 }]
