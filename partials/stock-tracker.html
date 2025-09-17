@@ -42,12 +42,32 @@
                 <p id="last-updated" class="text-sm text-gray-400 mt-2 h-4"></p>
             </div>
 
+            <!-- Hot Sectors Section -->
+            <div id="hot-sectors-section" class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div class="flex flex-wrap justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-gray-800">热门板块</h2>
+                    <div id="sector-sort-controls" class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-gray-600">排序:</span>
+                        <button class="sector-sort-btn active" data-sort="f3">涨跌幅</button>
+                        <button class="sector-sort-btn" data-sort="f62">主力净额</button>
+                    </div>
+                </div>
+                <div id="sector-status-message" class="text-center py-5 text-gray-500"></div>
+                <div id="sector-list" class="sector-grid">
+                    <!-- Sector cards will be populated by JS -->
+                </div>
+            </div>
+
+
             <!-- Filter and Sort Controls -->
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div id="stock-view-header" class="mb-4">
+                    <h2 id="stock-list-title" class="text-lg font-bold text-gray-800">全市场股票列表</h2>
+                </div>
                 <div class="filter-grid">
                     <!-- Search Input -->
                     <div class="filter-item" style="grid-column: 1 / -1; margin-bottom: 0.5rem;">
-                        <label for="search-input" class="filter-label">搜索股票 (名称/代码)</label>
+                        <label for="search-input" class="filter-label">在当前列表搜索 (名称/代码)</label>
                         <div class="relative">
                             <input type="text" id="search-input" placeholder="例如: 贵州茅台 或 600519"
                                 class="filter-input w-full pl-10">
@@ -81,24 +101,6 @@
                             <input type="number" id="turnover-min" placeholder="最小" class="filter-input">
                             <span class="text-gray-400">-</span>
                             <input type="number" id="turnover-max" placeholder="最大" class="filter-input">
-                        </div>
-                    </div>
-                    <!-- Volume -->
-                    <div class="filter-item">
-                        <label class="filter-label">成交量 (万手)</label>
-                        <div class="flex items-center gap-1 sm:gap-2">
-                            <input type="number" id="volume-min" placeholder="最小" class="filter-input">
-                            <span class="text-gray-400">-</span>
-                            <input type="number" id="volume-max" placeholder="最大" class="filter-input">
-                        </div>
-                    </div>
-                    <!-- Turnover Amount -->
-                    <div class="filter-item">
-                        <label class="filter-label">成交额 (万元)</label>
-                        <div class="flex items-center gap-1 sm:gap-2">
-                            <input type="number" id="turnoverAmount-min" placeholder="最小" class="filter-input">
-                            <span class="text-gray-400">-</span>
-                            <input type="number" id="turnoverAmount-max" placeholder="最大" class="filter-input">
                         </div>
                     </div>
                     <!-- Sort By -->
