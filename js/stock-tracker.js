@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sectorListContainer = document.getElementById('sector-list');
     const sectorStatusMessage = document.getElementById('sector-status-message');
     const sectorSortControls = document.getElementById('sector-sort-controls');
+    const sectorTypeControls = document.getElementById('sector-type-controls');
+    const mainSectorTitle = document.getElementById('sector-list-title-main');
     const stockListTitle = document.getElementById('stock-list-title');
 
     // Filter Inputs
@@ -42,12 +44,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentChartStockCode = null;
     let currentView = 'market'; // 'market' or 'sector'
     let currentSector = {};
+    let currentSectorType = 'all'; // 'all', 'industry', 'concept', or 'region'
 
     // --- Main Functions ---
     async function init() {
         showLoading('正在获取所有A股代码...');
-        fetchHotSectors('f3'); // Initially sort by change percent
-        sectorUpdateInterval = setInterval(() => fetchHotSectors(sectorSortControls.querySelector('.active').dataset.sort, true), 8000);
+        fetchHotSectors(); // Initially load with default settings
+        sectorUpdateInterval = setInterval(() => {
+            const currentSort = sectorSortControls.querySelector('.active').dataset.sort;
+            fetchHotSectors(currentSort, currentSectorType, true);
+        }, 8000);
 
         try {
             const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataNew?page=1&num=8000&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
@@ -65,13 +71,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function fetchHotSectors(sortField = 'f3', isUpdate = false) {
+    async function fetchHotSectors(sortField = 'f3', sectorType = 'all', isUpdate = false) {
         if (!isUpdate) {
             sectorStatusMessage.innerHTML = `<div class="loader"></div><p class="mt-2 text-sm">正在加载板块数据...</p>`;
             sectorListContainer.innerHTML = '';
         }
         try {
-            const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=50&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=${sortField}&fs=m:90+t:2+f:!50&fields=f2,f3,f12,f14,f62,f104,f126`;
+            const fsMap = {
+                'all': 'm:90+f:!50',          // 全部
+                'industry': 'm:90+t:2+f:!50', // 行业
+                'concept': 'm:90+t:3+f:!50',  // 概念
+                'region': 'm:90+t:1+f:!50'    // 地区
+            };
+            const fs = fsMap[sectorType];
+            const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=${sortField}&fs=${fs}&fields=f2,f3,f12,f14,f62`;
             const response = await fetch(url);
             const data = await response.json();
             if (data && data.data && data.data.diff) {
@@ -97,34 +110,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSectors(sectors) {
         const fragment = document.createDocumentFragment();
-        sectors.forEach(sector => {
-            const card = document.createElement('div');
-            card.className = 'sector-card';
-            card.dataset.sectorCode = sector.f12;
-            card.dataset.sectorName = sector.f14;
-            card.dataset.stockCount = sector.f104;
+        sectors.forEach((sector, index) => {
+            const item = document.createElement('div');
+            item.className = 'sector-item';
+            item.dataset.sectorCode = sector.f12;
+            item.dataset.sectorName = sector.f14;
 
             if (currentView === 'sector' && currentSector.code === sector.f12) {
-                card.classList.add('active');
+                item.classList.add('active');
             }
 
             const colorClass = sector.f3 > 0 ? 'stock-up' : (sector.f3 < 0 ? 'stock-down' : 'stock-flat');
             const sign = sector.f3 > 0 ? '+' : '';
 
-            card.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2 truncate">
-                        <span class="sector-name truncate" title="${sector.f14}">${sector.f14}</span>
-                        <span class="sector-count">${sector.f104}家</span>
-                    </div>
-                    <span class="sector-change ${colorClass}">${sign}${sector.f3.toFixed(2)}%</span>
+            item.innerHTML = `
+                <div class="seq-cell">${index + 1}</div>
+                <div class="sector-name-cell">
+                    <span class="sector-name truncate" title="${sector.f14}">${sector.f14}</span>
                 </div>
-                <div class="flex justify-between items-center mt-1.5">
-                    <span class="sector-detail truncate">领涨股: ${sector.f126 || '--'}</span>
-                    <span class="sector-detail">净流入: ${formatNetInflow(sector.f62)}</span>
+                <div class="text-right font-bold ${colorClass}">
+                    <span>${sign}${sector.f3.toFixed(2)}%</span>
+                </div>
+                <div class="text-right sector-detail">
+                    <span>${formatNetInflow(sector.f62)}</span>
                 </div>
             `;
-            fragment.appendChild(card);
+            fragment.appendChild(item);
         });
         sectorListContainer.innerHTML = '';
         sectorListContainer.appendChild(fragment);
@@ -143,23 +154,55 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-
         const batchSize = 100;
-        const promises = [];
+        let priceData = [];
         for (let i = 0; i < stockCodes.length; i += batchSize) {
-            promises.push(fetchBatchData(stockCodes.slice(i, i + batchSize)));
+            const batch = stockCodes.slice(i, i + batchSize);
+            const results = await fetchBatchData(batch);
+            priceData.push(...results);
         }
 
         try {
-            const results = await Promise.all(promises);
-            allStockData = results.flat().filter(stock => stock && stock.price > 0);
+            allStockData = await mergeNetInflowData(priceData);
             applyFiltersAndRender({ preserveScroll: !isInitialLoad, source: 'fetch' });
             updateTimestamp();
         } catch (error) {
             if (isInitialLoad) showError('更新数据失败，请检查网络连接');
             console.error('Failed to fetch stock data:', error);
+            // Fallback to price data only if inflow fails
+            allStockData = priceData;
+            applyFiltersAndRender({ preserveScroll: !isInitialLoad, source: 'fetch' });
         }
     }
+
+    async function mergeNetInflowData(stocks) {
+        const stockMap = new Map(stocks.map(s => [s.code, s]));
+        const batchSize = 100;
+
+        for (let i = 0; i < stocks.length; i += batchSize) {
+            const batch = stocks.slice(i, i + batchSize);
+            const secids = batch.map(s => `${s.market === 'sh' ? 1 : 0}.${s.code}`).join(',');
+
+            try {
+                const url = `https://push2.eastmoney.com/api/qt/ulist/get?fltt=2&fields=f12,f62&secids=${secids}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data && data.data && data.data.diff) {
+                    data.data.diff.forEach(item => {
+                        const stock = stockMap.get(item.f12);
+                        if (stock) {
+                            stock.netInflow = item.f62 || 0;
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Failed to fetch net inflow for batch", e);
+            }
+        }
+        return Array.from(stockMap.values());
+    }
+
 
     async function fetchBatchData(codes) {
         if (codes.length === 0) return [];
@@ -185,9 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return {
                 code: parts[2], name: parts[1].trim(), price: parseFloat(parts[3]),
                 changePercent: parseFloat(parts[32]), volume: parseFloat(parts[6]),
-                turnover: parseFloat(parts[38]), turnoverAmount: parseFloat(parts[37]), market: market
+                turnover: parseFloat(parts[38]), turnoverAmount: parseFloat(parts[37]),
+                market: market, netInflow: 0 // Default value
             };
-        }).filter(Boolean);
+        }).filter(s => s && s.price > 0);
     }
 
 
@@ -197,11 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (allStockData.length > 0) {
             hideMessage();
         } else if (currentView === 'market') {
-            // Don't hide message if it's the initial market load
         } else {
             showError(`此板块下无成分股数据`);
         }
-
 
         const searchTerm = searchInput.value.trim().toLowerCase();
 
@@ -237,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showError(`板块 [${currentSector.name}] 下无成分股数据`);
         }
 
-        renderStockList(pageItems);
+        renderStockList(pageItems, startIndex);
         renderPagination(totalPages);
 
         if (preserveScroll) window.scrollTo({ top: scrollY, behavior: 'instant' });
@@ -254,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${amountInWanYuan.toFixed(0)}万`;
     }
 
-    function renderStockList(stocks) {
+    function renderStockList(stocks, startIndex) {
         if (stocks.length === 0 && allStockData.length > 0) {
             showError('没有满足筛选条件的股票');
             stockListContainer.innerHTML = '';
@@ -263,17 +305,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const fragment = document.createDocumentFragment();
-        stocks.forEach(stock => {
+        stocks.forEach((stock, index) => {
             const colorClass = stock.changePercent > 0 ? 'stock-up' : (stock.changePercent < 0 ? 'stock-down' : 'stock-flat');
             const sign = stock.changePercent > 0 ? '+' : '';
             const item = document.createElement('div');
             item.className = 'stock-item';
             item.dataset.stockCode = `${stock.market}${stock.code}`;
             item.dataset.stockName = stock.name;
+
+            const seq = startIndex + index + 1;
+
             item.innerHTML = `
-                <div class="stock-item-cell stock-name-cell"><div class="stock-name">${stock.name}</div><div class="stock-code">${stock.market.toUpperCase()}${stock.code}</div></div>
+                <div class="stock-item-cell seq-cell"><span>${seq}</span></div>
+                <div class="stock-item-cell stock-name-cell">
+                    <div class="stock-name">${stock.name}</div>
+                    <div class="stock-code">${stock.market.toUpperCase()}${stock.code}</div>
+                </div>
                 <div class="stock-item-cell ${colorClass}"><span class="mobile-label">最新价</span><span class="font-medium">${stock.price.toFixed(2)}</span></div>
                 <div class="stock-item-cell ${colorClass}"><span class="mobile-label">涨跌幅</span><span class="font-bold">${sign}${stock.changePercent.toFixed(2)}%</span></div>
+                <div class="stock-item-cell"><span class="mobile-label">主力净额</span><span>${formatNetInflow(stock.netInflow)}</span></div>
                 <div class="stock-item-cell"><span class="mobile-label">换手率</span><span>${stock.turnover.toFixed(2)}%</span></div>
                 <div class="stock-item-cell"><span class="mobile-label">成交量</span><span>${formatVolume(stock.volume)}</span></div>
                 <div class="stock-item-cell"><span class="mobile-label">成交额</span><span>${formatTurnoverAmount(stock.turnoverAmount)}</span></div>
@@ -450,30 +500,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Handlers ---
     async function handleSectorClick(e) {
-        const card = e.target.closest('.sector-card');
-        if (!card) return;
+        const item = e.target.closest('.sector-item');
+        if (!item) return;
 
-        const { sectorCode, sectorName, stockCount } = card.dataset;
-        const isActive = card.classList.contains('active');
+        const { sectorCode, sectorName } = item.dataset;
+        const isActive = item.classList.contains('active');
 
         if (isActive) {
-            handleBackToMarket(card);
+            handleBackToMarket(item);
             return;
         }
 
         currentView = 'sector';
         currentSector = { code: sectorCode, name: sectorName };
-        document.querySelectorAll('.sector-card.active').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-        stockListTitle.textContent = `板块: ${sectorName} (${stockCount}家)`;
+        document.querySelectorAll('.sector-item.active').forEach(c => c.classList.remove('active'));
+        item.classList.add('active');
+        stockListTitle.textContent = `板块: ${sectorName}`;
         currentPage = 1;
         clearInterval(updateInterval);
         allStockData = [];
         showLoading(`正在获取板块 [${sectorName}] 成分股...`);
 
         try {
-            // FIX: Use a more reliable endpoint to fetch all stocks in a sector
-            const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=${stockCount}&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b:${sectorCode}+f:!50&fields=f12,f13`;
+            // Use pz=500 as a reasonable limit for sector constituents
+            const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=500&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b:${sectorCode}+f:!50&fields=f12,f13`;
             const response = await fetch(url);
             const data = await response.json();
 
@@ -481,11 +531,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 stockCodes = [];
             } else {
                 stockCodes = data.data.diff.map(item => {
-                    const marketPrefix = item.f13 === 1 ? 'sh' : 'sz';
+                    const marketPrefix = item.f13 === 1 ? 'sh' : (item.f13 === 0 ? 'sz' : 'bj');
                     return `${marketPrefix}${item.f12}`;
                 });
             }
-
+            stockListTitle.textContent = `板块: ${sectorName} (${stockCodes.length}家)`;
             fetchStockData();
             updateInterval = setInterval(fetchStockData, 5000);
         } catch (error) {
@@ -519,9 +569,36 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.matches('.sector-sort-btn')) {
             sectorSortControls.querySelector('.active').classList.remove('active');
             e.target.classList.add('active');
-            fetchHotSectors(e.target.dataset.sort);
+            fetchHotSectors(e.target.dataset.sort, currentSectorType);
         }
     });
+
+    sectorTypeControls.addEventListener('click', (e) => {
+        if (e.target.matches('.sector-type-btn')) {
+            const newType = e.target.dataset.type;
+            if (newType === currentSectorType) return;
+
+            currentSectorType = newType;
+            const titleMap = {
+                'all': '全部板块',
+                'industry': '热门行业板块',
+                'concept': '热门概念板块',
+                'region': '热门地区板块'
+            };
+            mainSectorTitle.textContent = titleMap[newType];
+
+            sectorTypeControls.querySelector('.active').classList.remove('active');
+            e.target.classList.add('active');
+
+            const currentSort = sectorSortControls.querySelector('.active').dataset.sort;
+            fetchHotSectors(currentSort, currentSectorType);
+
+            if (currentView === 'sector') {
+                handleBackToMarket(null);
+            }
+        }
+    });
+
     sectorListContainer.addEventListener('click', handleSectorClick);
 
     // --- Initial Load ---

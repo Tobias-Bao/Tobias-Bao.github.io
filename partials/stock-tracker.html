@@ -44,17 +44,33 @@
 
             <!-- Hot Sectors Section -->
             <div id="hot-sectors-section" class="bg-gray-50 rounded-lg p-4 mb-6">
-                <div class="flex flex-wrap justify-between items-center mb-4">
-                    <h2 class="text-lg font-bold text-gray-800">热门板块</h2>
-                    <div id="sector-sort-controls" class="flex items-center gap-2">
-                        <span class="text-sm font-medium text-gray-600">排序:</span>
-                        <button class="sector-sort-btn active" data-sort="f3">涨跌幅</button>
-                        <button class="sector-sort-btn" data-sort="f62">主力净额</button>
+                <div class="flex flex-wrap justify-between items-center gap-y-3 mb-4">
+                    <h2 id="sector-list-title-main" class="text-lg font-bold text-gray-800">全部板块</h2>
+                    <div class="flex items-center gap-x-4">
+                        <div id="sector-type-controls" class="flex items-center gap-2 p-1 bg-gray-200 rounded-md">
+                            <button class="sector-type-btn active" data-type="all">全部板块</button>
+                            <button class="sector-type-btn" data-type="industry">行业板块</button>
+                            <button class="sector-type-btn" data-type="concept">概念板块</button>
+                            <button class="sector-type-btn" data-type="region">地区板块</button>
+                        </div>
+                        <div id="sector-sort-controls" class="flex items-center gap-2">
+                            <span class="text-sm font-medium text-gray-600">排序:</span>
+                            <button class="sector-sort-btn active" data-sort="f3">涨跌幅</button>
+                            <button class="sector-sort-btn" data-sort="f62">主力净额</button>
+                        </div>
                     </div>
                 </div>
                 <div id="sector-status-message" class="text-center py-5 text-gray-500"></div>
-                <div id="sector-list" class="sector-grid">
-                    <!-- Sector cards will be populated by JS -->
+                <div id="sector-list-wrapper" class="sector-list-wrapper">
+                    <div class="sector-list-header">
+                        <div class="seq-cell">序号</div>
+                        <div class="sector-name-cell">板块名称</div>
+                        <div class="text-right">涨跌幅</div>
+                        <div class="text-right">主力净额</div>
+                    </div>
+                    <div id="sector-list" class="sector-list-body">
+                        <!-- Sector items will be populated by JS -->
+                    </div>
                 </div>
             </div>
 
@@ -108,9 +124,10 @@
                         <label class="filter-label">排序指标</label>
                         <select id="sort-by" class="filter-input">
                             <option value="changePercent">涨跌幅</option>
+                            <option value="netInflow">主力净额</option>
                             <option value="turnover">换手率</option>
-                            <option value="volume">成交量</option>
                             <option value="turnoverAmount">成交额</option>
+                            <option value="volume">成交量</option>
                             <option value="price">最新价</option>
                         </select>
                     </div>
@@ -134,9 +151,11 @@
             <div id="stock-list-container" class="hidden">
                 <!-- Desktop Header -->
                 <div class="stock-grid-header">
+                    <div class="text-left font-semibold text-gray-600 seq-cell">序号</div>
                     <div class="text-left font-semibold text-gray-600">股票名称</div>
                     <div class="text-right font-semibold text-gray-600">最新价</div>
                     <div class="text-right font-semibold text-gray-600">涨跌幅</div>
+                    <div class="text-right font-semibold text-gray-600">主力净额</div>
                     <div class="text-right font-semibold text-gray-600">换手率</div>
                     <div class="text-right font-semibold text-gray-600">成交量</div>
                     <div class="text-right font-semibold text-gray-600">成交额</div>
