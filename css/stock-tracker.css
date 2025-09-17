@@ -255,7 +255,7 @@
     .stock-grid-header,
     .stock-item {
         display: grid;
-        grid-template-columns: 0.3fr 2fr 1fr 1fr 1.2fr 1fr 1fr 1.2fr;
+        grid-template-columns: 0.3fr 1.6fr 1fr 1fr 1.2fr 1fr 1fr 1.2fr;
         gap: 1rem;
         align-items: center;
         padding: 0.75rem 1rem;

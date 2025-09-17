@@ -119,25 +119,23 @@
                             <input type="number" id="turnover-max" placeholder="最大" class="filter-input">
                         </div>
                     </div>
-                    <!-- Sort By -->
+                    <!-- Sort Controls -->
                     <div class="filter-item">
-                        <label class="filter-label">排序指标</label>
-                        <select id="sort-by" class="filter-input">
-                            <option value="changePercent">涨跌幅</option>
-                            <option value="netInflow">主力净额</option>
-                            <option value="turnover">换手率</option>
-                            <option value="turnoverAmount">成交额</option>
-                            <option value="volume">成交量</option>
-                            <option value="price">最新价</option>
-                        </select>
-                    </div>
-                    <!-- Sort Direction -->
-                    <div class="filter-item">
-                        <label class="filter-label">排序方向</label>
-                        <select id="sort-direction" class="filter-input">
-                            <option value="desc">由大到小</option>
-                            <option value="asc">由小到大</option>
-                        </select>
+                        <label for="sort-by" class="filter-label">排序</label>
+                        <div class="flex items-center gap-2">
+                            <select id="sort-by" class="filter-input">
+                                <option value="changePercent">涨跌幅</option>
+                                <option value="netInflow">主力净额</option>
+                                <option value="turnover">换手率</option>
+                                <option value="turnoverAmount">成交额</option>
+                                <option value="volume">成交量</option>
+                                <option value="price">最新价</option>
+                            </select>
+                            <select id="sort-direction" class="filter-input">
+                                <option value="desc">由大到小</option>
+                                <option value="asc">由小到大</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

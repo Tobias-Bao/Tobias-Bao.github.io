@@ -77,19 +77,43 @@ document.addEventListener('DOMContentLoaded', () => {
             sectorListContainer.innerHTML = '';
         }
         try {
-            const fsMap = {
-                'all': 'm:90+f:!50',          // 全部
-                'industry': 'm:90+t:2+f:!50', // 行业
-                'concept': 'm:90+t:3+f:!50',  // 概念
-                'region': 'm:90+t:1+f:!50'    // 地区
+            let finalSectors = [];
+
+            const fetchSectorData = async (type) => {
+                const fsMap = {
+                    'industry': 'm:90+t:2+f:!50',
+                    'concept': 'm:90+t:3+f:!50',
+                    'region': 'm:90+t:1+f:!50'
+                };
+                const fs = fsMap[type];
+                if (!fs) return [];
+
+                const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=${sortField}&fs=${fs}&fields=f2,f3,f12,f14,f62`;
+                const response = await fetch(url);
+                const data = await response.json();
+                return (data && data.data && data.data.diff) ? data.data.diff : [];
             };
-            const fs = fsMap[sectorType];
-            const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=${sortField}&fs=${fs}&fields=f2,f3,f12,f14,f62`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data && data.data && data.data.diff) {
+
+            if (sectorType === 'all') {
+                const [industry, concept, region] = await Promise.all([
+                    fetchSectorData('industry'),
+                    fetchSectorData('concept'),
+                    fetchSectorData('region')
+                ]);
+
+                const combined = [...industry, ...concept, ...region];
+                const uniqueSectors = Array.from(new Map(combined.map(s => [s.f12, s])).values());
+
+                uniqueSectors.sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0));
+                finalSectors = uniqueSectors;
+
+            } else {
+                finalSectors = await fetchSectorData(sectorType);
+            }
+
+            if (finalSectors.length > 0) {
                 sectorStatusMessage.style.display = 'none';
-                renderSectors(data.data.diff);
+                renderSectors(finalSectors);
             } else {
                 throw new Error("无板块数据返回");
             }
@@ -298,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderStockList(stocks, startIndex) {
         if (stocks.length === 0 && allStockData.length > 0) {
-            showError('没有满足筛选条件的股票');
+            showError('沒有满足筛选条件的股票');
             stockListContainer.innerHTML = '';
             document.getElementById('stock-list-container').classList.add('hidden');
             return;
@@ -581,9 +605,9 @@ document.addEventListener('DOMContentLoaded', () => {
             currentSectorType = newType;
             const titleMap = {
                 'all': '全部板块',
-                'industry': '热门行业板块',
-                'concept': '热门概念板块',
-                'region': '热门地区板块'
+                'industry': '行业板块',
+                'concept': '概念板块',
+                'region': '地区板块'
             };
             mainSectorTitle.textContent = titleMap[newType];
 
@@ -604,4 +628,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initial Load ---
     init();
 });
-
