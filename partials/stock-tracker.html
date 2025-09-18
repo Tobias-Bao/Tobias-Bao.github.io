@@ -44,19 +44,24 @@
 
             <!-- Hot Sectors Section -->
             <div id="hot-sectors-section" class="bg-gray-50 rounded-lg p-4 mb-6">
-                <div class="flex flex-wrap justify-between items-center gap-y-3 mb-4">
-                    <h2 id="sector-list-title-main" class="text-lg font-bold text-gray-800">全部板块</h2>
-                    <div class="flex items-center gap-x-4">
-                        <div id="sector-type-controls" class="flex items-center gap-2 p-1 bg-gray-200 rounded-md">
-                            <button class="sector-type-btn active" data-type="all">全部板块</button>
-                            <button class="sector-type-btn" data-type="industry">行业板块</button>
-                            <button class="sector-type-btn" data-type="concept">概念板块</button>
-                            <button class="sector-type-btn" data-type="region">地区板块</button>
+                <div class="flex flex-wrap justify-between items-end gap-x-4 gap-y-3 mb-4">
+                    <h2 id="sector-list-title-main" class="text-lg font-bold text-gray-800 w-full md:w-auto">全部板块</h2>
+                    <div class="flex flex-col md:flex-row items-end gap-x-4 gap-y-3 w-full md:w-auto">
+                        <div class="filter-item w-full md:w-auto">
+                            <label for="sector-type-select" class="filter-label">板块类型</label>
+                            <select id="sector-type-select" class="filter-input">
+                                <option value="all" selected>全部板块</option>
+                                <option value="industry">行业板块</option>
+                                <option value="concept">概念板块</option>
+                                <option value="region">地区板块</option>
+                            </select>
                         </div>
-                        <div id="sector-sort-controls" class="flex items-center gap-2">
-                            <span class="text-sm font-medium text-gray-600">排序:</span>
-                            <button class="sector-sort-btn active" data-sort="f3">涨跌幅</button>
-                            <button class="sector-sort-btn" data-sort="f62">主力净额</button>
+                        <div class="filter-item w-full md:w-auto">
+                            <label for="sector-sort-by" class="filter-label">板块排序</label>
+                            <select id="sector-sort-by" class="filter-input">
+                                <option value="f3" selected>涨跌幅</option>
+                                <option value="f62">主力净额</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -86,7 +91,7 @@
                         <label for="search-input" class="filter-label">在当前列表搜索 (名称/代码)</label>
                         <div class="relative">
                             <input type="text" id="search-input" placeholder="例如: 贵州茅台 或 600519"
-                                class="filter-input w-full pl-10">
+                                class="filter-input w-full">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <i data-lucide="search" class="h-5 w-5 text-gray-400"></i>
                             </div>
@@ -121,21 +126,15 @@
                     </div>
                     <!-- Sort Controls -->
                     <div class="filter-item">
-                        <label for="sort-by" class="filter-label">排序</label>
-                        <div class="flex items-center gap-2">
-                            <select id="sort-by" class="filter-input">
-                                <option value="changePercent">涨跌幅</option>
-                                <option value="netInflow">主力净额</option>
-                                <option value="turnover">换手率</option>
-                                <option value="turnoverAmount">成交额</option>
-                                <option value="volume">成交量</option>
-                                <option value="price">最新价</option>
-                            </select>
-                            <select id="sort-direction" class="filter-input">
-                                <option value="desc">由大到小</option>
-                                <option value="asc">由小到大</option>
-                            </select>
-                        </div>
+                        <label for="sort-by" class="filter-label">股票排序</label>
+                        <select id="sort-by" class="filter-input">
+                            <option value="changePercent">涨跌幅</option>
+                            <option value="netInflow">主力净额</option>
+                            <option value="turnover">换手率</option>
+                            <option value="turnoverAmount">成交额</option>
+                            <option value="volume">成交量</option>
+                            <option value="price">最新价</option>
+                        </select>
                     </div>
                 </div>
             </div>

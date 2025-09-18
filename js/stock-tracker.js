@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const stockListContainer = document.getElementById('stock-list');
     const statusMessage = document.getElementById('status-message');
     const sortBySelect = document.getElementById('sort-by');
-    const sortDirectionSelect = document.getElementById('sort-direction');
     const lastUpdated = document.getElementById('last-updated');
     const paginationControls = document.getElementById('pagination-controls');
     const searchInput = document.getElementById('search-input');
@@ -11,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sector Elements
     const sectorListContainer = document.getElementById('sector-list');
     const sectorStatusMessage = document.getElementById('sector-status-message');
-    const sectorSortControls = document.getElementById('sector-sort-controls');
-    const sectorTypeControls = document.getElementById('sector-type-controls');
+    const sectorSortBySelect = document.getElementById('sector-sort-by');
+    const sectorTypeSelect = document.getElementById('sector-type-select');
     const mainSectorTitle = document.getElementById('sector-list-title-main');
     const stockListTitle = document.getElementById('stock-list-title');
 
@@ -51,8 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoading('正在获取所有A股代码...');
         fetchHotSectors(); // Initially load with default settings
         sectorUpdateInterval = setInterval(() => {
-            const currentSort = sectorSortControls.querySelector('.active').dataset.sort;
-            fetchHotSectors(currentSort, currentSectorType, true);
+            const sortField = sectorSortBySelect.value;
+            fetchHotSectors(sortField, currentSectorType, true);
         }, 8000);
 
         try {
@@ -88,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const fs = fsMap[type];
                 if (!fs) return [];
 
+                // po=1 means sort descending
                 const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=${sortField}&fs=${fs}&fields=f2,f3,f12,f14,f62`;
                 const response = await fetch(url);
                 const data = await response.json();
@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const combined = [...industry, ...concept, ...region];
                 const uniqueSectors = Array.from(new Map(combined.map(s => [s.f12, s])).values());
 
+                // Always sort descending
                 uniqueSectors.sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0));
                 finalSectors = uniqueSectors;
 
@@ -284,8 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const sortBy = sortBySelect.value;
-        const sortDirection = sortDirectionSelect.value;
-        filteredStockData.sort((a, b) => (sortDirection === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy]));
+        // Always sort descending (from large to small)
+        filteredStockData.sort((a, b) => b[sortBy] - a[sortBy]);
 
         renderPage({ preserveScroll });
     }
@@ -611,44 +612,32 @@ document.addEventListener('DOMContentLoaded', () => {
     allFilterInputs.forEach(input => input.addEventListener('input', debouncedRender));
     searchInput.addEventListener('input', debouncedRender);
     sortBySelect.addEventListener('change', () => applyFiltersAndRender({ source: 'user' }));
-    sortDirectionSelect.addEventListener('change', () => applyFiltersAndRender({ source: 'user' }));
 
-    sectorSortControls.addEventListener('click', (e) => {
-        if (e.target.matches('.sector-sort-btn')) {
-            sectorSortControls.querySelector('.active').classList.remove('active');
-            e.target.classList.add('active');
-            fetchHotSectors(e.target.dataset.sort, currentSectorType);
+    sectorSortBySelect.addEventListener('change', () => {
+        const sortField = sectorSortBySelect.value;
+        fetchHotSectors(sortField, currentSectorType);
+    });
+
+    sectorTypeSelect.addEventListener('change', (e) => {
+        const newType = e.target.value;
+        if (newType === currentSectorType) return;
+
+        currentSectorType = newType;
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        mainSectorTitle.textContent = selectedOption.textContent;
+
+        const sortField = sectorSortBySelect.value;
+        fetchHotSectors(sortField, currentSectorType);
+
+        if (currentView === 'sector') {
+            handleBackToMarket(null);
         }
     });
 
-    sectorTypeControls.addEventListener('click', (e) => {
-        if (e.target.matches('.sector-type-btn')) {
-            const newType = e.target.dataset.type;
-            if (newType === currentSectorType) return;
-
-            currentSectorType = newType;
-            const titleMap = {
-                'all': '全部板块',
-                'industry': '行业板块',
-                'concept': '概念板块',
-                'region': '地区板块'
-            };
-            mainSectorTitle.textContent = titleMap[newType];
-
-            sectorTypeControls.querySelector('.active').classList.remove('active');
-            e.target.classList.add('active');
-
-            const currentSort = sectorSortControls.querySelector('.active').dataset.sort;
-            fetchHotSectors(currentSort, currentSectorType);
-
-            if (currentView === 'sector') {
-                handleBackToMarket(null);
-            }
-        }
-    });
 
     sectorListContainer.addEventListener('click', handleSectorClick);
 
     // --- Initial Load ---
     init();
 });
+

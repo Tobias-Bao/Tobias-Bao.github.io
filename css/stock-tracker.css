@@ -16,45 +16,6 @@
     }
 }
 
-/* --- Hot Sectors --- */
-.sector-type-btn {
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #4b5563;
-    background-color: transparent;
-    border: 1px solid transparent;
-    transition: all 0.2s ease-in-out;
-}
-
-.sector-type-btn.active {
-    background-color: white;
-    color: #f43f5e;
-    border-color: #f9a8d4;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-}
-
-
-.sector-sort-btn {
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #4b5563;
-    background-color: #e5e7eb;
-    transition: all 0.2s ease-in-out;
-}
-
-.sector-sort-btn:hover {
-    background-color: #d1d5db;
-}
-
-.sector-sort-btn.active {
-    background-color: #f43f5e;
-    color: white;
-}
-
 /* New Vertical List Styles */
 .sector-list-wrapper {
     border: 1px solid #e5e7eb;
@@ -87,7 +48,8 @@
 .sector-list-header,
 .sector-item {
     display: grid;
-    grid-template-columns: 0.3fr 3fr 1fr 1.5fr;
+    /* Adjusted desktop column widths for better balance */
+    grid-template-columns: 0.3fr 2.8fr 1.2fr 1.5fr;
     gap: 1rem;
     align-items: center;
     padding: 0.75rem 1rem;
@@ -196,6 +158,12 @@
     outline: none;
 }
 
+/* 为搜索框增加左内边距以容纳图标 */
+#search-input {
+    padding-left: 2.5rem;
+    /* 40px */
+}
+
 
 /* --- Stock List --- */
 .stock-grid-header {
@@ -205,7 +173,8 @@
     font-size: 0.875rem;
     border-bottom: 2px solid #e5e7eb;
     margin-bottom: 0.5rem;
-    grid-template-columns: 0.3fr 1.6fr 1fr 1fr 1.2fr 1fr 1fr 1.2fr;
+    /* Adjusted desktop column widths for better balance */
+    grid-template-columns: 0.3fr 2fr 1fr 1fr 1.2fr 0.9fr 0.9fr 1.2fr;
     gap: 1rem;
 }
 
@@ -250,7 +219,8 @@
 
     .desktop-view-grid {
         display: grid;
-        grid-template-columns: 0.3fr 1.6fr 1fr 1fr 1.2fr 1fr 1fr 1.2fr;
+        /* Adjusted desktop column widths for better balance */
+        grid-template-columns: 0.3fr 2fr 1fr 1fr 1.2fr 0.9fr 0.9fr 1.2fr;
         gap: 1rem;
         align-items: center;
         padding: 0.75rem 1rem;
@@ -280,17 +250,8 @@
         gap: 1rem;
     }
 
-    #sector-type-controls,
-    #sector-sort-controls {
-        display: flex;
-        justify-content: center;
+    .filter-item {
         width: 100%;
-    }
-
-    #sector-type-controls .sector-type-btn,
-    #sector-sort-controls .sector-sort-btn {
-        flex-grow: 1;
-        text-align: center;
     }
 
     /* Sector List */
@@ -303,17 +264,23 @@
     }
 
     .sector-item {
-        grid-template-columns: 1fr auto;
+        /* New grid for mobile to show Name, Change%, and Net Inflow */
+        grid-template-columns: 2fr 1fr 1.2fr;
         padding: 0.75rem;
     }
 
-    .sector-item .seq-cell,
-    .sector-item .sector-detail {
+    .sector-item .seq-cell {
         display: none;
     }
 
+    .sector-item .sector-detail {
+        /* Made Net Inflow column visible on mobile */
+        display: block;
+        text-align: right;
+    }
+
     .sector-item .text-right:not(.sector-detail) {
-        grid-column: 2;
+        text-align: right;
     }
 
     /* Filter Grid */
