@@ -145,21 +145,17 @@
 /* --- Filter Section --- */
 .filter-grid {
     display: grid;
-    /* Mobile: 2 columns */
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     align-items: end;
-    /* Align to bottom for consistent vertical alignment */
 }
 
-/* Tablet: 3 columns */
 @media (min-width: 768px) {
     .filter-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-/* Desktop: 4 columns */
 @media (min-width: 1280px) {
     .filter-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -184,9 +180,7 @@
     box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease-in-out;
     height: 42px;
-    /* Set consistent height */
     -moz-appearance: textfield;
-    /* Firefox */
 }
 
 .filter-input::-webkit-outer-spin-button,
@@ -198,7 +192,6 @@
 
 .filter-input:focus {
     border-color: #fb7185;
-    /* rose-400 */
     box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.2);
     outline: none;
 }
@@ -207,12 +200,13 @@
 /* --- Stock List --- */
 .stock-grid-header {
     display: none;
-    /* Hidden by default, shown on desktop */
     align-items: center;
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
     border-bottom: 2px solid #e5e7eb;
     margin-bottom: 0.5rem;
+    grid-template-columns: 0.3fr 1.6fr 1fr 1fr 1.2fr 1fr 1fr 1.2fr;
+    gap: 1rem;
 }
 
 .stock-item {
@@ -243,26 +237,23 @@
     color: #6b7280;
 }
 
-.mobile-label {
-    color: #6b7280;
-    /* Gray-500 */
-    margin-right: 0.5rem;
+.mobile-view-card {
+    display: none;
 }
+
 
 /* Desktop Layout (Grid) */
 @media (min-width: 768px) {
+    .stock-grid-header {
+        display: grid;
+    }
 
-    .stock-grid-header,
-    .stock-item {
+    .desktop-view-grid {
         display: grid;
         grid-template-columns: 0.3fr 1.6fr 1fr 1fr 1.2fr 1fr 1fr 1.2fr;
         gap: 1rem;
         align-items: center;
         padding: 0.75rem 1rem;
-    }
-
-    .stock-grid-header {
-        display: grid;
     }
 
     .stock-item {
@@ -274,56 +265,114 @@
         background-color: #f9fafb;
         border-color: #e5e7eb;
     }
+}
 
-    .mobile-label {
+/* --- Mobile Optimizations --- */
+@media (max-width: 767px) {
+    #tracker-card {
+        padding: 1rem;
+    }
+
+    /* Sector Controls */
+    #hot-sectors-section .flex-wrap {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    #sector-type-controls,
+    #sector-sort-controls {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    #sector-type-controls .sector-type-btn,
+    #sector-sort-controls .sector-sort-btn {
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    /* Sector List */
+    .sector-list-header {
         display: none;
     }
 
-    /* Hide mobile labels on desktop */
-    .stock-item-cell {
-        text-align: right;
+    .sector-list-wrapper {
+        max-height: 350px;
     }
 
-    .stock-item-cell.stock-name-cell {
-        text-align: left;
+    .sector-item {
+        grid-template-columns: 1fr auto;
+        padding: 0.75rem;
     }
-}
 
+    .sector-item .seq-cell,
+    .sector-item .sector-detail {
+        display: none;
+    }
 
-/* Mobile Layout (Flexbox Column) */
-@media (max-width: 767px) {
-    .stock-item {
-        display: flex;
-        flex-direction: column;
+    .sector-item .text-right:not(.sector-detail) {
+        grid-column: 2;
+    }
+
+    /* Filter Grid */
+    .filter-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .filter-item[style*="grid-column"] {
+        grid-column: auto;
+    }
+
+    .filter-item .flex {
+        gap: 0.5rem;
+    }
+
+    /* Stock List */
+    .desktop-view-grid {
+        display: none;
+    }
+
+    .mobile-view-card {
+        display: block;
         padding: 0.75rem;
         border-radius: 0.5rem;
         background-color: #f9fafb;
         border: 1px solid #f3f4f6;
     }
 
-    .stock-item>div {
-        /* Each data row */
+    .mobile-main-info {
         display: flex;
         justify-content: space-between;
-        padding: 0.375rem 0;
-        font-size: 0.9rem;
-    }
-
-    .stock-name-cell {
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 0.25rem;
-        flex-direction: column;
-        align-items: flex-start !important;
-    }
-
-    .stock-item-cell {
         align-items: center;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
     }
 
-    .stock-item-cell.seq-cell {
-        display: none;
-        /* Hide sequence number on mobile for space */
+    .mobile-secondary-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .info-pair {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        color: #6b7280;
+        font-size: 0.75rem;
+        margin-bottom: 0.125rem;
+    }
+
+    .info-value {
+        font-weight: 500;
+        color: #1f2937;
     }
 }
 
@@ -331,7 +380,6 @@
 .pagination-btn {
     display: inline-flex;
     justify-content: center;
-    /* Center text inside button */
     align-items: center;
     padding: 0.5rem 1rem;
     border: 1px solid #D1D5DB;
@@ -341,7 +389,6 @@
     color: #374151;
     transition: all 0.2s ease-in-out;
     white-space: nowrap;
-    /* Prevent text from wrapping */
 }
 
 .pagination-btn:not(:disabled):hover {
@@ -354,48 +401,35 @@
     cursor: not-allowed;
 }
 
-/* Mobile Pagination Layout */
 #pagination-controls {
     gap: 0.75rem;
-    /* gap between items */
 }
 
 #pagination-controls>.pagination-btn {
     flex-grow: 1;
-    /* Buttons take up available space */
     flex-basis: 0;
-    /* Allow them to shrink and grow from 0 */
 }
 
 #pagination-controls>span {
     flex-basis: 100%;
-    /* Text info takes full width */
     text-align: center;
     order: -1;
-    /* Moves text to the top of the flex container */
 }
 
-/* Desktop Pagination Layout (sm breakpoint from Tailwind) */
 @media (min-width: 640px) {
     #pagination-controls {
         flex-wrap: nowrap;
-        /* Revert to one line */
     }
 
     #pagination-controls>.pagination-btn {
         flex-grow: 0;
-        /* Revert grow behavior */
         padding-left: 2rem;
-        /* 32px */
         padding-right: 2rem;
-        /* 32px */
     }
 
     #pagination-controls>span {
         flex-basis: auto;
-        /* Revert basis */
         order: 0;
-        /* Revert order */
     }
 }
 
@@ -406,7 +440,6 @@
     height: 32px;
     border: 4px solid #f3f3f3;
     border-top: 4px solid #f43f5e;
-    /* rose-500 */
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto;
@@ -444,51 +477,38 @@
     border-radius: 0.375rem;
     font-weight: 500;
     color: #4b5563;
-    /* gray-600 */
     background-color: #f3f4f6;
-    /* gray-100 */
     transition: all 0.2s ease-in-out;
 }
 
 .time-range-btn:hover {
     background-color: #e5e7eb;
-    /* gray-200 */
     color: #1f2937;
-    /* gray-800 */
 }
 
 .time-range-btn.active {
     background-color: #f43f5e;
-    /* rose-500 */
     color: white;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-/* --- Mobile Chart Modal Optimizations --- */
 @media (max-width: 767px) {
     #stock-chart-modal .modal-content {
         padding: 1rem;
-        /* 16px */
         max-height: 90vh;
-        /* More vertical space */
     }
 
     #stock-chart-modal #chart-stock-name {
         font-size: 1.125rem;
-        /* text-lg */
     }
 
     #stock-chart-modal #chart-time-range {
         flex-wrap: wrap;
-        /* Allow buttons to wrap */
         gap: 0.5rem;
-        /* Reduce gap */
     }
 
     #stock-chart-modal .time-range-btn {
         padding: 0.375rem 0.75rem;
-        /* Smaller buttons */
         font-size: 0.875rem;
-        /* text-sm */
     }
 }

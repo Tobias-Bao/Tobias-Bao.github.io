@@ -339,18 +339,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const seq = startIndex + index + 1;
 
+            // This new structure uses CSS to show the correct layout for mobile/desktop
             item.innerHTML = `
-                <div class="stock-item-cell seq-cell"><span>${seq}</span></div>
-                <div class="stock-item-cell stock-name-cell">
-                    <div class="stock-name">${stock.name}</div>
-                    <div class="stock-code">${stock.market.toUpperCase()}${stock.code}</div>
+                <!-- Desktop View: A single grid row -->
+                <div class="desktop-view-grid">
+                    <div class="text-center text-gray-500 text-sm">${seq}</div>
+                    <div class="text-left">
+                        <div class="stock-name">${stock.name}</div>
+                        <div class="stock-code">${stock.market.toUpperCase()}${stock.code}</div>
+                    </div>
+                    <div class="text-right ${colorClass} font-medium">${stock.price.toFixed(2)}</div>
+                    <div class="text-right ${colorClass} font-bold">${sign}${stock.changePercent.toFixed(2)}%</div>
+                    <div class="text-right">${formatNetInflow(stock.netInflow)}</div>
+                    <div class="text-right">${stock.turnover.toFixed(2)}%</div>
+                    <div class="text-right">${formatVolume(stock.volume)}</div>
+                    <div class="text-right">${formatTurnoverAmount(stock.turnoverAmount)}</div>
                 </div>
-                <div class="stock-item-cell ${colorClass}"><span class="mobile-label">最新价</span><span class="font-medium">${stock.price.toFixed(2)}</span></div>
-                <div class="stock-item-cell ${colorClass}"><span class="mobile-label">涨跌幅</span><span class="font-bold">${sign}${stock.changePercent.toFixed(2)}%</span></div>
-                <div class="stock-item-cell"><span class="mobile-label">主力净额</span><span>${formatNetInflow(stock.netInflow)}</span></div>
-                <div class="stock-item-cell"><span class="mobile-label">换手率</span><span>${stock.turnover.toFixed(2)}%</span></div>
-                <div class="stock-item-cell"><span class="mobile-label">成交量</span><span>${formatVolume(stock.volume)}</span></div>
-                <div class="stock-item-cell"><span class="mobile-label">成交额</span><span>${formatTurnoverAmount(stock.turnoverAmount)}</span></div>
+
+                <!-- Mobile View: A compact card -->
+                <div class="mobile-view-card">
+                    <div class="mobile-main-info">
+                        <div>
+                            <div class="stock-name">${stock.name}</div>
+                            <div class="stock-code">${stock.market.toUpperCase()}${stock.code}</div>
+                        </div>
+                        <div class="text-right ${colorClass}">
+                            <div class="font-medium text-lg">${stock.price.toFixed(2)}</div>
+                            <div class="font-bold">${sign}${stock.changePercent.toFixed(2)}%</div>
+                        </div>
+                    </div>
+                    <div class="mobile-secondary-info">
+                        <div class="info-pair"><span class="info-label">主力净额</span><span class="info-value">${formatNetInflow(stock.netInflow)}</span></div>
+                        <div class="info-pair"><span class="info-label">换手率</span><span class="info-value">${stock.turnover.toFixed(2)}%</span></div>
+                        <div class="info-pair"><span class="info-label">成交量</span><span class="info-value">${formatVolume(stock.volume)}</span></div>
+                        <div class="info-pair"><span class="info-label">成交额</span><span class="info-value">${formatTurnoverAmount(stock.turnoverAmount)}</span></div>
+                    </div>
+                </div>
             `;
             fragment.appendChild(item);
         });
