@@ -12,8 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <!-- 替换为 ECharts 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/stock-tracker.css">
 </head>
@@ -46,7 +46,7 @@
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
                 <div class="filter-grid">
                     <!-- Search Input -->
-                    <div class="filter-item" style="grid-column: 1 / -1;">
+                    <div class="filter-item search-bar">
                         <label for="search-input" class="filter-label">搜索股票 (名称/代码)</label>
                         <div class="relative">
                             <i data-lucide="search"
@@ -59,27 +59,27 @@
                     <div class="filter-item">
                         <label class="filter-label">最新价 (元)</label>
                         <div class="flex items-center gap-1 sm:gap-2">
-                            <input type="number" id="price-min" placeholder="最小" class="filter-input">
+                            <input type="number" id="price-min" placeholder="最低" class="filter-input">
                             <span class="text-gray-400">-</span>
-                            <input type="number" id="price-max" placeholder="最大" class="filter-input">
+                            <input type="number" id="price-max" placeholder="最高" class="filter-input">
                         </div>
                     </div>
                     <!-- Change Percent -->
                     <div class="filter-item">
                         <label class="filter-label">涨跌幅 (%)</label>
                         <div class="flex items-center gap-1 sm:gap-2">
-                            <input type="number" id="changePercent-min" placeholder="最小" class="filter-input">
+                            <input type="number" id="changePercent-min" placeholder="最低" class="filter-input">
                             <span class="text-gray-400">-</span>
-                            <input type="number" id="changePercent-max" placeholder="最大" class="filter-input">
+                            <input type="number" id="changePercent-max" placeholder="最高" class="filter-input">
                         </div>
                     </div>
                     <!-- Turnover Rate -->
                     <div class="filter-item">
                         <label class="filter-label">换手率 (%)</label>
                         <div class="flex items-center gap-1 sm:gap-2">
-                            <input type="number" id="turnover-min" placeholder="最小" class="filter-input">
+                            <input type="number" id="turnover-min" placeholder="最低" class="filter-input">
                             <span class="text-gray-400">-</span>
-                            <input type="number" id="turnover-max" placeholder="最大" class="filter-input">
+                            <input type="number" id="turnover-max" placeholder="最高" class="filter-input">
                         </div>
                     </div>
                     <!-- Sort Controls -->
@@ -89,6 +89,8 @@
                             <option value="changePercent">涨跌幅</option>
                             <option value="turnover">换手率</option>
                             <option value="turnoverAmount">成交额</option>
+                            <option value="marketCap">总市值</option>
+                            <option value="pe">市盈率</option>
                             <option value="volume">成交量</option>
                             <option value="price">最新价</option>
                         </select>
@@ -110,8 +112,10 @@
                     <div class="text-right font-semibold text-gray-600">最新价</div>
                     <div class="text-right font-semibold text-gray-600">涨跌幅</div>
                     <div class="text-right font-semibold text-gray-600">换手率</div>
+                    <div class="text-right font-semibold text-gray-600">市盈率</div>
                     <div class="text-right font-semibold text-gray-600">成交量</div>
                     <div class="text-right font-semibold text-gray-600">成交额</div>
+                    <div class="text-right font-semibold text-gray-600">总市值</div>
                 </div>
                 <!-- List Content -->
                 <div id="stock-list" class="space-y-2 md:space-y-1">
@@ -127,7 +131,7 @@
 
             <!-- Data Source Disclaimer -->
             <div class="text-center text-xs text-gray-400 mt-6 border-t pt-4">
-                <p>数据来源：新浪财经、腾讯财经</p>
+                <p>数据来源：新浪财经、腾讯财经、东方财富</p>
                 <p>行情数据仅供参考，不构成任何投资建议</p>
             </div>
 
@@ -153,17 +157,16 @@
                         class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10 hidden">
                         <div class="loader"></div>
                     </div>
-                    <canvas id="stock-chart"></canvas>
+                    <!-- ECharts container -->
+                    <div id="stock-chart" style="width: 100%; height: 100%;"></div>
                 </div>
                 <!-- Time Range Buttons -->
                 <div id="chart-time-range"
                     class="flex justify-center items-center gap-2 mt-4 pt-4 border-t border-gray-200 flex-shrink-0 flex-wrap">
                     <button class="time-range-btn active" data-range="intraday">分时</button>
-                    <button class="time-range-btn" data-range="daily">日线</button>
-                    <button class="time-range-btn" data-range="weekly">周线</button>
-                    <button class="time-range-btn" data-range="monthly">月线</button>
-                    <button class="time-range-btn" data-range="quarterly">季线</button>
-                    <button class="time-range-btn" data-range="yearly">年线</button>
+                    <button class="time-range-btn" data-range="daily">日K</button>
+                    <button class="time-range-btn" data-range="weekly">周K</button>
+                    <button class="time-range-btn" data-range="monthly">月K</button>
                 </div>
             </div>
         </div>

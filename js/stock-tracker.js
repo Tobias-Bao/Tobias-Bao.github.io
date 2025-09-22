@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chartStockName = document.getElementById('chart-stock-name');
     const chartTimeRangeContainer = document.getElementById('chart-time-range');
     const chartLoader = document.getElementById('chart-loader');
-    const chartCanvas = document.getElementById('stock-chart');
+    const chartContainer = document.getElementById('stock-chart');
 
     // App State
     let allStockData = [];
@@ -36,12 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
     async function init() {
         showLoading('正在获取所有A股代码...');
         try {
+            // 获取所有A股代码
             const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataNew?page=1&num=8000&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
             const data = await response.json();
             if (data && Array.isArray(data)) {
                 allMarketStockCodes = data.map(item => item.symbol);
             }
             fetchStockData();
+            // 每5秒刷新一次数据
             updateInterval = setInterval(fetchStockData, 5000);
             initModal();
         } catch (error) {
@@ -71,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchBatchData(codes) {
         if (codes.length === 0) return [];
+        // 使用腾讯财经接口批量获取数据
         const url = `https://qt.gtimg.cn/q=${codes.join(',')}`;
         try {
             const response = await fetch(url);
@@ -88,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const lines = rawData.trim().split('\n');
         return lines.map(line => {
             const parts = line.split('~');
-            if (parts.length < 40) return null;
+            if (parts.length < 50) return null;
 
             const marketInfo = parts[0];
             let market = 'sz';
@@ -96,14 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (marketInfo.includes('bj')) market = 'bj';
 
             return {
-                code: parts[2], name: parts[1].trim(), price: parseFloat(parts[3]),
-                changePercent: parseFloat(parts[32]), volume: parseFloat(parts[6]),
-                turnover: parseFloat(parts[38]), turnoverAmount: parseFloat(parts[37]),
+                code: parts[2],
+                name: parts[1].trim(),
+                price: parseFloat(parts[3]),
+                changePercent: parseFloat(parts[32]),
+                volume: parseFloat(parts[6]), // 成交量 (手)
+                turnover: parseFloat(parts[38]), // 换手率 (%)
+                turnoverAmount: parseFloat(parts[37]), // 成交额 (万)
+                pe: parseFloat(parts[39]), // 市盈率
+                marketCap: parseFloat(parts[45]), // 总市值 (亿)
                 market: market
             };
-        }).filter(s => s && s.price > 0);
+        }).filter(s => s && s.price > 0 && s.marketCap > 0);
     }
-
 
     function applyFiltersAndRender({ preserveScroll = false, source = 'user' } = {}) {
         if (source === 'user') currentPage = 1;
@@ -114,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const searchTerm = searchInput.value.trim().toLowerCase();
 
+        // Updated filters object, removing PE and MarketCap
         const filters = {
             price: { min: parseFloat(document.getElementById('price-min').value) || 0, max: parseFloat(document.getElementById('price-max').value) || Infinity },
             changePercent: { min: parseFloat(document.getElementById('changePercent-min').value) || -Infinity, max: parseFloat(document.getElementById('changePercent-max').value) || Infinity },
@@ -122,7 +131,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         filteredStockData = allStockData.filter(stock => {
             const matchesSearch = searchTerm === '' || stock.name.toLowerCase().includes(searchTerm) || stock.code.includes(searchTerm);
-            const matchesFilters = Object.keys(filters).every(key => stock[key] >= filters[key].min && stock[key] <= filters[key].max);
+            // Updated filtering logic
+            const matchesFilters = Object.keys(filters).every(key => {
+                return stock[key] >= filters[key].min && stock[key] <= filters[key].max;
+            });
             return matchesSearch && matchesFilters;
         });
 
@@ -141,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const endIndex = startIndex + itemsPerPage;
         const pageItems = filteredStockData.slice(startIndex, endIndex);
 
-        if (pageItems.length === 0 && searchInput.value.trim().length > 0) {
+        if (pageItems.length === 0 && (searchInput.value.trim().length > 0 || allFilterInputs.some(i => i.value !== ''))) {
             showError('没有满足筛选条件的股票');
         }
 
@@ -151,20 +163,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (preserveScroll) window.scrollTo({ top: scrollY, behavior: 'instant' });
     }
 
-    function formatVolume(volumeInShou) {
-        if (volumeInShou >= 100000000) return `${(volumeInShou / 100000000).toFixed(2)}亿手`;
-        if (volumeInShou >= 10000) return `${(volumeInShou / 10000).toFixed(2)}万手`;
-        return `${volumeInShou.toFixed(0)}手`;
-    }
-
-    function formatTurnoverAmount(amountInWanYuan) {
-        if (amountInWanYuan >= 10000) return `${(amountInWanYuan / 10000).toFixed(2)}亿`;
-        return `${amountInWanYuan.toFixed(0)}万`;
-    }
+    // --- Formatters ---
+    const formatters = {
+        volume: (v) => v >= 10000 ? `${(v / 10000).toFixed(2)}万手` : `${v.toFixed(0)}手`,
+        turnoverAmount: (v) => v >= 10000 ? `${(v / 10000).toFixed(2)}亿` : `${v.toFixed(0)}万`,
+        marketCap: (v) => v >= 10000 ? `${(v / 10000).toFixed(2)}万亿` : `${v.toFixed(0)}亿`,
+        pe: (v) => v > 0 ? v.toFixed(2) : '亏损'
+    };
 
     function renderStockList(stocks, startIndex) {
         if (stocks.length === 0 && allStockData.length > 0) {
-            showError('没有满足筛选条件的股票');
             stockListContainer.innerHTML = '';
             document.getElementById('stock-list-container').classList.add('hidden');
             return;
@@ -182,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const seq = startIndex + index + 1;
 
             item.innerHTML = `
-                <!-- Desktop View: A single grid row -->
+                <!-- Desktop View -->
                 <div class="desktop-view-grid">
                     <div class="text-center text-gray-500 text-sm">${seq}</div>
                     <div class="text-left">
@@ -192,26 +200,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="text-right ${colorClass} font-medium">${stock.price.toFixed(2)}</div>
                     <div class="text-right ${colorClass} font-bold">${sign}${stock.changePercent.toFixed(2)}%</div>
                     <div class="text-right">${stock.turnover.toFixed(2)}%</div>
-                    <div class="text-right">${formatVolume(stock.volume)}</div>
-                    <div class="text-right">${formatTurnoverAmount(stock.turnoverAmount)}</div>
+                    <div class="text-right">${formatters.pe(stock.pe)}</div>
+                    <div class="text-right">${formatters.volume(stock.volume)}</div>
+                    <div class="text-right">${formatters.turnoverAmount(stock.turnoverAmount)}</div>
+                    <div class="text-right">${formatters.marketCap(stock.marketCap)}</div>
                 </div>
 
-                <!-- Mobile View: A compact card -->
+                <!-- Mobile View (Updated) -->
                 <div class="mobile-view-card">
                     <div class="mobile-main-info">
                         <div>
                             <div class="stock-name">${stock.name}</div>
                             <div class="stock-code">${stock.market.toUpperCase()}${stock.code}</div>
                         </div>
-                        <div class="text-right ${colorClass}">
-                            <div class="font-medium text-lg">${stock.price.toFixed(2)}</div>
-                            <div class="font-bold">${sign}${stock.changePercent.toFixed(2)}%</div>
+                        <div class="text-right">
+                            <div class="info-label text-right">最新价</div>
+                            <div class="${colorClass} font-medium text-lg">${stock.price.toFixed(2)}</div>
+                        </div>
+                         <div class="text-right">
+                            <div class="info-label text-right">涨跌幅</div>
+                            <div class="${colorClass} font-medium text-lg">${sign}${stock.changePercent.toFixed(2)}%</div>
                         </div>
                     </div>
                     <div class="mobile-secondary-info">
                         <div class="info-pair"><span class="info-label">换手率</span><span class="info-value">${stock.turnover.toFixed(2)}%</span></div>
-                        <div class="info-pair"><span class="info-label">成交量</span><span class="info-value">${formatVolume(stock.volume)}</span></div>
-                        <div class="info-pair"><span class="info-label">成交额</span><span class="info-value">${formatTurnoverAmount(stock.turnoverAmount)}</span></div>
+                        <div class="info-pair"><span class="info-label">成交量</span><span class="info-value">${formatters.volume(stock.volume)}</span></div>
+                        <div class="info-pair"><span class="info-label">成交额</span><span class="info-value">${formatters.turnoverAmount(stock.turnoverAmount)}</span></div>
+                        <div class="info-pair"><span class="info-label">市盈率</span><span class="info-value">${formatters.pe(stock.pe)}</span></div>
+                        <div class="info-pair"><span class="info-label">总市值</span><span class="info-value">${formatters.marketCap(stock.marketCap)}</span></div>
                     </div>
                 </div>
             `;
@@ -230,22 +246,31 @@ document.addEventListener('DOMContentLoaded', () => {
         pageInfo.className = 'text-sm font-medium text-gray-600';
         pageInfo.textContent = `第 ${currentPage} / ${totalPages} 页 (共 ${filteredStockData.length} 项)`;
         const prevButton = document.createElement('button');
-        prevButton.innerHTML = `&larr; 上一页`;
+        prevButton.innerHTML = `<i data-lucide="arrow-left" class="h-4 w-4 mr-1"></i> 上一页`;
         prevButton.className = 'pagination-btn';
         prevButton.disabled = currentPage === 1;
         prevButton.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(); } });
         const nextButton = document.createElement('button');
-        nextButton.innerHTML = `下一页 &rarr;`;
+        nextButton.innerHTML = `下一页 <i data-lucide="arrow-right" class="h-4 w-4 ml-1"></i>`;
         nextButton.className = 'pagination-btn';
         nextButton.disabled = currentPage === totalPages;
         nextButton.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderPage(); } });
         paginationControls.appendChild(prevButton);
         paginationControls.appendChild(pageInfo);
         paginationControls.appendChild(nextButton);
+        lucide.createIcons();
     }
 
     // --- Chart Modal Functions ---
     function initModal() {
+        if (chartContainer) {
+            stockChart = echarts.init(chartContainer);
+            window.addEventListener('resize', () => {
+                if (stockChart) {
+                    stockChart.resize();
+                }
+            });
+        }
         modalCloseBtn.addEventListener('click', closeStockChartModal);
         modal.addEventListener('click', (e) => { if (e.target === modal) closeStockChartModal(); });
         stockListContainer.addEventListener('click', (e) => {
@@ -271,27 +296,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentActive = chartTimeRangeContainer.querySelector('.active');
         if (currentActive) currentActive.classList.remove('active');
         chartTimeRangeContainer.querySelector('[data-range="intraday"]').classList.add('active');
+        // Delay resize to ensure modal is fully rendered
+        setTimeout(() => {
+            if (stockChart) stockChart.resize();
+        }, 50);
         updateChart(stockCode, 'intraday');
     }
 
     function closeStockChartModal() {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
-        if (stockChart) { stockChart.destroy(); stockChart = null; }
+        if (stockChart) stockChart.clear();
     }
 
     async function updateChart(stockCode, range) {
         chartLoader.classList.remove('hidden');
+        if (stockChart) stockChart.clear();
         try {
             const data = await fetchChartData(stockCode, range);
             renderChart(data, range);
         } catch (error) {
             console.error(`Failed to update chart for ${stockCode}, range ${range}:`, error);
-            if (stockChart) stockChart.destroy();
-            const ctx = chartCanvas.getContext('2d');
-            ctx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
-            Object.assign(ctx, { textAlign: 'center', fillStyle: '#f87171', font: '16px Inter' });
-            ctx.fillText(`加载图表数据失败 (${error.message})`, chartCanvas.width / 2, chartCanvas.height / 2);
+            if (stockChart) {
+                stockChart.setOption({
+                    title: {
+                        show: true, text: '图表数据加载失败', left: 'center', top: 'center', textStyle: { color: '#ef4444' }
+                    }
+                });
+            }
         } finally {
             chartLoader.classList.add('hidden');
         }
@@ -305,101 +337,121 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             const intradayData = result?.data?.[stockCode]?.data?.data;
             if (!intradayData?.length) return { labels: [], values: [] };
-            const datePrefix = new Date().toISOString().split('T')[0];
+            const datePrefix = result?.data?.[stockCode]?.data?.date;
+            if (!datePrefix) return { labels: [], values: [] };
+
+            const formattedDate = `${datePrefix.slice(0, 4)}-${datePrefix.slice(4, 6)}-${datePrefix.slice(6, 8)}`;
+
             return {
-                labels: intradayData.map(d => `${datePrefix} ${d.split(' ')[0].replace(/(\d{2})(\d{2})/, '$1:$2')}`),
+                labels: intradayData.map(d => `${formattedDate} ${d.split(' ')[0].replace(/(\d{2})(\d{2})/, '$1:$2')}`),
                 values: intradayData.map(d => parseFloat(d.split(' ')[1])),
+                volumes: intradayData.map(d => parseFloat(d.split(' ')[2])),
+                preclose: parseFloat(result?.data?.[stockCode]?.qt?.[stockCode]?.[4])
             };
         }
+
         let klt;
         switch (range) {
-            case 'daily': klt = 101; break; case 'weekly': klt = 102; break;
-            case 'monthly': klt = 103; break; case 'quarterly': klt = 104; break;
-            case 'yearly': klt = 105; break; default: klt = 101;
+            case 'daily': klt = 101; break; case 'weekly': klt = 102; break; case 'monthly': klt = 103; break; default: klt = 101;
         }
         const marketCode = stockCode.startsWith('sh') ? '1' : '0';
         const secid = `${marketCode}.${stockCode.substring(2)}`;
-        const url = `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${secid}&ut=fa5fd1943c7b386f172d6893dbfba10b&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55&klt=${klt}&fqt=1&end=20500101&lmt=1000`;
+        const url = `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${secid}&ut=fa5fd1943c7b386f172d6893dbfba10b&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58&klt=${klt}&fqt=1&end=20500101&lmt=1000`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`请求失败: ${response.status}`);
         const result = await response.json();
         const klines = result?.data?.klines;
-        if (!klines?.length) return { labels: [], values: [] };
+        if (!klines?.length) return { dates: [], values: [] };
+
         return {
-            labels: klines.map(d => d.split(',')[0]),
-            values: klines.map(d => parseFloat(d.split(',')[2])),
+            dates: klines.map(d => d.split(',')[0]),
+            // [open, close, low, high]
+            values: klines.map(d => [parseFloat(d.split(',')[1]), parseFloat(d.split(',')[2]), parseFloat(d.split(',')[3]), parseFloat(d.split(',')[4])]),
         };
     }
 
-    function renderChart({ labels, values }, range) {
-        if (stockChart) stockChart.destroy();
-        const ctx = chartCanvas.getContext('2d');
-        if (!values?.length) {
-            ctx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
-            Object.assign(ctx, { textAlign: 'center', fillStyle: '#9ca3af', font: '16px Inter' });
-            ctx.fillText('该时间段无可用数据', chartCanvas.width / 2, chartCanvas.height / 2);
+    function renderChart(data, range) {
+        if (!data || (!data.values || data.values.length === 0)) {
+            stockChart.setOption({
+                title: { show: true, text: '该时间段无可用数据', left: 'center', top: 'center', textStyle: { color: '#6b7280' } }
+            });
             return;
         }
-        const isUp = values[values.length - 1] >= values[0];
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, isUp ? 'rgba(239, 68, 68, 0.4)' : 'rgba(34, 197, 94, 0.4)');
-        gradient.addColorStop(1, isUp ? 'rgba(239, 68, 68, 0)' : 'rgba(34, 197, 94, 0)');
-        const borderColor = isUp ? '#ef4444' : '#22c55e';
 
-        const timeParser = range === 'intraday' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
+        let option;
+        if (range === 'intraday') {
+            option = getIntradayOption(data);
+        } else {
+            option = getCandlestickOption(data);
+        }
 
-        stockChart = new Chart(ctx, {
-            type: 'line',
-            data: { labels, datasets: [{ data: values, borderColor, borderWidth: 2, pointRadius: 0, tension: range === 'intraday' ? 0.1 : 0, fill: true, backgroundColor: gradient }] },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            title: (tooltipItems) => {
-                                const date = new Date(tooltipItems[0].parsed.x);
-                                if (range === 'intraday') {
-                                    return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
-                                }
-                                return date.toLocaleDateString('zh-CN');
-                            },
-                            label: ctx => `价格: ${ctx.parsed.y.toFixed(2)}`
-                        }
-                    }
+        stockChart.setOption(option, true); // `true` to clear previous options
+    }
+
+    // --- Chart Options ---
+    function getIntradayOption({ labels, values, preclose }) {
+        const color = values[values.length - 1] >= preclose ? '#ef4444' : '#22c55e';
+        return {
+            tooltip: {
+                trigger: 'axis',
+                formatter: params => `时间: ${params[0].axisValueLabel.split(' ')[1]}<br/>价格: ${params[0].value.toFixed(2)}`,
+                axisPointer: { type: 'cross' }
+            },
+            grid: { left: '10', right: '50', bottom: '20', top: '10', containLabel: true },
+            xAxis: {
+                type: 'category', data: labels, axisLabel: { formatter: val => val.split(' ')[1] }
+            },
+            yAxis: {
+                type: 'value', scale: true,
+                axisLabel: { formatter: v => v.toFixed(2) },
+                splitLine: { lineStyle: { color: '#f3f4f6' } }
+            },
+            series: [{
+                type: 'line', data: values, showSymbol: false, smooth: true,
+                lineStyle: { color: color, width: 1.5 },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                        offset: 0, color: color, opacity: 0.3
+                    }, {
+                        offset: 1, color: color, opacity: 0
+                    }])
                 },
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            parser: timeParser,
-                            unit: range === 'intraday' ? 'minute' : 'day',
-                            displayFormats: {
-                                minute: 'HH:mm',
-                                hour: 'HH:mm',
-                                day: 'MM-dd'
-                            }
-                        },
-                        grid: { display: false },
-                        ticks: {
-                            display: true,
-                            maxRotation: 0,
-                            autoSkip: true,
-                            maxTicksLimit: 7
-                        }
-                    },
-                    y: {
-                        position: 'right',
-                        grid: { color: '#f3f4f6' },
-                        ticks: { callback: v => v.toFixed(2) }
-                    }
-                },
-                interaction: { mode: 'index', intersect: false }
-            }
-        });
+                markLine: {
+                    symbol: 'none', silent: true, data: [{
+                        yAxis: preclose, lineStyle: { type: 'dashed', color: '#6b7280' },
+                        label: { show: true, position: 'start', formatter: '昨收', color: '#6b7280' }
+                    }]
+                }
+            }]
+        };
+    }
+
+    function getCandlestickOption({ dates, values }) {
+        return {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'cross' },
+                formatter: params => {
+                    const data = params[0].data;
+                    return `日期: ${params[0].axisValue}<br/>
+                             开盘: ${data[1]}<br/>
+                             收盘: ${data[2]}<br/>
+                             最低: ${data[3]}<br/>
+                             最高: ${data[4]}`;
+                }
+            },
+            grid: { left: '10', right: '50', bottom: '20', top: '10', containLabel: true },
+            xAxis: { type: 'category', data: dates, },
+            yAxis: { scale: true, splitLine: { lineStyle: { color: '#f3f4f6' } } },
+            series: [{
+                type: 'candlestick',
+                data: values.map(item => [item[0], item[1], item[2], item[3]]),
+                itemStyle: {
+                    color: '#ef4444', color0: '#22c55e',
+                    borderColor: '#ef4444', borderColor0: '#22c55e'
+                }
+            }]
+        };
     }
 
     // --- UI & Utility Functions ---
@@ -427,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateTimestamp() {
-        lastUpdated.textContent = `最后更新: ${new Date().toLocaleTimeString()}`;
+        lastUpdated.textContent = `最后更新: ${new Date().toLocaleTimeString('zh-CN', { hour12: false })}`;
     }
 
     function debounce(func, delay) {
