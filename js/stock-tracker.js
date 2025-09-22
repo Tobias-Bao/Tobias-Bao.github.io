@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const endIndex = startIndex + itemsPerPage;
         const pageItems = filteredStockData.slice(startIndex, endIndex);
 
-        if (pageItems.length === 0 && searchTerm.length > 0) {
+        if (pageItems.length === 0 && searchInput.value.trim().length > 0) {
             showError('没有满足筛选条件的股票');
         }
 
@@ -345,6 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
         gradient.addColorStop(0, isUp ? 'rgba(239, 68, 68, 0.4)' : 'rgba(34, 197, 94, 0.4)');
         gradient.addColorStop(1, isUp ? 'rgba(239, 68, 68, 0)' : 'rgba(34, 197, 94, 0)');
         const borderColor = isUp ? '#ef4444' : '#22c55e';
+
+        const timeParser = range === 'intraday' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd';
+
         stockChart = new Chart(ctx, {
             type: 'line',
             data: { labels, datasets: [{ data: values, borderColor, borderWidth: 2, pointRadius: 0, tension: range === 'intraday' ? 0.1 : 0, fill: true, backgroundColor: gradient }] },
@@ -372,12 +375,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     x: {
                         type: 'time',
                         time: {
-                            parser: 'yyyy-MM-dd HH:mm',
+                            parser: timeParser,
                             unit: range === 'intraday' ? 'minute' : 'day',
                             displayFormats: {
                                 minute: 'HH:mm',
                                 hour: 'HH:mm',
-                                day: 'yyyy-MM-dd'
+                                day: 'MM-dd'
                             }
                         },
                         grid: { display: false },
