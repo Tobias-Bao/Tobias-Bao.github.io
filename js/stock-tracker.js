@@ -445,8 +445,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 data: values.map(item => [item[0], item[1], item[2], item[3]]),
                 animation: false, // Disable animation
                 itemStyle: {
-                    color: '#ef4444', color0: '#22c55e',
-                    borderColor: '#ef4444', borderColor0: '#22c55e'
+                    color: '#ef4444',
+                    color0: '#22c55e',
+                    borderColor: '#dc2626',
+                    borderColor0: '#16a34a'
                 }
             }]
         };
@@ -494,4 +496,5 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initial Load ---
     init();
 });
+
 
