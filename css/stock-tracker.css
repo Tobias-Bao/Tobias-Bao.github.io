@@ -16,86 +16,6 @@
     }
 }
 
-/* New Vertical List Styles */
-.sector-list-wrapper {
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    max-height: 450px;
-    overflow-y: auto;
-    position: relative;
-}
-
-/* Custom scrollbar for the new vertical list */
-.sector-list-wrapper::-webkit-scrollbar {
-    width: 8px;
-}
-
-.sector-list-wrapper::-webkit-scrollbar-track {
-    background-color: #f1f5f9;
-    border-radius: 0 0.5rem 0.5rem 0;
-}
-
-.sector-list-wrapper::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-.sector-list-wrapper::-webkit-scrollbar-thumb:hover {
-    background-color: #94a3b8;
-}
-
-.sector-list-header,
-.sector-item {
-    display: grid;
-    /* Adjusted desktop column widths for better balance */
-    grid-template-columns: 0.3fr 2.8fr 1.2fr 1.5fr;
-    gap: 1rem;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-}
-
-.sector-list-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: #f9fafb;
-    font-weight: 600;
-    color: #4b5563;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-.sector-list-body {}
-
-.sector-item {
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-.sector-item:last-child {
-    border-bottom: none;
-}
-
-.sector-item:hover {
-    background-color: #f9fafb;
-}
-
-.sector-item.active {
-    background-color: #fff1f2;
-}
-
-.sector-item .sector-name {
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.sector-item .sector-detail {
-    font-size: 0.8rem;
-    color: #6b7280;
-}
-
 .seq-cell {
     text-align: center;
     color: #6b7280;
@@ -107,20 +27,35 @@
 /* --- Filter Section --- */
 .filter-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 1rem;
     align-items: end;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 640px) {
     .filter-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (min-width: 1280px) {
+
+@media (min-width: 1024px) {
     .filter-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    }
+
+    .filter-item[style*="grid-column"] {
+        grid-column: 1 / -1;
+    }
+
+    @media (min-width: 1280px) {
+        .filter-item[style*="grid-column"] {
+            grid-column: span 2 / span 2;
+        }
+
+        .filter-grid {
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+        }
     }
 }
 
@@ -158,13 +93,6 @@
     outline: none;
 }
 
-/* 为搜索框增加左内边距以容纳图标 */
-#search-input {
-    padding-left: 2.5rem;
-    /* 40px */
-}
-
-
 /* --- Stock List --- */
 .stock-grid-header {
     display: none;
@@ -173,8 +101,7 @@
     font-size: 0.875rem;
     border-bottom: 2px solid #e5e7eb;
     margin-bottom: 0.5rem;
-    /* Adjusted desktop column widths for better balance */
-    grid-template-columns: 0.3fr 2fr 1fr 1fr 1.2fr 0.9fr 0.9fr 1.2fr;
+    grid-template-columns: 0.3fr 2fr 1fr 1fr 0.9fr 0.9fr 1.2fr;
     gap: 1rem;
 }
 
@@ -219,8 +146,7 @@
 
     .desktop-view-grid {
         display: grid;
-        /* Adjusted desktop column widths for better balance */
-        grid-template-columns: 0.3fr 2fr 1fr 1fr 1.2fr 0.9fr 0.9fr 1.2fr;
+        grid-template-columns: 0.3fr 2fr 1fr 1fr 0.9fr 0.9fr 1.2fr;
         gap: 1rem;
         align-items: center;
         padding: 0.75rem 1rem;
@@ -243,54 +169,8 @@
         padding: 1rem;
     }
 
-    /* Sector Controls */
-    #hot-sectors-section .flex-wrap {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-    }
-
     .filter-item {
         width: 100%;
-    }
-
-    /* Sector List */
-    .sector-list-header {
-        display: none;
-    }
-
-    .sector-list-wrapper {
-        max-height: 350px;
-    }
-
-    .sector-item {
-        /* New grid for mobile to show Name, Change%, and Net Inflow */
-        grid-template-columns: 2fr 1fr 1.2fr;
-        padding: 0.75rem;
-    }
-
-    .sector-item .seq-cell {
-        display: none;
-    }
-
-    .sector-item .sector-detail {
-        /* Made Net Inflow column visible on mobile */
-        display: block;
-        text-align: right;
-    }
-
-    .sector-item .text-right:not(.sector-detail) {
-        text-align: right;
-    }
-
-    /* Filter Grid */
-    .filter-grid {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-    }
-
-    .filter-item[style*="grid-column"] {
-        grid-column: auto;
     }
 
     .filter-item .flex {
@@ -321,7 +201,7 @@
 
     .mobile-secondary-info {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 0.75rem 1rem;
         font-size: 0.875rem;
     }

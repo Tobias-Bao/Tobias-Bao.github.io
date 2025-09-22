@@ -7,14 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const paginationControls = document.getElementById('pagination-controls');
     const searchInput = document.getElementById('search-input');
 
-    // Sector Elements
-    const sectorListContainer = document.getElementById('sector-list');
-    const sectorStatusMessage = document.getElementById('sector-status-message');
-    const sectorSortBySelect = document.getElementById('sector-sort-by');
-    const sectorTypeSelect = document.getElementById('sector-type-select');
-    const mainSectorTitle = document.getElementById('sector-list-title-main');
-    const stockListTitle = document.getElementById('stock-list-title');
-
     // Filter Inputs
     const allFilterInputs = [
         document.getElementById('price-min'), document.getElementById('price-max'),
@@ -33,33 +25,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // App State
     let allStockData = [];
     let filteredStockData = [];
-    let stockCodes = [];
-    let allMarketStockCodes = []; // A persistent list of all stock codes
+    let allMarketStockCodes = [];
     let updateInterval;
-    let sectorUpdateInterval;
     let currentPage = 1;
     const itemsPerPage = 20;
     let stockChart = null;
     let currentChartStockCode = null;
-    let currentView = 'market'; // 'market' or 'sector'
-    let currentSector = {};
-    let currentSectorType = 'all'; // 'all', 'industry', 'concept', or 'region'
 
     // --- Main Functions ---
     async function init() {
         showLoading('正在获取所有A股代码...');
-        fetchHotSectors(); // Initially load with default settings
-        sectorUpdateInterval = setInterval(() => {
-            const sortField = sectorSortBySelect.value;
-            fetchHotSectors(sortField, currentSectorType, true);
-        }, 8000);
-
         try {
             const response = await fetch(`https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataNew?page=1&num=8000&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page`);
             const data = await response.json();
             if (data && Array.isArray(data)) {
                 allMarketStockCodes = data.map(item => item.symbol);
-                stockCodes = [...allMarketStockCodes];
             }
             fetchStockData();
             updateInterval = setInterval(fetchStockData, 5000);
@@ -70,173 +50,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function fetchHotSectors(sortField = 'f3', sectorType = 'all', isUpdate = false) {
-        if (!isUpdate) {
-            sectorStatusMessage.innerHTML = `<div class="loader"></div><p class="mt-2 text-sm">正在加载板块数据...</p>`;
-            sectorListContainer.innerHTML = '';
-        }
-        try {
-            let finalSectors = [];
-
-            const fetchSectorData = async (type) => {
-                const fsMap = {
-                    'industry': 'm:90+t:2+f:!50',
-                    'concept': 'm:90+t:3+f:!50',
-                    'region': 'm:90+t:1+f:!50'
-                };
-                const fs = fsMap[type];
-                if (!fs) return [];
-
-                // po=1 means sort descending
-                const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=1000&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=${sortField}&fs=${fs}&fields=f2,f3,f12,f14,f62`;
-                const response = await fetch(url);
-                const data = await response.json();
-                return (data && data.data && data.data.diff) ? data.data.diff : [];
-            };
-
-            if (sectorType === 'all') {
-                const [industry, concept, region] = await Promise.all([
-                    fetchSectorData('industry'),
-                    fetchSectorData('concept'),
-                    fetchSectorData('region')
-                ]);
-
-                const combined = [...industry, ...concept, ...region];
-                const uniqueSectors = Array.from(new Map(combined.map(s => [s.f12, s])).values());
-
-                // Always sort descending
-                uniqueSectors.sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0));
-                finalSectors = uniqueSectors;
-
-            } else {
-                finalSectors = await fetchSectorData(sectorType);
-            }
-
-            if (finalSectors.length > 0) {
-                sectorStatusMessage.style.display = 'none';
-                renderSectors(finalSectors);
-            } else {
-                throw new Error("无板块数据返回");
-            }
-        } catch (error) {
-            sectorStatusMessage.innerHTML = `<p class="text-red-500 text-sm">加载板块数据失败</p>`;
-            console.error('Failed to fetch hot sectors:', error);
-        }
-    }
-
-    function formatNetInflow(value) {
-        if (!value || isNaN(value)) return '--';
-        const absValue = Math.abs(value);
-        const sign = value < 0 ? '-' : '';
-        if (absValue >= 100000000) return `${sign}${(absValue / 100000000).toFixed(2)}亿`;
-        if (absValue >= 10000) return `${sign}${(absValue / 10000).toFixed(2)}万`;
-        return `${sign}${value.toFixed(0)}`;
-    }
-
-    function renderSectors(sectors) {
-        const fragment = document.createDocumentFragment();
-        sectors.forEach((sector, index) => {
-            const item = document.createElement('div');
-            item.className = 'sector-item';
-            item.dataset.sectorCode = sector.f12;
-            item.dataset.sectorName = sector.f14;
-
-            if (currentView === 'sector' && currentSector.code === sector.f12) {
-                item.classList.add('active');
-            }
-
-            const colorClass = sector.f3 > 0 ? 'stock-up' : (sector.f3 < 0 ? 'stock-down' : 'stock-flat');
-            const sign = sector.f3 > 0 ? '+' : '';
-
-            item.innerHTML = `
-                <div class="seq-cell">${index + 1}</div>
-                <div class="sector-name-cell">
-                    <span class="sector-name truncate" title="${sector.f14}">${sector.f14}</span>
-                </div>
-                <div class="text-right font-bold ${colorClass}">
-                    <span>${sign}${sector.f3.toFixed(2)}%</span>
-                </div>
-                <div class="text-right sector-detail">
-                    <span>${formatNetInflow(sector.f62)}</span>
-                </div>
-            `;
-            fragment.appendChild(item);
-        });
-        sectorListContainer.innerHTML = '';
-        sectorListContainer.appendChild(fragment);
-    }
-
     async function fetchStockData() {
-        const isInitialLoad = allStockData.length === 0 && stockCodes.length === allMarketStockCodes.length;
+        const isInitialLoad = allStockData.length === 0;
         if (isInitialLoad) {
             showLoading('正在更新全市场行情...');
         }
 
-        if (stockCodes.length === 0 && currentView !== 'market') {
-            showError(`此板块下无成分股数据`);
-            allStockData = [];
-            applyFiltersAndRender({ source: 'fetch' });
-            return;
-        }
-
         const batchSize = 100;
         let priceData = [];
-        for (let i = 0; i < stockCodes.length; i += batchSize) {
-            const batch = stockCodes.slice(i, i + batchSize);
+        for (let i = 0; i < allMarketStockCodes.length; i += batchSize) {
+            const batch = allMarketStockCodes.slice(i, i + batchSize);
             const results = await fetchBatchData(batch);
             priceData.push(...results);
         }
 
-        try {
-            allStockData = await mergeNetInflowData(priceData);
-            applyFiltersAndRender({ preserveScroll: !isInitialLoad, source: 'fetch' });
-            updateTimestamp();
-        } catch (error) {
-            if (isInitialLoad) showError('更新数据失败，请检查网络连接');
-            console.error('Failed to fetch stock data:', error);
-            // Fallback to price data only if inflow fails
-            allStockData = priceData;
-            applyFiltersAndRender({ preserveScroll: !isInitialLoad, source: 'fetch' });
-        }
+        allStockData = priceData;
+        applyFiltersAndRender({ preserveScroll: !isInitialLoad, source: 'fetch' });
+        updateTimestamp();
     }
-
-    async function mergeNetInflowData(stocks) {
-        const stockMap = new Map(stocks.map(s => [s.code, s]));
-        const batchSize = 100;
-
-        for (let i = 0; i < stocks.length; i += batchSize) {
-            const batch = stocks.slice(i, i + batchSize);
-            const secids = batch.map(s => `${s.market === 'sh' ? 1 : 0}.${s.code}`).join(',');
-
-            try {
-                const url = `https://push2.eastmoney.com/api/qt/ulist/get?fltt=2&fields=f12,f62&secids=${secids}`;
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data && data.data && data.data.diff) {
-                    data.data.diff.forEach(item => {
-                        const stock = stockMap.get(item.f12);
-                        if (stock) {
-                            stock.netInflow = item.f62 || 0;
-                        }
-                    });
-                }
-            } catch (e) {
-                console.error("Failed to fetch net inflow for batch", e);
-            }
-        }
-        return Array.from(stockMap.values());
-    }
-
 
     async function fetchBatchData(codes) {
         if (codes.length === 0) return [];
         const url = `https://qt.gtimg.cn/q=${codes.join(',')}`;
-        const response = await fetch(url);
-        const buffer = await response.arrayBuffer();
-        const decoder = new TextDecoder('gbk');
-        const text = decoder.decode(buffer);
-        return parseStockData(text);
+        try {
+            const response = await fetch(url);
+            const buffer = await response.arrayBuffer();
+            const decoder = new TextDecoder('gbk');
+            const text = decoder.decode(buffer);
+            return parseStockData(text);
+        } catch (error) {
+            console.error('Failed to fetch batch data:', error);
+            return [];
+        }
     }
 
     function parseStockData(rawData) {
@@ -254,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 code: parts[2], name: parts[1].trim(), price: parseFloat(parts[3]),
                 changePercent: parseFloat(parts[32]), volume: parseFloat(parts[6]),
                 turnover: parseFloat(parts[38]), turnoverAmount: parseFloat(parts[37]),
-                market: market, netInflow: 0 // Default value
+                market: market
             };
         }).filter(s => s && s.price > 0);
     }
@@ -265,9 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (allStockData.length > 0) {
             hideMessage();
-        } else if (currentView === 'market') {
-        } else {
-            showError(`此板块下无成分股数据`);
         }
 
         const searchTerm = searchInput.value.trim().toLowerCase();
@@ -285,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const sortBy = sortBySelect.value;
-        // Always sort descending (from large to small)
         filteredStockData.sort((a, b) => b[sortBy] - a[sortBy]);
 
         renderPage({ preserveScroll });
@@ -300,8 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const endIndex = startIndex + itemsPerPage;
         const pageItems = filteredStockData.slice(startIndex, endIndex);
 
-        if (filteredStockData.length === 0 && currentView === 'sector' && allStockData.length === 0) {
-            showError(`板块 [${currentSector.name}] 下无成分股数据`);
+        if (pageItems.length === 0 && searchTerm.length > 0) {
+            showError('没有满足筛选条件的股票');
         }
 
         renderStockList(pageItems, startIndex);
@@ -323,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderStockList(stocks, startIndex) {
         if (stocks.length === 0 && allStockData.length > 0) {
-            showError('沒有满足筛选条件的股票');
+            showError('没有满足筛选条件的股票');
             stockListContainer.innerHTML = '';
             document.getElementById('stock-list-container').classList.add('hidden');
             return;
@@ -340,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const seq = startIndex + index + 1;
 
-            // This new structure uses CSS to show the correct layout for mobile/desktop
             item.innerHTML = `
                 <!-- Desktop View: A single grid row -->
                 <div class="desktop-view-grid">
@@ -351,7 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="text-right ${colorClass} font-medium">${stock.price.toFixed(2)}</div>
                     <div class="text-right ${colorClass} font-bold">${sign}${stock.changePercent.toFixed(2)}%</div>
-                    <div class="text-right">${formatNetInflow(stock.netInflow)}</div>
                     <div class="text-right">${stock.turnover.toFixed(2)}%</div>
                     <div class="text-right">${formatVolume(stock.volume)}</div>
                     <div class="text-right">${formatTurnoverAmount(stock.turnoverAmount)}</div>
@@ -370,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     <div class="mobile-secondary-info">
-                        <div class="info-pair"><span class="info-label">主力净额</span><span class="info-value">${formatNetInflow(stock.netInflow)}</span></div>
                         <div class="info-pair"><span class="info-label">换手率</span><span class="info-value">${stock.turnover.toFixed(2)}%</span></div>
                         <div class="info-pair"><span class="info-label">成交量</span><span class="info-value">${formatVolume(stock.volume)}</span></div>
                         <div class="info-pair"><span class="info-label">成交额</span><span class="info-value">${formatTurnoverAmount(stock.turnoverAmount)}</span></div>
@@ -510,7 +348,54 @@ document.addEventListener('DOMContentLoaded', () => {
         stockChart = new Chart(ctx, {
             type: 'line',
             data: { labels, datasets: [{ data: values, borderColor, borderWidth: 2, pointRadius: 0, tension: range === 'intraday' ? 0.1 : 0, fill: true, backgroundColor: gradient }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, callbacks: { title: ctx => new Date(ctx[0].parsed.x).toLocaleDateString('zh-CN'), label: ctx => `${ctx.dataset.label || ''}: ${ctx.parsed.y.toFixed(2)}` } } }, scales: { x: { type: 'time', time: { parser: range === 'intraday' ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd', unit: range === 'intraday' ? 'hour' : 'day' }, grid: { display: false }, ticks: { display: false } }, y: { position: 'right', grid: { color: '#f3f4f6' }, ticks: { callback: v => v.toFixed(2) } } }, interaction: { mode: 'index', intersect: false } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: (tooltipItems) => {
+                                const date = new Date(tooltipItems[0].parsed.x);
+                                if (range === 'intraday') {
+                                    return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
+                                }
+                                return date.toLocaleDateString('zh-CN');
+                            },
+                            label: ctx => `价格: ${ctx.parsed.y.toFixed(2)}`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            parser: 'yyyy-MM-dd HH:mm',
+                            unit: range === 'intraday' ? 'minute' : 'day',
+                            displayFormats: {
+                                minute: 'HH:mm',
+                                hour: 'HH:mm',
+                                day: 'yyyy-MM-dd'
+                            }
+                        },
+                        grid: { display: false },
+                        ticks: {
+                            display: true,
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 7
+                        }
+                    },
+                    y: {
+                        position: 'right',
+                        grid: { color: '#f3f4f6' },
+                        ticks: { callback: v => v.toFixed(2) }
+                    }
+                },
+                interaction: { mode: 'index', intersect: false }
+            }
         });
     }
 
@@ -547,95 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); };
     }
 
-    // --- Event Handlers ---
-    async function handleSectorClick(e) {
-        const item = e.target.closest('.sector-item');
-        if (!item) return;
-
-        const { sectorCode, sectorName } = item.dataset;
-        const isActive = item.classList.contains('active');
-
-        if (isActive) {
-            handleBackToMarket(item);
-            return;
-        }
-
-        currentView = 'sector';
-        currentSector = { code: sectorCode, name: sectorName };
-        document.querySelectorAll('.sector-item.active').forEach(c => c.classList.remove('active'));
-        item.classList.add('active');
-        stockListTitle.textContent = `板块: ${sectorName}`;
-        currentPage = 1;
-        clearInterval(updateInterval);
-        allStockData = [];
-        showLoading(`正在获取板块 [${sectorName}] 成分股...`);
-
-        try {
-            // Use pz=500 as a reasonable limit for sector constituents
-            const url = `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=500&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=f3&fs=b:${sectorCode}+f:!50&fields=f12,f13`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (!data.data || !data.data.diff) {
-                stockCodes = [];
-            } else {
-                stockCodes = data.data.diff.map(item => {
-                    const marketPrefix = item.f13 === 1 ? 'sh' : (item.f13 === 0 ? 'sz' : 'bj');
-                    return `${marketPrefix}${item.f12}`;
-                });
-            }
-            stockListTitle.textContent = `板块: ${sectorName} (${stockCodes.length}家)`;
-            fetchStockData();
-            updateInterval = setInterval(fetchStockData, 5000);
-        } catch (error) {
-            showError('获取板块成分股失败');
-            console.error('Failed to fetch stocks for sector:', error);
-        }
-    }
-
-    function handleBackToMarket(card) {
-        currentView = 'market';
-        currentSector = {};
-        if (card) card.classList.remove('active');
-        stockListTitle.textContent = `全市场股票列表`;
-        currentPage = 1;
-        clearInterval(updateInterval);
-        allStockData = [];
-        stockCodes = [...allMarketStockCodes];
-        showLoading('正在加载全市场行情...');
-        fetchStockData();
-        updateInterval = setInterval(fetchStockData, 5000);
-    }
-
     // --- Event Listeners ---
     const debouncedRender = debounce(() => applyFiltersAndRender({ source: 'user' }), 400);
     allFilterInputs.forEach(input => input.addEventListener('input', debouncedRender));
     searchInput.addEventListener('input', debouncedRender);
     sortBySelect.addEventListener('change', () => applyFiltersAndRender({ source: 'user' }));
-
-    sectorSortBySelect.addEventListener('change', () => {
-        const sortField = sectorSortBySelect.value;
-        fetchHotSectors(sortField, currentSectorType);
-    });
-
-    sectorTypeSelect.addEventListener('change', (e) => {
-        const newType = e.target.value;
-        if (newType === currentSectorType) return;
-
-        currentSectorType = newType;
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        mainSectorTitle.textContent = selectedOption.textContent;
-
-        const sortField = sectorSortBySelect.value;
-        fetchHotSectors(sortField, currentSectorType);
-
-        if (currentView === 'sector') {
-            handleBackToMarket(null);
-        }
-    });
-
-
-    sectorListContainer.addEventListener('click', handleSectorClick);
 
     // --- Initial Load ---
     init();
