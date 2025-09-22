@@ -85,15 +85,17 @@
                     <!-- Sort Controls -->
                     <div class="filter-item">
                         <label for="sort-by" class="filter-label">股票排序</label>
-                        <select id="sort-by" class="filter-input">
-                            <option value="changePercent">涨跌幅</option>
-                            <option value="turnover">换手率</option>
-                            <option value="turnoverAmount">成交额</option>
-                            <option value="marketCap">总市值</option>
-                            <option value="pe">市盈率</option>
-                            <option value="volume">成交量</option>
-                            <option value="price">最新价</option>
-                        </select>
+                        <div class="select-wrapper">
+                            <select id="sort-by" class="filter-input custom-select">
+                                <option value="changePercent">涨跌幅</option>
+                                <option value="price">最新价</option>
+                                <option value="turnover">换手率</option>
+                                <option value="pe">市盈率</option>
+                                <option value="volume">成交量</option>
+                                <option value="turnoverAmount">成交额</option>
+                                <option value="marketCap">总市值</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

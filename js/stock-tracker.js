@@ -122,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const searchTerm = searchInput.value.trim().toLowerCase();
 
-        // Updated filters object, removing PE and MarketCap
         const filters = {
             price: { min: parseFloat(document.getElementById('price-min').value) || 0, max: parseFloat(document.getElementById('price-max').value) || Infinity },
             changePercent: { min: parseFloat(document.getElementById('changePercent-min').value) || -Infinity, max: parseFloat(document.getElementById('changePercent-max').value) || Infinity },
@@ -131,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         filteredStockData = allStockData.filter(stock => {
             const matchesSearch = searchTerm === '' || stock.name.toLowerCase().includes(searchTerm) || stock.code.includes(searchTerm);
-            // Updated filtering logic
             const matchesFilters = Object.keys(filters).every(key => {
                 return stock[key] >= filters[key].min && stock[key] <= filters[key].max;
             });
@@ -206,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="text-right">${formatters.marketCap(stock.marketCap)}</div>
                 </div>
 
-                <!-- Mobile View (Updated) -->
+                <!-- Mobile View -->
                 <div class="mobile-view-card">
                     <div class="mobile-main-info">
                         <div>
@@ -296,7 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentActive = chartTimeRangeContainer.querySelector('.active');
         if (currentActive) currentActive.classList.remove('active');
         chartTimeRangeContainer.querySelector('[data-range="intraday"]').classList.add('active');
-        // Delay resize to ensure modal is fully rendered
         setTimeout(() => {
             if (stockChart) stockChart.resize();
         }, 50);
@@ -365,7 +362,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return {
             dates: klines.map(d => d.split(',')[0]),
-            // [open, close, low, high]
             values: klines.map(d => [parseFloat(d.split(',')[1]), parseFloat(d.split(',')[2]), parseFloat(d.split(',')[3]), parseFloat(d.split(',')[4])]),
         };
     }
@@ -385,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             option = getCandlestickOption(data);
         }
 
-        stockChart.setOption(option, true); // `true` to clear previous options
+        stockChart.setOption(option, { notMerge: true });
     }
 
     // --- Chart Options ---
@@ -408,14 +404,15 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             series: [{
                 type: 'line', data: values, showSymbol: false, smooth: true,
-                lineStyle: { color: color, width: 1.5 },
-                areaStyle: {
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-                        offset: 0, color: color, opacity: 0.3
-                    }, {
-                        offset: 1, color: color, opacity: 0
-                    }])
+                animation: false, // Disable animation
+                lineStyle: {
+                    width: 1.5,
+                    color: color,
+                    shadowColor: color,
+                    shadowBlur: 10,
+                    shadowOffsetY: 5
                 },
+                // Removed areaStyle
                 markLine: {
                     symbol: 'none', silent: true, data: [{
                         yAxis: preclose, lineStyle: { type: 'dashed', color: '#6b7280' },
@@ -446,6 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             series: [{
                 type: 'candlestick',
                 data: values.map(item => [item[0], item[1], item[2], item[3]]),
+                animation: false, // Disable animation
                 itemStyle: {
                     color: '#ef4444', color0: '#22c55e',
                     borderColor: '#ef4444', borderColor0: '#22c55e'

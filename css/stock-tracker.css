@@ -79,7 +79,6 @@
     transition: all 0.2s ease-in-out;
     height: 42px;
     font-size: 0.9rem;
-    /* 调整字体大小 */
     -moz-appearance: textfield;
 }
 
@@ -101,6 +100,23 @@
     outline: none;
 }
 
+/* Custom Select Dropdown Styles for Windows UI */
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.1em;
+    padding-right: 2.5rem;
+}
+
 /* --- Stock List --- */
 .stock-grid-header {
     display: none;
@@ -109,7 +125,6 @@
     font-size: 0.875rem;
     border-bottom: 2px solid #e5e7eb;
     margin-bottom: 0.5rem;
-    /* 更新列数以适应新指标 */
     grid-template-columns: 0.3fr 2fr repeat(7, 1fr);
     gap: 1rem;
 }
@@ -155,7 +170,6 @@
 
     .desktop-view-grid {
         display: grid;
-        /* 更新列数以适应新指标 */
         grid-template-columns: 0.3fr 2fr repeat(7, 1fr);
         gap: 1rem;
         align-items: center;
@@ -206,7 +220,6 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 0.85rem 0.5rem;
-        /* Increased row gap */
         font-size: 0.875rem;
     }
 
