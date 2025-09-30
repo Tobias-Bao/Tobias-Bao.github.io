@@ -6,10 +6,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearButton = document.getElementById('clear-button');
     const downloadBtn = document.getElementById('download-btn');
     const penColorInput = document.getElementById('pen-color');
-    const penWidthInput = document.getElementById('pen-width');
-    const widthDisplay = document.getElementById('width-display');
 
-    // Modal Elements (reused from QR code generator)
+    // Mode Buttons
+    const modeManualBtn = document.getElementById('mode-manual');
+    const modeAutoBtn = document.getElementById('mode-auto');
+
+    // Manual-specific controls
+    const manualSettings = document.getElementById('manual-settings');
+    const penWidthInput = document.getElementById('pen-width');
+    const penWidthDisplay = document.getElementById('pen-width-display');
+
+    // Auto-specific controls
+    const autoSettings = document.getElementById('auto-settings');
+    const nameInput = document.getElementById('name-input');
+    const fontFamilySelect = document.getElementById('font-family');
+    const fontWeightInput = document.getElementById('font-weight');
+    const weightDisplay = document.getElementById('weight-display');
+
+    // Modal Elements
     const imagePreviewModal = document.getElementById('image-preview-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
     const imagePreviewContainer = document.getElementById('image-preview-container');
@@ -18,149 +32,165 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
 
     // State
+    let mode = 'manual'; // 'manual' or 'auto'
     let isDrawing = false;
     let lastX = 0;
     let lastY = 0;
-    let signatureDrawn = false; // Flag to check if any drawing has occurred
+    let hasContent = false;
 
     // --- Utility Functions ---
 
-    /**
-     * Initializes or resizes the canvas to match its container size.
-     * Crucially sets high resolution and ensures background is transparent (default for canvas).
-     */
     function resizeCanvas() {
-        // Get the size of the container element
         const rect = container.getBoundingClientRect();
-
-        // Set the internal canvas dimensions (high resolution for crisp lines)
-        // Note: setting width/height resets the canvas state
         canvas.width = rect.width * 2;
         canvas.height = rect.height * 2;
-
-        // Set the display size via CSS (handled by the HTML/CSS) or set below
-        canvas.style.width = rect.width + 'px';
-        canvas.style.height = rect.height + 'px';
-
-        // Restore context settings after resize
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.strokeStyle = penColorInput.value;
-        ctx.lineWidth = parseInt(penWidthInput.value, 10) * 2; // Scale line width for high resolution
-
-        // Ensure initial background is transparent (cleared to transparent)
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
+        if (mode === 'auto') {
+            renderAutoSignature();
+        } else {
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            updateManualContext();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 
-    /**
-     * Updates the context settings based on user input.
-     */
-    function updateContext() {
+    function updateManualContext() {
         ctx.strokeStyle = penColorInput.value;
-        ctx.lineWidth = parseInt(penWidthInput.value, 10) * 2; // Scale line width
-        widthDisplay.textContent = penWidthInput.value;
+        const penWidth = parseInt(penWidthInput.value, 10);
+        ctx.lineWidth = penWidth * 2;
+        penWidthDisplay.textContent = penWidth;
     }
 
-    /**
-     * Gets the coordinates of the pointer (mouse or touch) relative to the canvas.
-     */
     function getCoords(e) {
         const rect = canvas.getBoundingClientRect();
         let clientX, clientY;
-
         if (e.touches && e.touches.length > 0) {
-            // Touch event
             clientX = e.touches[0].clientX;
             clientY = e.touches[0].clientY;
         } else {
-            // Mouse event
             clientX = e.clientX;
             clientY = e.clientY;
         }
-
-        // Calculate coordinates relative to canvas, accounting for scaling factor (2)
         const x = (clientX - rect.left) * (canvas.width / rect.width);
         const y = (clientY - rect.top) * (canvas.height / rect.height);
-
         return { x, y };
     }
 
-    // --- Drawing Logic ---
+    function setHasContent(state) {
+        hasContent = state;
+        downloadBtn.disabled = !state;
+        if (state) {
+            container.classList.add(mode === 'manual' ? 'drawing' : 'has-text');
+        } else {
+            container.classList.remove('drawing', 'has-text');
+        }
+    }
 
-    /**
-     * Starts the drawing path.
-     */
+    // --- Drawing Logic (Manual Mode) ---
+
     function drawStart(e) {
-        // Prevent default touch behavior (like scrolling)
-        if (e.type.startsWith('touch')) e.preventDefault();
-
+        if (mode !== 'manual') return;
+        e.preventDefault();
         isDrawing = true;
-        container.classList.add('drawing');
-
         const coords = getCoords(e);
         [lastX, lastY] = [coords.x, coords.y];
-
-        signatureDrawn = true;
-        downloadBtn.disabled = false;
-        downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        setHasContent(true);
     }
 
-    /**
-     * Draws the line segment.
-     */
     function draw(e) {
-        if (!isDrawing) return;
-        if (e.type.startsWith('touch')) e.preventDefault();
-
+        if (!isDrawing || mode !== 'manual') return;
+        e.preventDefault();
         const coords = getCoords(e);
-        const newX = coords.x;
-        const newY = coords.y;
-
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
-        ctx.lineTo(newX, newY);
+        ctx.lineTo(coords.x, coords.y);
         ctx.stroke();
-
-        [lastX, lastY] = [newX, newY];
+        [lastX, lastY] = [coords.x, coords.y];
     }
 
-    /**
-     * Stops the drawing path.
-     */
     function drawEnd() {
+        if (mode !== 'manual') return;
         isDrawing = false;
         ctx.closePath();
     }
 
-    // --- Controls and Download ---
+    // --- Text Rendering (Auto Mode) ---
 
-    /**
-     * Clears the entire canvas.
-     */
-    function clearCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        container.classList.remove('drawing');
-        signatureDrawn = false;
-        downloadBtn.disabled = true;
-        downloadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    function renderAutoSignature() {
+        // Use an async inner function to handle font loading
+        const render = async () => {
+            const text = nameInput.value;
+            const fontFamily = fontFamilySelect.value;
+            const fontWeight = fontWeightInput.value;
+            const color = penColorInput.value;
+            // A font string with a default size for the loader
+            const fontToLoad = `${fontWeight} 12px "${fontFamily}"`;
+
+            // Await for the font to be loaded by the browser.
+            try {
+                await document.fonts.load(fontToLoad, text);
+            } catch (error) {
+                console.error(`Error loading font: ${error}`);
+            }
+
+            // Clear canvas after font is ready
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!text.trim()) {
+                setHasContent(false);
+                tip.style.opacity = '1';
+                return;
+            }
+
+            tip.style.opacity = '0';
+            setHasContent(true);
+
+            const padding = 40 * 2; // High-res padding
+            let fontSize = 150 * 2; // Start with a large font size
+
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+
+            // Auto-fit font size
+            let finalFont;
+            do {
+                fontSize -= 2;
+                finalFont = `${fontWeight} ${fontSize}px "${fontFamily}"`;
+                ctx.font = finalFont;
+            } while (ctx.measureText(text).width > canvas.width - padding && fontSize > 10);
+
+            // Set final properties and draw the text
+            ctx.fillStyle = color;
+            ctx.font = finalFont;
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+        };
+
+        render(); // Execute the async rendering function
     }
 
-    /**
-     * Handles the download process, ensuring transparent PNG is used.
-     */
+
+    // --- Controls and Download ---
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (mode === 'auto') {
+            nameInput.value = '';
+        }
+        tip.style.opacity = '1';
+        setHasContent(false);
+    }
+
     function saveSignature() {
-        if (!signatureDrawn) return;
-
-        // Use PNG format, which supports transparency, and the scaled-up canvas data.
+        if (!hasContent) return;
         const dataURL = canvas.toDataURL('image/png');
-        const filename = `electronic-signature-${new Date().getTime()}.png`;
-
+        const filename = `signature-${new Date().getTime()}.png`;
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
         if (isTouchDevice) {
             showImageInModal(dataURL);
         } else {
-            // For desktop: trigger a direct download
             const link = document.createElement('a');
             link.href = dataURL;
             link.download = filename;
@@ -170,64 +200,97 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Modal Functions (for mobile saving) ---
+    // --- Mode Switching ---
+
+    function switchMode(newMode) {
+        mode = newMode;
+        clearCanvas();
+
+        if (mode === 'manual') {
+            modeManualBtn.classList.add('active');
+            modeAutoBtn.classList.remove('active');
+            manualSettings.classList.remove('hidden');
+            autoSettings.classList.add('hidden');
+            tip.textContent = '在此区域签名...';
+            container.style.cursor = 'crosshair';
+            updateManualContext();
+        } else { // auto mode
+            modeAutoBtn.classList.add('active');
+            modeManualBtn.classList.remove('active');
+            autoSettings.classList.remove('hidden');
+            manualSettings.classList.add('hidden');
+            tip.textContent = '签名将在此预览...';
+            container.style.cursor = 'default';
+            renderAutoSignature();
+        }
+    }
+
+    // --- Modal Functions ---
 
     function showImageInModal(dataURL) {
-        imagePreviewContainer.innerHTML = ''; // Clear previous image
-        const img = document.createElement('img');
-        img.src = dataURL;
-        // Setting a light checkerboard background to visualize transparency on the modal
-        img.className = 'w-full h-auto rounded-md shadow-inner bg-checkerboard';
-        imagePreviewContainer.appendChild(img);
-
+        imagePreviewContainer.innerHTML = `<img src="${dataURL}" class="w-full h-auto rounded-md shadow-inner bg-white">`;
         imagePreviewModal.classList.remove('hidden');
         setTimeout(() => {
             imagePreviewModal.classList.add('opacity-100');
             modalContent.classList.add('scale-100', 'opacity-100');
-            modalContent.classList.remove('scale-95', 'opacity-0');
         }, 10);
     }
 
     function hideImageModal() {
         imagePreviewModal.classList.remove('opacity-100');
         modalContent.classList.remove('scale-100', 'opacity-100');
-        modalContent.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => {
-            imagePreviewModal.classList.add('hidden');
-        }, 300);
+        setTimeout(() => imagePreviewModal.classList.add('hidden'), 300);
     }
 
 
     // --- Event Listeners and Initialization ---
 
-    // Drawing Events (Mouse)
+    // Drawing Listeners
     canvas.addEventListener('mousedown', drawStart);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', drawEnd);
-    canvas.addEventListener('mouseout', drawEnd); // Stop drawing if mouse leaves canvas
-
-    // Drawing Events (Touch)
-    canvas.addEventListener('touchstart', drawStart, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('mouseout', drawEnd);
+    canvas.addEventListener('touchstart', drawStart, {
+        passive: false
+    });
+    canvas.addEventListener('touchmove', draw, {
+        passive: false
+    });
     canvas.addEventListener('touchend', drawEnd);
-    canvas.addEventListener('touchcancel', drawEnd);
 
-    // Controls
+    // Control Listeners
     clearButton.addEventListener('click', clearCanvas);
     downloadBtn.addEventListener('click', saveSignature);
-    penColorInput.addEventListener('input', updateContext);
-    penWidthInput.addEventListener('input', updateContext);
+    penColorInput.addEventListener('input', () => {
+        if (mode === 'manual') updateManualContext();
+        else renderAutoSignature();
+    });
 
-    // Initial setup and resizing
+    // Manual-specific listeners
+    penWidthInput.addEventListener('input', updateManualContext);
+
+    // Auto-specific listeners
+    nameInput.addEventListener('input', renderAutoSignature);
+    fontFamilySelect.addEventListener('change', renderAutoSignature);
+    fontWeightInput.addEventListener('input', (e) => {
+        weightDisplay.textContent = e.target.value;
+        renderAutoSignature();
+    });
+
+    // Mode switch listeners
+    modeManualBtn.addEventListener('click', () => switchMode('manual'));
+    modeAutoBtn.addEventListener('click', () => switchMode('auto'));
+
+    // Window and Modal
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    updateContext(); // Apply initial width/color settings
-
-    // Modal close events
     closeModalBtn.addEventListener('click', hideImageModal);
-    imagePreviewModal.addEventListener('click', (e) => {
-        if (e.target === imagePreviewModal) {
-            hideImageModal();
-        }
+    imagePreviewModal.addEventListener('click', (e) => e.target === imagePreviewModal && hideImageModal());
+
+    // Initial Setup
+    // Ensure fonts are ready before initial render
+    document.fonts.ready.then(() => {
+        switchMode('manual');
+        resizeCanvas();
     });
 });
+
