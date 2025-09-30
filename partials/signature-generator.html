@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电子签名生成器</title>
+    <link rel="icon" type="image/png" href="../images/logo.png?v=2">
+    <link rel="apple-touch-icon" href="../images/logo.png?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/signature-generator.css">
+</head>
+
+<body class="bg-gray-100 antialiased">
+
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-6 py-4">
+            <a href="../index.html"
+                class="inline-flex items-center gap-2 rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-800 shadow-sm ring-1 ring-inset ring-gray-200 transition-all hover:bg-gray-200 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <i data-lucide="arrow-left" class="h-4 w-4"></i>
+                返回主页
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div id="signature-card" class="bg-white rounded-xl shadow-2xl p-6 sm:p-8 max-w-2xl mx-auto">
+            <div class="text-center mb-8">
+                <div
+                    class="flex items-center justify-center w-16 h-16 bg-fuchsia-100 text-fuchsia-500 rounded-lg mx-auto mb-4">
+                    <i data-lucide="pencil-line" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">电子签名生成器</h1>
+                <p class="text-gray-500 mt-2">在下方区域手写您的签名，可保存为图片文件</p>
+            </div>
+
+            <div class="space-y-6">
+                <!-- 签名画布区域 -->
+                <div id="signature-container">
+                    <canvas id="signature-canvas" class="rounded-lg"></canvas>
+                    <p id="signature-tip">在此区域签名...</p>
+                </div>
+
+                <!-- 控制按钮组 -->
+                <div class="space-y-4">
+                    <!-- 第一行：设置 (颜色和粗细) -->
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <!-- 颜色选择 -->
+                        <div class="flex items-center bg-gray-100 rounded-lg p-2 shadow-inner">
+                            <label for="pen-color" class="text-sm font-medium text-gray-700 mr-2">颜色:</label>
+                            <input type="color" id="pen-color" value="#000000"
+                                class="w-8 h-8 rounded-full border-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 cursor-pointer">
+                        </div>
+
+                        <!-- 笔触粗细 -->
+                        <div class="flex items-center bg-gray-100 rounded-lg p-2 shadow-inner">
+                            <label for="pen-width" class="text-sm font-medium text-gray-700 mr-2">粗细:</label>
+                            <input type="range" id="pen-width" min="2" max="10" value="4"
+                                class="w-24 h-4 rounded-lg appearance-none bg-gray-300 range-slider-fuchsia cursor-pointer">
+                            <span id="width-display" class="ml-2 text-sm font-semibold text-gray-800 w-4">4</span>
+                        </div>
+                    </div>
+
+                    <!-- 第二行：操作 (清空和保存) -->
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <!-- 清空按钮 -->
+                        <button id="clear-button"
+                            class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-all hover:scale-[1.02] flex-1 sm:flex-initial">
+                            <i data-lucide="eraser" class="w-5 h-5 mr-2"></i>
+                            清空签名
+                        </button>
+
+                        <!-- 保存按钮 -->
+                        <button id="download-btn"
+                            class="download-button inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-lg text-white bg-fuchsia-600 hover:bg-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fuchsia-500 transition-all hover:scale-105 flex-1 sm:flex-initial"
+                            disabled>
+                            <i data-lucide="download" class="w-5 h-5 mr-2"></i>
+                            保存签名图片
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Image Preview Modal (用于移动端保存) -->
+    <div id="image-preview-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 transition-opacity duration-300">
+        <div
+            class="modal-content bg-white rounded-lg shadow-xl p-6 max-w-xs w-full text-center relative transform transition-all duration-300 scale-95 opacity-0">
+            <button id="close-modal-btn"
+                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="w-6 h-6">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">保存签名图片</h3>
+            <p class="text-sm text-gray-500 mb-4">请长按下方图片，然后选择“添加到照相册”</p>
+            <div id="image-preview-container" class="bg-gray-100 p-2 rounded-md border border-gray-300">
+                <!-- Generated image will be placed here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/signature-generator.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
