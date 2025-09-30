@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat&family=Dancing+Script&family=Great+Vibes&family=Marck+Script&family=Sacramento&family=Germanica&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Long+Cang&family=Noto+Serif+SC:wght@400;700&family=EB+Garamond&family=Alex+Brush&family=Allura&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Caveat:wght@400..700&family=Cormorant+Garamond:wght@400;700&family=Dancing+Script:wght@400..700&family=EB+Garamond:wght@400..800&family=Great+Vibes&family=Inter:wght@400;500;600;700&family=Liu+Jian+Mao+Cao&family=Long+Cang&family=Ma+Shan+Zheng&family=Marck+Script&family=Noto+Serif+SC:wght@400;700&family=Pinyon+Script&family=Sacramento&family=Tangerine:wght@400;700&family=Zhi+Mang+Xing&display=swap"
         rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -64,29 +64,42 @@
                             <label for="font-family" class="block text-sm font-medium text-gray-700 mb-1">选择字体</label>
                             <select id="font-family"
                                 class="w-full p-2 border border-gray-300 rounded-md focus:ring-fuchsia-500 focus:border-fuchsia-500">
-                                <optgroup label="中文">
-                                    <option value="Ma Shan Zheng">马善政</option>
-                                    <option value="Zhi Mang Xing">之芒行</option>
-                                    <option value="Long Cang">龙藏</option>
-                                    <option value="Noto Serif SC">思源宋体</option>
+                                <optgroup label="中文草书">
+                                    <option value="Liu Jian Mao Cao" data-variable="false">流江毛草</option>
+                                    <option value="Zhi Mang Xing" data-variable="false">之芒行</option>
                                 </optgroup>
-                                <optgroup label="英文">
-                                    <option value="EB Garamond">EB Garamond</option>
-                                    <option value="Alex Brush">Alex Brush</option>
-                                    <option value="Allura">Allura</option>
-                                    <option value="Dancing Script">Dancing Script</option>
-                                    <option value="Caveat">Caveat</option>
-                                    <option value="Great Vibes">Great Vibes</option>
-                                    <option value="Marck Script">Marck Script</option>
-                                    <option value="Sacramento">Sacramento</option>
+                                <optgroup label="中文艺术">
+                                    <option value="Ma Shan Zheng" data-variable="false">马善政</option>
+                                    <option value="Long Cang" data-variable="false">龙藏</option>
+                                </optgroup>
+                                <optgroup label="中文正式">
+                                    <option value="Noto Serif SC" data-variable="true">思源宋体</option>
+                                </optgroup>
+                                <optgroup label="英文手写">
+                                    <option value="Tangerine" data-variable="true">Tangerine</option>
+                                    <option value="Pinyon Script" data-variable="false">Pinyon Script</option>
+                                    <option value="Allura" data-variable="false">Allura</option>
+                                    <option value="Great Vibes" data-variable="false">Great Vibes</option>
+                                    <option value="Sacramento" data-variable="false">Sacramento</option>
+                                </optgroup>
+                                <optgroup label="英文艺术">
+                                    <option value="Alex Brush" data-variable="false">Alex Brush</option>
+                                    <option value="Dancing Script" data-variable="true">Dancing Script</option>
+                                    <option value="Marck Script" data-variable="false">Marck Script</option>
+                                    <option value="Caveat" data-variable="true">Caveat</option>
+                                </optgroup>
+                                <optgroup label="英文正式">
+                                    <option value="Cormorant Garamond" data-variable="true">Cormorant Garamond</option>
+                                    <option value="EB Garamond" data-variable="true">EB Garamond</option>
                                 </optgroup>
                             </select>
                         </div>
                         <div>
                             <label for="font-weight" class="block text-sm font-medium text-gray-700 mb-1">字体粗细</label>
-                            <div class="flex items-center bg-gray-100 rounded-lg p-2 shadow-inner">
+                            <div id="font-weight-container"
+                                class="flex items-center bg-gray-100 rounded-lg p-2 shadow-inner transition-opacity duration-300">
                                 <input type="range" id="font-weight" min="100" max="900" value="400" step="100"
-                                    class="w-full h-4 rounded-lg appearance-none bg-gray-300 range-slider-fuchsia cursor-pointer">
+                                    class="w-full h-4 rounded-lg appearance-none bg-gray-300 range-slider-fuchsia cursor-pointer disabled:cursor-not-allowed">
                                 <span id="weight-display"
                                     class="ml-3 text-sm font-semibold text-gray-800 w-8 text-center">400</span>
                             </div>
@@ -102,17 +115,17 @@
 
                 <!-- 通用控制按钮组 -->
                 <div class="space-y-4">
-                    <!-- 第一行：设置 (颜色和笔触粗细 - 仅手写模式) -->
-                    <div id="manual-settings" class="flex flex-wrap justify-center gap-4">
-                        <!-- 颜色选择 -->
+                    <!-- 第一行：设置 -->
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <!-- 颜色选择 (通用) -->
                         <div class="flex items-center bg-gray-100 rounded-lg p-2 shadow-inner">
                             <label for="pen-color" class="text-sm font-medium text-gray-700 mr-2">颜色:</label>
                             <input type="color" id="pen-color" value="#000000"
                                 class="w-8 h-8 rounded-full border-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 cursor-pointer">
                         </div>
 
-                        <!-- 笔触粗细 -->
-                        <div class="flex items-center bg-gray-100 rounded-lg p-2 shadow-inner">
+                        <!-- 笔触粗细 (仅手写模式) -->
+                        <div id="manual-settings" class="flex items-center bg-gray-100 rounded-lg p-2 shadow-inner">
                             <label for="pen-width" class="text-sm font-medium text-gray-700 mr-2">粗细:</label>
                             <input type="range" id="pen-width" min="2" max="10" value="4"
                                 class="w-24 h-4 rounded-lg appearance-none bg-gray-300 range-slider-fuchsia cursor-pointer">
@@ -121,7 +134,7 @@
                     </div>
 
                     <!-- 第二行：操作 (清空和保存) -->
-                    <div class="flex flex-wrap justify-center gap-4 pt-2 border-t border-gray-200">
+                    <div class="flex flex-wrap justify-center gap-4 pt-4 border-t border-gray-200">
                         <!-- 清空按钮 -->
                         <button id="clear-button"
                             class="action-btn bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-400">

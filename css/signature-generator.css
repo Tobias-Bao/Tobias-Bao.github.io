@@ -174,3 +174,9 @@
 .hidden {
     display: none;
 }
+
+/* Disabled state for font weight slider */
+#font-weight-container.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}

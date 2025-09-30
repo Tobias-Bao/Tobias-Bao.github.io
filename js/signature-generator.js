@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('name-input');
     const fontFamilySelect = document.getElementById('font-family');
     const fontWeightInput = document.getElementById('font-weight');
+    const fontWeightContainer = document.getElementById('font-weight-container');
     const weightDisplay = document.getElementById('weight-display');
 
     // Modal Elements
@@ -42,24 +43,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resizeCanvas() {
         const rect = container.getBoundingClientRect();
-        canvas.width = rect.width * 2;
-        canvas.height = rect.height * 2;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr); // Scale context for high-res displays
         canvas.style.width = `${rect.width}px`;
         canvas.style.height = `${rect.height}px`;
+
+        // Re-render content after resizing
         if (mode === 'auto') {
             renderAutoSignature();
         } else {
+            // Context is reset on resize, so re-apply settings
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             updateManualContext();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            setHasContent(false); // Drawing is cleared
+            tip.style.opacity = '1';
         }
     }
+
 
     function updateManualContext() {
         ctx.strokeStyle = penColorInput.value;
         const penWidth = parseInt(penWidthInput.value, 10);
-        ctx.lineWidth = penWidth * 2;
+        ctx.lineWidth = penWidth; // Directly use value, scaling is handled by DPR
         penWidthDisplay.textContent = penWidth;
     }
 
@@ -73,8 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
             clientX = e.clientX;
             clientY = e.clientY;
         }
-        const x = (clientX - rect.left) * (canvas.width / rect.width);
-        const y = (clientY - rect.top) * (canvas.height / rect.height);
+        // Return coordinates relative to the canvas element
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
         return { x, y };
     }
 
@@ -96,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
         isDrawing = true;
         const coords = getCoords(e);
         [lastX, lastY] = [coords.x, coords.y];
+        ctx.beginPath(); // Start a new path
+        ctx.moveTo(lastX, lastY);
         setHasContent(true);
     }
 
@@ -103,10 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isDrawing || mode !== 'manual') return;
         e.preventDefault();
         const coords = getCoords(e);
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
         ctx.lineTo(coords.x, coords.y);
-        ctx.stroke();
+        ctx.stroke(); // Draw the line
         [lastX, lastY] = [coords.x, coords.y];
     }
 
@@ -118,25 +128,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Text Rendering (Auto Mode) ---
 
+    function handleFontFamilyChange() {
+        const selectedOption = fontFamilySelect.options[fontFamilySelect.selectedIndex];
+        const isVariable = selectedOption.dataset.variable === 'true';
+
+        if (isVariable) {
+            fontWeightInput.disabled = false;
+            fontWeightContainer.classList.remove('disabled');
+        } else {
+            // For non-variable fonts, reset to 400 and disable the slider
+            fontWeightInput.value = 400;
+            weightDisplay.textContent = '400';
+            fontWeightInput.disabled = true;
+            fontWeightContainer.classList.add('disabled');
+        }
+        renderAutoSignature();
+    }
+
+
     function renderAutoSignature() {
-        // Use an async inner function to handle font loading
         const render = async () => {
             const text = nameInput.value;
             const fontFamily = fontFamilySelect.value;
             const fontWeight = fontWeightInput.value;
             const color = penColorInput.value;
-            // A font string with a default size for the loader
+            // Use a generic font string for loading check
             const fontToLoad = `${fontWeight} 12px "${fontFamily}"`;
 
-            // Await for the font to be loaded by the browser.
             try {
-                await document.fonts.load(fontToLoad, text);
+                // Check if font is loaded before attempting to load again
+                if (!document.fonts.check(fontToLoad, text)) {
+                    await document.fonts.load(fontToLoad, text);
+                }
             } catch (error) {
-                console.error(`Error loading font: ${error}`);
+                console.error(`Font loading failed for "${fontFamily}":`, error);
             }
 
-            // Clear canvas after font is ready
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const dpr = window.devicePixelRatio || 1;
+            const canvasWidth = canvas.width / dpr;
+            const canvasHeight = canvas.height / dpr;
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
             if (!text.trim()) {
                 setHasContent(false);
@@ -147,36 +179,36 @@ document.addEventListener('DOMContentLoaded', () => {
             tip.style.opacity = '0';
             setHasContent(true);
 
-            const padding = 40 * 2; // High-res padding
-            let fontSize = 150 * 2; // Start with a large font size
+            const padding = 40;
+            let fontSize = 150; // Initial font size
 
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
 
-            // Auto-fit font size
+            // Dynamically adjust font size to fit canvas
             let finalFont;
             do {
-                fontSize -= 2;
+                fontSize -= 1;
                 finalFont = `${fontWeight} ${fontSize}px "${fontFamily}"`;
                 ctx.font = finalFont;
-            } while (ctx.measureText(text).width > canvas.width - padding && fontSize > 10);
+            } while (ctx.measureText(text).width > canvasWidth - padding && fontSize > 10);
 
-            // Set final properties and draw the text
             ctx.fillStyle = color;
             ctx.font = finalFont;
-            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+            ctx.fillText(text, canvasWidth / 2, canvasHeight / 2);
         };
-
-        render(); // Execute the async rendering function
+        render();
     }
 
 
     // --- Controls and Download ---
 
     function clearCanvas() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const dpr = window.devicePixelRatio || 1;
+        ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
         if (mode === 'auto') {
             nameInput.value = '';
+            renderAutoSignature(); // Re-render to show placeholder text
         }
         tip.style.opacity = '1';
         setHasContent(false);
@@ -203,8 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Mode Switching ---
 
     function switchMode(newMode) {
+        if (mode === newMode) return;
         mode = newMode;
-        clearCanvas();
 
         if (mode === 'manual') {
             modeManualBtn.classList.add('active');
@@ -213,7 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
             autoSettings.classList.add('hidden');
             tip.textContent = '在此区域签名...';
             container.style.cursor = 'crosshair';
-            updateManualContext();
         } else { // auto mode
             modeAutoBtn.classList.add('active');
             modeManualBtn.classList.remove('active');
@@ -221,8 +252,9 @@ document.addEventListener('DOMContentLoaded', () => {
             manualSettings.classList.add('hidden');
             tip.textContent = '签名将在此预览...';
             container.style.cursor = 'default';
-            renderAutoSignature();
+            handleFontFamilyChange(); // Initial check for font properties
         }
+        clearCanvas();
     }
 
     // --- Modal Functions ---
@@ -245,20 +277,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners and Initialization ---
 
-    // Drawing Listeners
     canvas.addEventListener('mousedown', drawStart);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', drawEnd);
     canvas.addEventListener('mouseout', drawEnd);
-    canvas.addEventListener('touchstart', drawStart, {
-        passive: false
-    });
-    canvas.addEventListener('touchmove', draw, {
-        passive: false
-    });
+    canvas.addEventListener('touchstart', drawStart, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
     canvas.addEventListener('touchend', drawEnd);
 
-    // Control Listeners
     clearButton.addEventListener('click', clearCanvas);
     downloadBtn.addEventListener('click', saveSignature);
     penColorInput.addEventListener('input', () => {
@@ -266,28 +292,23 @@ document.addEventListener('DOMContentLoaded', () => {
         else renderAutoSignature();
     });
 
-    // Manual-specific listeners
     penWidthInput.addEventListener('input', updateManualContext);
 
-    // Auto-specific listeners
     nameInput.addEventListener('input', renderAutoSignature);
-    fontFamilySelect.addEventListener('change', renderAutoSignature);
+    fontFamilySelect.addEventListener('change', handleFontFamilyChange);
     fontWeightInput.addEventListener('input', (e) => {
         weightDisplay.textContent = e.target.value;
         renderAutoSignature();
     });
 
-    // Mode switch listeners
     modeManualBtn.addEventListener('click', () => switchMode('manual'));
     modeAutoBtn.addEventListener('click', () => switchMode('auto'));
 
-    // Window and Modal
     window.addEventListener('resize', resizeCanvas);
     closeModalBtn.addEventListener('click', hideImageModal);
     imagePreviewModal.addEventListener('click', (e) => e.target === imagePreviewModal && hideImageModal());
 
     // Initial Setup
-    // Ensure fonts are ready before initial render
     document.fonts.ready.then(() => {
         switchMode('manual');
         resizeCanvas();
